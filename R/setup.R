@@ -20,20 +20,17 @@
 #'
 #' @export
 
-dcpo_setup <- function(vars, keep) {
+dcpo_setup <- function(vars, keep = NULL) {
   datapath <- "~/Documents/Projects/Data/"
   datasets.table <- read.csv(" Datasets.csv", as.is=T)
   vars.table <- read.csv(vars, as.is=T)
 
-  low <- FALSE
-  high <- FALSE
-
-  if(low) {
+  if (keep == "low") {
       vars.table <- vars.table[(vars.table$reverse | grepl(x=vars.table$item, "2")), ]
       vars.table$reverse <- !vars.table$reverse
       vars.table$item <- gsub(x=vars.table$item, "r$","")
       vars.table$item <- gsub(x=vars.table$item, "2$", "2r")
-  } else if(high) {
+  } else if (keep == "high") {
       vars.table <- vars.table[!vars.table$reverse, ]
   }
 

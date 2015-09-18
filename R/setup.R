@@ -2,28 +2,27 @@
 #'
 #' \code{dcpo_setup} is a function .
 #'
-#' @param
+#' @param vars a df of variables
+#' @param keep all, high, or low
 #
-#' @details \code{dcpo_setup}
+#' @details \code{dcpo_setup} prepares data
 #'
-#' @references
 #'
-#' @return
+#' @return a data frame
 #'
 #' @import foreign
 #' @import Hmisc
-#' @import plyr
 #' @import reshape2
+#' @import plyr
 #' @import beepr
 #'
-#' @examples
 #'
 #' @export
 
-dcpo_setup <- function(vars, keep = NULL) {
+dcpo_setup <- function(vars, keep = "all") {
   datapath <- "~/Documents/Projects/Data/"
-  datasets.table <- read.csv(" Datasets.csv", as.is=T)
   vars.table <- read.csv(vars, as.is=T)
+  data(sysdata, envir=environment())
 
   if (keep == "low") {
       vars.table <- vars.table[(vars.table$reverse | grepl(x=vars.table$item, "2")), ]
@@ -38,7 +37,7 @@ dcpo_setup <- function(vars, keep = NULL) {
   for (i in seq(dim(vars.table)[1])) {
       cat(i, " ")
       v <- vars.table[i, ]
-      ds <- datasets.table[datasets.table$survey==v$survey, ]
+      ds <- datasets_table[datasets_table$survey==v$survey, ]
 
       # Get dataset (if necessary)
       if (vars.table[i, "survey"] != c(0, head(vars.table[, "survey"],-1))[i]) {

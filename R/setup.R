@@ -99,16 +99,14 @@ dcpo_setup <- function(vars, keep = "all") {
       if (i == 1) all_data <- add else all_data <- rbind(all_data, add)
   }
   rm(add)
-  all_data$y_r = with(all_data, n * value/100)
+  all_data$y_r = with(all_data, as.integer(round(n * value/100))) # equivalent number of 'yes' responses, given data weights
 
   # When two surveys asked the same question in the same country-year, add samples together
-  all_data2 <- all_data[!names(all_data) %in% c("value", "L1", "survey")]
-  all_data2y_r <- dcast(all_data2, country + year + variable ~ ., value.var = "y_r", fun.aggregate = function(x) as.integer(round(sum(x))))
-  names(all_data2y_r)[4] <- "y_r"
-  all_data2n <- dcast(all_data2, country + year + variable ~ ., value.var = "n", fun.aggregate = sum)
-  names(all_data2n)[4] <- "n"
-  all_data2 <- merge(all_data2y_r, all_data2n)
-  rm(all_data2y_r, all_data2n)
+  all_data2 <- all_data %>% select(-value, -L1, -survey) %>%
+    group_by(country, year, variable) %>%
+    summarize(y_r = sum(y_r),
+              n = sum(n)) %>%
+    ungroup()
 
   # Generate numeric codes for countries, years, and questions
   all_data2 <- ddply(all_data2, .(country), mutate,

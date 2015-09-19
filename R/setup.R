@@ -66,6 +66,7 @@ dcpo_setup <- function(vars, keep = "all") {
           }
       }
 
+      # If multiple values of var of interest are specified, combine them in target
       if (length(eval(parse(text = v$value)))>1) {
           for(j in 2:length(eval(parse(text = v$value)))) {
               t_data$target[t_data$target==eval(parse(text = v$value))[j]] <- eval(parse(text = v$value))[1]
@@ -73,16 +74,20 @@ dcpo_setup <- function(vars, keep = "all") {
           v$value <- eval(parse(text = v$value))[1]
       }
 
+      # Summarize by country and year
       vars0 <- t_data %>%
+        select(c_dcpo, y_dcpo, wt_dcpo, target) %>%
         group_by(c_dcpo, y_dcpo) %>%
         summarise(survey = ds$survey,
                   item = weighted.mean(target == v$value, wt_dcpo, na.rm=T) * 100,
-                  n = length(na.omit(target))) %>%
+                  n = length(na.omit(target))
+                  ) %>%
         filter(!is.na(item) & item!=100 & item!=0)
       if (v$reverse == TRUE) {
           vars0$item <- 100 - vars0$item
       }
 
+      # Rename vars in summary
       names(vars0) <- c("country", "year", "survey", v$item, "n")
       all_sets[[i]] <- vars0
       rm(vars0)
@@ -120,5 +125,5 @@ dcpo_setup <- function(vars, keep = "all") {
   # Chime
   beep()
 
-  write.csv(all_data2, file="all_data2.csv")
+  write_csv(all_data2, file="all_data2.csv")
 }

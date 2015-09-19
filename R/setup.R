@@ -101,19 +101,20 @@ dcpo_setup <- function(vars, keep = "all") {
   rm(add)
   all_data$y_r = with(all_data, as.integer(round(n * value/100))) # equivalent number of 'yes' responses, given data weights
 
-  # When two surveys asked the same question in the same country-year, add samples together
+
   all_data2 <- all_data %>% select(-value, -L1, -survey) %>%
     group_by(country, year, variable) %>%
-    summarize(y_r = sum(y_r),
-              n = sum(n)) %>%
-    ungroup()
-
+    summarize(y_r = sum(y_r),     # When two surveys ask the same question in
+              n = sum(n)) %>%     # the same country-year, add samples together
+    ungroup() %>%
+    group_by(country) %>%
+    mutate(cc_rank = n(),         # number of country-year-items (data-richness)
+              firstyr = first(year, order_by = year),
+              lastyr = last(year, order_by = year)) %>%
+    ungroup() %>%
+    arrange(desc(cc_rank), country, year) # order by data-richness
+######HERE
   # Generate numeric codes for countries, years, and questions
-  all_data2 <- ddply(all_data2, .(country), mutate,
-                     cc_rank = length(y_r),
-                     firstyr = min(year),
-                     lastyr = max(year))
-  all_data2 <- all_data2[order(-all_data2$cc_rank, all_data2$country), ]
   all_data2$ccode <- match(all_data2$country, unique(all_data2$country))
   all_data2$tcode <- with(all_data2, as.integer(year - min(year) + 1))
   all_data2$rcode <- match(all_data2$variable, unique(all_data2$variable))

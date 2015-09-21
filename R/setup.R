@@ -99,8 +99,7 @@ dcpo_setup <- function(vars, keep = "all") {
       if (i == 1) all_data <- add else all_data <- rbind(all_data, add)
   }
   rm(add)
-  all_data$y_r = with(all_data, as.integer(round(n * value/100))) # equivalent number of 'yes' responses, given data weights
-
+  all_data$y_r = with(all_data, as.integer(round(n * value/100))) # number of 'yes' response equivalents, given data weights
 
   all_data2 <- all_data %>% select(-value, -L1, -survey) %>%
     group_by(country, year, variable) %>%
@@ -112,20 +111,16 @@ dcpo_setup <- function(vars, keep = "all") {
               firstyr = first(year, order_by = year),
               lastyr = last(year, order_by = year)) %>%
     ungroup() %>%
-    arrange(desc(cc_rank), country, year) # order by data-richness
-######HERE
-  # Generate numeric codes for countries, years, and questions
-
-  all_data2$ccode <- match(all_data2$country, unique(all_data2$country))
-  all_data3 <- left_join(all_data2, (all_data2 %>% ungroup %>% select(country) %>% distinct %>% mutate(ccode = 1:n())))
-
-  all_data2$tcode <- with(all_data2, as.integer(year - min(year) + 1))
-  all_data2$rcode <- match(all_data2$variable, unique(all_data2$variable))
-
-  all_data2 <- all_data2[order(all_data2$ccode, all_data2$tcode, all_data2$rcode), ]
+    arrange(desc(cc_rank), country, year) %>% # order by data-richness
+    # Generate numeric codes for countries, years, and questions
+    mutate(ccode = as.numeric(factor(country, levels = unique(country))),
+      tcode = as.integer(year - min(year) + 1),
+      rcode = as.numeric(factor(variable, levels = unique(variable)))) %>%
+    arrange(ccode, tcode, rcode)
 
   # Chime
   beep()
 
   write_csv(all_data2, file="all_data2.csv")
+  return(all_data2)
 }

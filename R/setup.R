@@ -11,7 +11,6 @@
 #' @return a data frame
 #'
 #' @import foreign
-#' @import Hmisc
 #' @import reshape2
 #' @import dplyr
 #' @import beepr
@@ -121,6 +120,6 @@ dcpo_setup <- function(vars, keep = "all") {
   # Chime
   beep()
 
-  write_csv(all_data2, file="all_data2.csv")
+  write.csv(all_data2, file="all_data2.csv")
   return(all_data2)
 }

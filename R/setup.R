@@ -1,12 +1,11 @@
 #' Prepare Data for DCPO
 #'
-#' \code{dcpo_setup} is a function .
+#' \code{dcpo_setup} prepares survey data for use with the \code{dcpo} function.
 #'
-#' @param vars a df of variables
-#' @param keep all, high, or low
+#' @param vars a data frame of survey items
 #
-#' @details \code{dcpo_setup} prepares data
-#'
+#' @details \code{dcpo_setup}, when passed a data frame of survey items, collects the
+#' responses and formats them for use with the \code{dcpo} function.
 #'
 #' @return a data frame
 #'
@@ -14,7 +13,6 @@
 #' @import reshape2
 #' @import dplyr
 #' @import beepr
-#'
 #'
 #' @export
 

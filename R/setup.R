@@ -18,18 +18,9 @@
 #'
 #' @export
 
-dcpo_setup <- function(vars, keep = "all") {
+dcpo_setup <- function(vars) {
   datapath <- "~/Documents/Projects/Data/"
   vars_table <- read.csv(vars, as.is = TRUE)
-
-  if (keep == "low") {
-      vars_table <- vars_table[(vars_table$reverse | grepl(x=vars_table$item, "2")), ]
-      vars_table$reverse <- !vars_table$reverse
-      vars_table$item <- gsub(x=vars_table$item, "r$","")
-      vars_table$item <- gsub(x=vars_table$item, "2$", "2r")
-  } else if (keep == "high") {
-      vars_table <- vars_table[!vars_table$reverse, ]
-  }
 
   all_sets <- list()
   for (i in seq(dim(vars_table)[1])) {

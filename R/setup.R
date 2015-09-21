@@ -115,7 +115,10 @@ dcpo_setup <- function(vars, keep = "all") {
     arrange(desc(cc_rank), country, year) # order by data-richness
 ######HERE
   # Generate numeric codes for countries, years, and questions
+
   all_data2$ccode <- match(all_data2$country, unique(all_data2$country))
+  all_data3 <- left_join(all_data2, (all_data2 %>% ungroup %>% select(country) %>% distinct %>% mutate(ccode = 1:n())))
+
   all_data2$tcode <- with(all_data2, as.integer(year - min(year) + 1))
   all_data2$rcode <- match(all_data2$variable, unique(all_data2$variable))
 

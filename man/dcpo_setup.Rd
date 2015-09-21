@@ -4,10 +4,12 @@
 \alias{dcpo_setup}
 \title{Prepare Data for DCPO}
 \usage{
-dcpo_setup(vars)
+dcpo_setup(vars, datapath = "~/Documents/Projects/Data/")
 }
 \arguments{
 \item{vars}{a data frame of survey items}
+
+\item{datapath}{path to the directory that houses raw survey datasets}
 }
 \value{
 a data frame

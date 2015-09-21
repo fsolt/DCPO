@@ -3,6 +3,7 @@
 #' \code{dcpo_setup} prepares survey data for use with the \code{dcpo} function.
 #'
 #' @param vars a data frame of survey items
+#' @param datapath path to the directory that houses raw survey datasets
 #
 #' @details \code{dcpo_setup}, when passed a data frame of survey items, collects the
 #' responses and formats them for use with the \code{dcpo} function.
@@ -16,8 +17,7 @@
 #'
 #' @export
 
-dcpo_setup <- function(vars) {
-  datapath <- "~/Documents/Projects/Data/"
+dcpo_setup <- function(vars, datapath = "~/Documents/Projects/Data/") {
   vars_table <- read.csv(vars, as.is = TRUE)
 
   all_sets <- list()

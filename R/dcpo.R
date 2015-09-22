@@ -1,0 +1,159 @@
+library(rstan)
+
+data1 <- all.data2
+
+dcpo.data <- list(  K=max(data1$ccode),
+                    T=max(data1$tcode),
+                    R=max(data1$rcode),
+                    N=length(data1$y_r),
+                    kk=data1$ccode,
+                    rr=data1$rcode,
+                    tt=data1$tcode,
+                    y_r=data1$y_r,
+                    n_r=data1$n
+)
+
+dcpo.code <- '
+    data {
+        int<lower=1> K;     			// number of countries
+        int<lower=1> R; 				// number of indicators
+        int<lower=1> T; 				// number of years
+        
+        int<lower=1> N; 				// number of actual observations
+        
+        int<lower=1, upper=K> kk[N]; 	// country for observation n
+        int<lower=1, upper=R> rr[N]; 	// indicator for observation n
+        int<lower=1, upper=T> tt[N]; 	// year for observation n
+        
+        int<lower=0> y_r[N];           // number of respondents giving selected answer for observation n
+        int<lower=0> n_r[N];           // total number of respondents for observation n
+    }	
+    
+    transformed data {
+        int G[N-1];						// number of missing years until next observed country-year (G for "gap")
+        for (n in 1:N-1) {
+            G[n] <- tt[n+1] - tt[n] - 1;
+        }
+    }
+    
+    parameters {
+        real<lower=0, upper=1> alpha[K, T]; // public opinion
+        
+        real<lower=-1, upper=1> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2014, 34; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
+        real<lower=1, upper=2> gamma[R]; // discrimination of indicator r (see Stan Development Team 2014, 34; McGann 2014, 118-120 (using 1/alpha))
+        
+        real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2014, 34)
+        real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2014, 34)
+        
+        real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
+        
+        real<lower=0> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+        
+        real<lower=0, upper=10> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    }
+
+    transformed parameters {
+        real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+        for (n in 1:N)
+             m[n] <- Phi((alpha[kk[n], tt[n]] - beta[rr[n]])/gamma[rr[n]]);
+    }
+
+    model {
+        beta ~ normal(0, sigma_beta);
+        gamma ~ lognormal(0, sigma_gamma);
+        sigma_beta ~ cauchy(0, 5);
+        sigma_gamma ~ cauchy(0, 5);
+        b ~ uniform(0, 10);
+    
+        sigma_k ~ cauchy(0, 1);
+    
+        for (n in 1:N) { 
+
+            // actual number of respondents giving selected answer
+            y_r[n] ~ binomial(n_r[n], p[n]);
+        
+            // individual probability of selected answer
+            p[n] ~ beta(b*m[n]/(1 - m[n]), b);
+         
+            // prior for alpha for the next observed year by country as well as for all intervening missing years
+            if (n < N) {
+                if (tt[n] < T) { 
+                    for (g in 0:G[n]) {
+                        alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]);
+                    }
+                }
+            }
+        }
+    }
+'
+
+out1 <- stan(model_code = dcpo.code, data = dcpo.data, seed = 324, iter = 1, chains = 1)
+
+library(parallel)
+runtime.p <- proc.time()
+sflist1 <- mclapply(1:4, mc.cores = 4, 
+                    function(i) stan(fit = out1, seed = 3034, data = dcpo.data, 
+                                     chains = 1, chain_id = i, refresh = -1, iter = 100))
+out <- sflist2stanfit(sflist1)
+runtime.p <- proc.time() - runtime.p
+runtime.p
+
+x1 <- summary(out)
+x1 <- as.data.frame(x1$summary)
+write.table(x1, file="x1.csv", sep = ",")
+View(x1)
+
+x2 <- summary(out, pars="alpha", probs=c(.1, .9))
+x2 <- as.data.frame(x2$summary)
+
+x2$ccode <- as.numeric(gsub("alpha\\[([0-9]*),[0-9]*\\]", "\\1", row.names(x2)))
+x2$tcode <- as.numeric(gsub("alpha\\[[0-9]*,([0-9]*)\\]", "\\1", row.names(x2)))
+
+k <- ddply(data1, .(country), summarize,
+           ccode = ccode[1],
+           firstyr = firstyr[1],
+           lastyr = lastyr[1])
+
+x2 <- merge(x2, k, all=T)
+x2$year <- min(x2$firstyr) + x2$tcode - 1
+
+x2 <- x2[which(x2$year <= x2$lastyr & x2$year >= x2$firstyr), c("country", "ccode", "year", "mean", "sd", "10%", "90%")]
+
+# Graph
+library(ggplot2)
+x2$kk <- x2$ccode
+
+pages <- c("1:35", "36:70", "71:105")
+
+x3 <- x2
+names(x3)[which(names(x3)=="10%")] <- "lb"
+names(x3)[which(names(x3)=="90%")] <- "ub"
+change <- ddply(x3, .(country), summarize, 
+                ch1 = max(mean) - min(mean),
+                ch2 = mean[length(year)]- mean[1],
+                years = length(year)
+)
+change <- change[order(-change$ch1), ]
+
+plotlist <- list()
+for (i in 1:3) {    
+    cpage <- unique(x3$country)[c(eval(parse(text=pages[i])))]
+    x4 <- x3[x3$country %in% cpage, ]
+    x4$country <- factor(x4$country, levels = cpage)
+    
+    plotx <- ggplot(data=x4, aes(x=year, y=mean)) + 
+        geom_line() +
+        theme(legend.position="none") +  
+        coord_cartesian(xlim=c(1980,2013), ylim = c(0, 1)) +
+        labs(x = "Year", y = "Favorable Opinion") +
+        geom_ribbon(aes(ymin = lb, ymax = ub, linetype=NA), alpha = .25) +
+        facet_wrap(~country, ncol = 5) + 
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    
+    pdf(file=paste0("plot",i,".pdf"), width=6, height = 9)
+    plot(plotx)
+    graphics.off()
+}   
+
+#Chime
+beep()

@@ -15,7 +15,7 @@
 
 library(rstan)
 
-data1 <- all_data2
+data1 <- gm
 
 dcpo_data <- list(  K=max(data1$ccode),
                     T=max(data1$tcode),
@@ -54,11 +54,11 @@ dcpo_code <- '
     parameters {
         real<lower=0, upper=1> alpha[K, T]; // public opinion
 
-        real<lower=-1, upper=1> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2014, 34; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
-        real<lower=1, upper=2> gamma[R]; // discrimination of indicator r (see Stan Development Team 2014, 34; McGann 2014, 118-120 (using 1/alpha))
+        real<lower=-1, upper=1> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
+        real<lower=1, upper=2> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; McGann 2014, 118-120 (using 1/alpha))
 
-        real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2014, 34)
-        real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2014, 34)
+        real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
+        real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
 
         real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
 
@@ -102,32 +102,22 @@ dcpo_code <- '
     }
 '
 
-out1 <- stan(model_code = dcpo_code, data = dcpo_data, seed = 324, iter = 1, chains = 1)
+out1 <- stan(model_code = dcpo_code, data = dcpo_data, seed = 324, iter = 100, chains = 4)
 
-library(parallel)
-runtime.p <- proc.time()
-sflist1 <- mclapply(1:4, mc.cores = 4,
-                    function(i) stan(fit = out1, seed = 3034, data = dcpo.data,
-                                     chains = 1, chain_id = i, refresh = -1, iter = 100))
-out <- sflist2stanfit(sflist1)
-runtime.p <- proc.time() - runtime.p
-runtime.p
+x1 <- summary(out1)
+write.table(as.data.frame(x1$summary), file="x1.csv", sep = ",")
+View(as.data.frame(x1$summary))
 
-x1 <- summary(out)
-x1 <- as.data.frame(x1$summary)
-write.table(x1, file="x1.csv", sep = ",")
-View(x1)
-
-x2 <- summary(out, pars="alpha", probs=c(.1, .9))
+x2 <- summary(out1, pars="alpha", probs=c(.1, .9))
 x2 <- as.data.frame(x2$summary)
 
 x2$ccode <- as.numeric(gsub("alpha\\[([0-9]*),[0-9]*\\]", "\\1", row.names(x2)))
 x2$tcode <- as.numeric(gsub("alpha\\[[0-9]*,([0-9]*)\\]", "\\1", row.names(x2)))
 
-k <- ddply(data1, .(country), summarize,
-           ccode = ccode[1],
-           firstyr = firstyr[1],
-           lastyr = lastyr[1])
+k <- data1 %>% group_by(country) %>% summarize(
+  ccode = first(ccode),
+  firstyr = first(firstyr),
+  lastyr = first(lastyr))
 
 x2 <- merge(x2, k, all=T)
 x2$year <- min(x2$firstyr) + x2$tcode - 1

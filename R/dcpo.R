@@ -17,7 +17,7 @@ library(rstan)
 
 data1 <- all_data2
 
-dcpo.data <- list(  K=max(data1$ccode),
+dcpo_data <- list(  K=max(data1$ccode),
                     T=max(data1$tcode),
                     R=max(data1$rcode),
                     N=length(data1$y_r),
@@ -28,9 +28,9 @@ dcpo.data <- list(  K=max(data1$ccode),
                     n_r=data1$n
 )
 
-dcpo.code <- '
+dcpo_code <- '
     data {
-        int<lower=1> K;     			// number of countries
+        int<lower=1> K;     		// number of countries
         int<lower=1> R; 				// number of indicators
         int<lower=1> T; 				// number of years
 
@@ -102,7 +102,7 @@ dcpo.code <- '
     }
 '
 
-out1 <- stan(model_code = dcpo.code, data = dcpo.data, seed = 324, iter = 1, chains = 1)
+out1 <- stan(model_code = dcpo_code, data = dcpo_data, seed = 324, iter = 1, chains = 1)
 
 library(parallel)
 runtime.p <- proc.time()

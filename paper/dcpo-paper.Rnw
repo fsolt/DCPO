@@ -46,7 +46,7 @@ A wealth of surveys provide information on the state of public opinion on variou
 
     A growing body of work is taking a different tack, examining the dynamics of public opinion in single countries over time.  These studies draw on
 
-(Not using stimson: Hobolt2008, McGann2014)
+(Not using stimson: Hobolt2008, McGann2014, Stubager2015)
 
     field of comparative public opinion
 	lack of dynamics (in contrast to public opinion work in U.S.)

@@ -119,6 +119,7 @@ k <- data1 %>% group_by(country) %>% summarize(
   firstyr = first(firstyr),
   lastyr = first(lastyr))
 
+#######HERE
 x2 <- merge(x2, k, all=T)
 x2$year <- min(x2$firstyr) + x2$tcode - 1
 

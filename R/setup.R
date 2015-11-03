@@ -4,6 +4,8 @@
 #'
 #' @param vars a data frame of survey items
 #' @param datapath path to the directory that houses raw survey datasets
+#' @param out filename for saving results
+#' @parame chime play chime when complete?
 #
 #' @details \code{dcpo_setup}, when passed a data frame of survey items, collects the
 #' responses and formats them for use with the \code{dcpo} function.
@@ -17,7 +19,10 @@
 #'
 #' @export
 
-dcpo_setup <- function(vars, datapath = "~/Documents/Projects/Data/", out = "all_data.csv") {
+dcpo_setup <- function(vars,
+                       datapath = "~/Documents/Projects/Data/",
+                       out = "all_data.csv",
+                       chime = TRUE) {
   vars_table <- read.csv(vars, as.is = TRUE)
 
   all_sets <- list()
@@ -107,7 +112,9 @@ dcpo_setup <- function(vars, datapath = "~/Documents/Projects/Data/", out = "all
     arrange(ccode, tcode, rcode)
 
   # Chime
-  beep()
+  if(chime) {
+    beep()
+  }
 
   write.csv(all_data2, file = out)
   return(all_data2)

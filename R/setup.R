@@ -17,7 +17,7 @@
 #'
 #' @export
 
-dcpo_setup <- function(vars, datapath = "~/Documents/Projects/Data/") {
+dcpo_setup <- function(vars, datapath = "~/Documents/Projects/Data/", out = "all_data.csv") {
   vars_table <- read.csv(vars, as.is = TRUE)
 
   all_sets <- list()
@@ -109,6 +109,6 @@ dcpo_setup <- function(vars, datapath = "~/Documents/Projects/Data/") {
   # Chime
   beep()
 
-  write.csv(all_data2, file="all_data2.csv")
+  write.csv(all_data2, file = out)
   return(all_data2)
 }

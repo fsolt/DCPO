@@ -5,7 +5,7 @@
 #' @param vars a data frame of survey items
 #' @param datapath path to the directory that houses raw survey datasets
 #' @param out filename for saving results
-#' @parame chime play chime when complete?
+#' @param chime play chime when complete?
 #
 #' @details \code{dcpo_setup}, when passed a data frame of survey items, collects the
 #' responses and formats them for use with the \code{dcpo} function.
@@ -16,13 +16,18 @@
 #' @import reshape2
 #' @import dplyr
 #' @import beepr
+#' @import Hmisc::spss.get
 #'
 #' @export
 
 dcpo_setup <- function(vars,
                        datapath = "~/Documents/Projects/Data/",
                        chime = TRUE) {
-  vars_table <- read.csv(vars, as.is = TRUE)
+  if(class(vars)=="data.frame") {
+    vars_table <- vars
+  } else {
+    vars_table <- read.csv(vars, as.is = TRUE)
+  }
 
   all_sets <- list()
   for (i in seq(dim(vars_table)[1])) {
@@ -35,6 +40,10 @@ dcpo_setup <- function(vars,
           eval(parse(text = ds$load_cmd))
           t_data <- get(v$survey)
           rm(list = v$survey)
+
+          # Fix column names (sometimes necessary)
+          valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE)
+          names(t_data) <- valid_column_names
 
           # Get country-years
           cc <- eval(parse(text = ds$cy_data))

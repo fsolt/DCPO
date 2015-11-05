@@ -42,7 +42,7 @@ The study of public opinion in comparative context has been hampered by data tha
 A wealth of surveys provide information on the state of public opinion on various issues in different countries over the years, but scholars have faced significant hurdles to putting all of this information to use in any comparative study.  The most challenging of these obstacles is that, across countries and over time, the questions asked regarding any given issue are rarely the same, making responses to these questions incomparable.
 
     As a result, the most common approach to the study of comparative public opinion is to make use a single cross-section, typically provided by a single cross-national survey \citep[see, e.g.,][] {Dalton2011, Ansell2014}.
-    Some works have captured some element of change over time by taking advantage of multiple waves of an ongoing cross-national survey \citep[see, e.g.,][]{Inglehart1997, Inglehart2005, NorrisInglehart2011} or, more rarely, drawing on multiple surveys that employed the same item \citep[see, e.g.,][]{Solt2011}.
+    Some works have captured some element of change over time by taking advantage of multiple waves of an ongoing cross-national survey \citep[see, e.g.,][]{Inglehart1997, Inglehart2005, NorrisInglehart2011} or, more rarely, drawing on multiple surveys that employed the same item \citep[see, e.g.,][]{Solt2011, Ezrow2014}.
 
     A growing body of work is taking a different tack, examining the dynamics of public opinion in single countries over time.  These studies draw on
 

@@ -27,7 +27,7 @@ dcpo <- function(x,
 ### Delete these when turning into a function
 model_code <- dcpo_code
 seed <- 324
-iter <- 150
+iter <- 400
 cores <- 4
 chains <- 4
 x <- gm
@@ -56,12 +56,12 @@ dcpo_code <- '
         int<lower=1, upper=R> rr[N]; 	// indicator for observation n
         int<lower=1, upper=T> tt[N]; 	// year for observation n
 
-        int<lower=0> y_r[N];           // number of respondents giving selected answer for observation n
-        int<lower=0> n_r[N];           // total number of respondents for observation n
+        int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
+        int<lower=0> n_r[N];    // total number of respondents for observation n
     }
 
     transformed data {
-        int G[N-1];						// number of missing years until next observed country-year (G for "gap")
+        int G[N-1];				// number of missing years until next observed country-year (G for "gap")
         for (n in 1:N-1) {
             G[n] <- tt[n+1] - tt[n] - 1;
         }
@@ -123,7 +123,9 @@ out1 <- stan(model_code = dcpo_code,
              seed = seed,
              iter = iter,
              cores = cores,
-             chains = chains)
+             chains = chains,
+             control = list(max_treedepth = 15,
+                            adapt_delta = 0.85))
 
 
 #Chime

@@ -27,7 +27,7 @@ dcpo <- function(x,
 ### Delete these when turning into a function
 model_code <- dcpo_code
 seed <- 324
-iter <- 400
+iter <- 100
 cores <- 4
 chains <- 4
 x <- gm
@@ -68,8 +68,9 @@ dcpo_code <- '
     }
 
     parameters {
-        real<lower=0, upper=1> alpha[K, T]; // public opinion
+        real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
 
+        real<lower=0, upper=1> mu_beta;  // mean public opinion
         real<lower=-1, upper=1> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
         real<lower=1, upper=2> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; McGann 2014, 118-120 (using 1/alpha))
 
@@ -86,12 +87,13 @@ dcpo_code <- '
     transformed parameters {
         real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
         for (n in 1:N)
-             m[n] <- Phi((alpha[kk[n], tt[n]] - beta[rr[n]])/gamma[rr[n]]);
+             m[n] <- Phi((alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta))/gamma[rr[n]]);
     }
 
     model {
         beta ~ normal(0, sigma_beta);
         gamma ~ lognormal(0, sigma_gamma);
+        mu_beta ~ cauchy(0, 5);
         sigma_beta ~ cauchy(0, 5);
         sigma_gamma ~ cauchy(0, 5);
         b ~ uniform(0, 10);

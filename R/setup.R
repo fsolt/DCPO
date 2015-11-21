@@ -12,6 +12,8 @@
 #' @return a data frame
 #'
 #' @import foreign
+#' @import haven
+#' @import readr
 #' @import reshape2
 #' @import dplyr
 #' @import beepr

@@ -26,10 +26,10 @@ dcpo <- function(x,
 
 ### Delete these when turning into a function
 model_code <- dcpo_code
-seed <- 324
-iter <- 400
-cores <- 5
-chains <- 5
+seed <- 3034
+iter <- 100
+cores <- 4
+chains <- 4
 x <- gm1
 ###
 
@@ -125,9 +125,7 @@ out1 <- stan(model_code = dcpo_code,
              seed = seed,
              iter = iter,
              cores = cores,
-             chains = chains,
-             control = list(max_treedepth = 15,
-                            adapt_delta = 0.87))
+             chains = chains)
 
 lapply(get_sampler_params(out1, inc_warmup = TRUE),
        summary, digits = 2)

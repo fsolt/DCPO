@@ -1,0 +1,4 @@
+
+posterior predictive checking
+event history analysis (this is just logit--See Box-SteffensmeierJones1997)
+trend analysis

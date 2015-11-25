@@ -45,79 +45,62 @@ dcpo_data <- list(  K=max(x$ccode),
 )
 
 dcpo_code <- '
-    data {
-        int<lower=1> K;     		// number of countries
-        int<lower=1> R; 				// number of indicators
-        int<lower=1> T; 				// number of years
-
-        int<lower=1> N; 				// number of actual observations
-
-        int<lower=1, upper=K> kk[N]; 	// country for observation n
-        int<lower=1, upper=R> rr[N]; 	// indicator for observation n
-        int<lower=1, upper=T> tt[N]; 	// year for observation n
-
-        int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
-        int<lower=0> n_r[N];    // total number of respondents for observation n
-    }
-
-    transformed data {
-        int G[N-1];				// number of missing years until next observed country-year (G for "gap")
-        for (n in 1:N-1) {
-            G[n] <- tt[n+1] - tt[n] - 1;
-        }
-    }
-
-    parameters {
-        real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-
-        real<lower=0, upper=1> mu_beta;  // mean public opinion
-        real<lower=-1, upper=1> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
-        real<lower=1, upper=2> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; McGann 2014, 118-120 (using 1/alpha))
-
-        real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
-        real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
-
-        real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
-
-        real<lower=0> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-
-        real<lower=0, upper=10> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
-    }
-
-    transformed parameters {
-        real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
-        for (n in 1:N)
-             m[n] <- Phi((alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta))/gamma[rr[n]]);
-    }
-
-    model {
-        beta ~ normal(0, sigma_beta);
-        gamma ~ lognormal(0, sigma_gamma);
-        mu_beta ~ cauchy(0, 5);
-        sigma_beta ~ cauchy(0, 5);
-        sigma_gamma ~ cauchy(0, 5);
-        b ~ uniform(0, 10);
-
-        sigma_k ~ cauchy(0, 1);
-
-        for (n in 1:N) {
-
-            // actual number of respondents giving selected answer
-            y_r[n] ~ binomial(n_r[n], p[n]);
-
-            // individual probability of selected answer
-            p[n] ~ beta(b*m[n]/(1 - m[n]), b);
-
-            // prior for alpha for the next observed year by country as well as for all intervening missing years
-            if (n < N) {
-                if (tt[n] < T) {
-                    for (g in 0:G[n]) {
-                        alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]);
-                    }
-                }
-            }
-        }
-    }
+  data {
+      int<lower=1> K;     		// number of countries
+      int<lower=1> R; 				// number of indicators
+      int<lower=1> T; 				// number of years
+      int<lower=1> N; 				// number of actual observations
+      int<lower=1, upper=K> kk[N]; 	// country for observation n
+      int<lower=1, upper=R> rr[N]; 	// indicator for observation n
+      int<lower=1, upper=T> tt[N]; 	// year for observation n
+      int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
+      int<lower=0> n_r[N];    // total number of respondents for observation n
+  }
+  transformed data {
+      int G[N-1];				// number of missing years until next observed country-year (G for "gap")
+      for (n in 1:N-1) {
+          G[n] <- tt[n+1] - tt[n] - 1;
+      }
+  }
+  parameters {
+      real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
+      real<lower=0, upper=1> mu_beta;  // mean public opinion
+      real<lower=-1, upper=1> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
+      real<lower=1, upper=2> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; McGann 2014, 118-120 (using 1/alpha))
+      real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
+      real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
+      real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
+      real<lower=0> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+      real<lower=0, upper=10> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+  }
+  transformed parameters {
+      real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+      for (n in 1:N)
+           m[n] <- Phi((alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta))/gamma[rr[n]]);
+  }
+  model {
+      beta ~ normal(0, sigma_beta);
+      gamma ~ lognormal(0, sigma_gamma);
+      mu_beta ~ cauchy(0, 5);
+      sigma_beta ~ cauchy(0, 5);
+      sigma_gamma ~ cauchy(0, 5);
+      b ~ uniform(0, 10);
+      sigma_k ~ cauchy(0, 1);
+      for (n in 1:N) {
+          // actual number of respondents giving selected answer
+          y_r[n] ~ binomial(n_r[n], p[n]);
+          // individual probability of selected answer
+          p[n] ~ beta(b*m[n]/(1 - m[n]), b);
+          // prior for alpha for the next observed year by country as well as for all intervening missing years
+          if (n < N) {
+              if (tt[n] < T) {
+                  for (g in 0:G[n]) {
+                      alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]);
+                  }
+              }
+          }
+      }
+  }
 '
 
 out1 <- stan(model_code = dcpo_code,

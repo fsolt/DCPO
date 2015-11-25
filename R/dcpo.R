@@ -25,7 +25,6 @@ dcpo <- function(x,
                  chains = 4)
 
 ### Delete these when turning into a function
-model_code <- dcpo_code
 seed <- 3034
 iter <- 100
 cores <- 4
@@ -85,7 +84,7 @@ dcpo_code <- '
       sigma_beta ~ cauchy(0, 5);
       sigma_gamma ~ cauchy(0, 5);
       b ~ uniform(0, 10);
-      sigma_k ~ cauchy(0, 1);
+      sigma_k ~ cauchy(0, .5);
       for (n in 1:N) {
           // actual number of respondents giving selected answer
           y_r[n] ~ binomial(n_r[n], p[n]);

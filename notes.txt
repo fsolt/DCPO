@@ -1,4 +1,4 @@
 
-posterior predictive checking
-event history analysis (this is just logit--See Box-SteffensmeierJones1997)
+posterior predictive checking (Stan Reference, 368-369)
+event history analysis (see Box-SteffensmeierJones1997)
 trend analysis

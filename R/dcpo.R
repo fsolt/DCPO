@@ -25,11 +25,11 @@ dcpo <- function(x,
                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 3034
+seed <- 324
 iter <- 100
 cores <- 4
 chains <- 4
-x <- gm1
+x <- gm
 ###
 
 dcpo_data <- list(  K=max(x$ccode),
@@ -64,8 +64,8 @@ dcpo_code <- '
   parameters {
       real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
       real<lower=0, upper=1> mu_beta;  // mean public opinion
-      real<lower=-1, upper=1> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
-      real<lower=1, upper=2> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; McGann 2014, 118-120 (using 1/alpha))
+      real<lower=0> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
+      real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; McGann 2014, 118-120 (using 1/alpha))
       real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
       real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
       real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
@@ -84,7 +84,7 @@ dcpo_code <- '
       sigma_beta ~ cauchy(0, 5);
       sigma_gamma ~ cauchy(0, 5);
       b ~ uniform(0, 10);
-      sigma_k ~ cauchy(0, .5);
+      sigma_k ~ cauchy(0, 1);
       for (n in 1:N) {
           // actual number of respondents giving selected answer
           y_r[n] ~ binomial(n_r[n], p[n]);
@@ -107,10 +107,11 @@ out1 <- stan(model_code = dcpo_code,
              seed = seed,
              iter = iter,
              cores = cores,
-             chains = chains)
+             chains = chains,
+             control = list(max_treedepth = 15))
 
-lapply(get_sampler_params(out1, inc_warmup = TRUE),
-       summary, digits = 2)
+# lapply(get_sampler_params(out1, inc_warmup = TRUE),
+#        summary, digits = 2)
 
 #Chime
 beep()

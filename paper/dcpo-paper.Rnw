@@ -77,10 +77,10 @@ heteroskedastic ideal points: Lauderdale (2010) -- actually not heteroskedastic 
 
 
 \pagebreak
-\section{An Example: Attitudes Toward Abortion}
-    debate regarding whether public policy corresponds to public opinion
-		Blofield vs. others
-	question of feedback: positive or negative?
+\section{An Example: Tolerance of Homosexuality}
+
+Indicators of Tolerance
+	question of feedback: positive or negative? ("policies create constituencies" vs. thermostatic)
 
 
 \section{Conclusions}

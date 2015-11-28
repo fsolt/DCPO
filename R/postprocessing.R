@@ -36,22 +36,22 @@ x1_sum %>% filter(parameter_type=="gamma") %>% select(parameter, mean, `2.5%`, `
 x2_ <- x2
 x2 <- x2[which(x2$year <= x2$lastyr & x2$year >= x2$firstyr), c("country", "ccode", "year", "mean", "sd", "10%", "90%")]
 
-# Graph
+# Plots:
+#   1. tolerance by country, most recent available year
+#   2. tolerance trends, estimate plus raw data, eight countries
+#   3. trends in all countries
+#   4. probability of tolerant answer by tolerance (beta and gamma), selected items
+
 library(ggplot2)
 x2$kk <- x2$ccode
 
 pages <- c("1:35", "36:70", "71:105")
 
-x3 <- x2
-names(x3)[which(names(x3)=="10%")] <- "lb"
-names(x3)[which(names(x3)=="90%")] <- "ub"
-change <- plyr::ddply(x3, plyr::.(country), summarize,
-                ch1 = max(mean) - min(mean),
-                ch2 = mean[length(year)]- mean[1],
-                years = length(year)
-)
-change <- change[order(-change$ch1), ]
+names(x2)[which(names(x2)=="10%")] <- "lb"
+names(x2)[which(names(x2)=="90%")] <- "ub"
 
+
+# 3. trends in all countries
 plotlist <- list()
 for (i in 1:3) {
   cpage <- unique(x3$country)[c(eval(parse(text=pages[i])))]
@@ -78,3 +78,5 @@ gm_laws %>% mutate(preyrs = civ-firstyr,
                    postyrs = lastyr-civ) %>%
   filter(!is.na(postyrs)) %>%
   select(country, preyrs, postyrs)
+
+

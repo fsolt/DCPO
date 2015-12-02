@@ -1,5 +1,6 @@
 # add legend
 # adjust margin between plots
+# make this a function!
 
 p1_data <- a_res %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
   arrange(-estimate) %>% mutate(half = ntile(estimate, 2))
@@ -12,12 +13,15 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
   geom_segment(aes(x = lb, xend = ub,
                    y = ranked, yend = ranked),
                na.rm = TRUE) +
-  scale_fill_manual(values = c("black", "grey50", "white")) +
+  scale_fill_manual(values = c("grey50", "white", "black"),
+                    breaks=c("Marriage","Civil Union","None"),
+                    name="Recognition of\nHomosexual\nRelationships") +
   geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
-  theme_bw() + theme(legend.position="none",
+  theme_bw() + theme(legend.position=c(.37, .87),
                      axis.text.x  = element_text(size=7),
-                     axis.text.y  = element_text(size=7)
-                     ) +
+                     axis.text.y  = element_text(size=7),
+                     legend.title = element_text(size=8),
+                     legend.key.height = unit(.6, "line")) +
   scale_y_discrete(breaks = p1_data_a$ranked, labels=p1_data_a$country) +
   coord_cartesian(xlim=c(0, 1)) +
   ylab("") + xlab("")
@@ -130,25 +134,25 @@ align_plots(p1a, p1b)
 dev.off()
 
 # With year colors
-
-p1_data <- a_res %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
-  arrange(-estimate) %>% mutate(half = ntile(estimate, 2),
-                                ranked = row_number(estimate),
-                                yr = year)
-p1_data$yr <- car::recode(p1_data$yr, "2001:2010 = 'Before 2011'")
-p1_data$yr <- factor(p1_data$yr, levels = c("Before 2011", "2011", "2012", "2013", "2014", "2015"))
-
-p1_data_a <- p1_data %>% filter(half==2)
-
-p1a <- ggplot(p1_data_a, aes(x = estimate,
-                             y = row_number(estimate), colour=yr)) +
-  scale_fill_manual(values = c("black", "white")) +
-  geom_point(aes(fill = as.factor(civ)), shape = 21, na.rm = TRUE) +
-  theme_bw() + theme(legend.position="none") +
-  geom_segment(aes(x = lb,
-                   xend = ub,
-                   y = row_number(estimate), yend = row_number(estimate),
-                   colour=yr), na.rm = TRUE) +
-  scale_y_discrete(breaks = row_number(p1_data_a$estimate), labels=p1_data_a$country) +
-  coord_cartesian(xlim=c(0, 1)) +
-  ylab("") + xlab("")
+#
+# p1_data <- a_res %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
+#   arrange(-estimate) %>% mutate(half = ntile(estimate, 2),
+#                                 ranked = row_number(estimate),
+#                                 yr = year)
+# p1_data$yr <- car::recode(p1_data$yr, "2001:2010 = 'Before 2011'")
+# p1_data$yr <- factor(p1_data$yr, levels = c("Before 2011", "2011", "2012", "2013", "2014", "2015"))
+#
+# p1_data_a <- p1_data %>% filter(half==2)
+#
+# p1a <- ggplot(p1_data_a, aes(x = estimate,
+#                              y = row_number(estimate), colour=yr)) +
+#   scale_fill_manual(values = c("black", "white")) +
+#   geom_point(aes(fill = as.factor(civ)), shape = 21, na.rm = TRUE) +
+#   theme_bw() + theme(legend.position="none") +
+#   geom_segment(aes(x = lb,
+#                    xend = ub,
+#                    y = row_number(estimate), yend = row_number(estimate),
+#                    colour=yr), na.rm = TRUE) +
+#   scale_y_discrete(breaks = row_number(p1_data_a$estimate), labels=p1_data_a$country) +
+#   coord_cartesian(xlim=c(0, 1)) +
+#   ylab("") + xlab("")

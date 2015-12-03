@@ -1,5 +1,3 @@
-# add legend
-# adjust margin between plots
 # make this a function!
 
 p1_data <- a_res %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
@@ -17,7 +15,7 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
                     breaks=c("Marriage","Civil Union","None"),
                     name = "Legal Recognition") +
   geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
-  theme_bw() + theme(legend.position=c(.36, .91),
+  theme_bw() + theme(legend.position=c(.36, .95),
                      axis.text.x  = element_text(size=7),
                      axis.text.y  = element_text(size=7),
                      legend.text = element_text(size = 7),

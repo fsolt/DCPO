@@ -83,6 +83,12 @@ Indicators of Tolerance
 	question of feedback: positive or negative? ("policies create constituencies" vs. thermostatic)
 
 
+Plots:
+  tolerance by country, most recent available year
+  tolerance trends, estimate plus raw data, eight countries
+  trends in all countries
+  probability of tolerant answer by tolerance (beta and gamma), selected items
+
 \section{Conclusions}
 strengths:
     makes maximum use of available data

@@ -26,7 +26,7 @@ dcpo <- function(x,
 
 ### Delete these when turning into a function
 seed <- 324
-iter <- 100
+iter <- 600
 cores <- 4
 chains <- 4
 x <- gm

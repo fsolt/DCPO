@@ -18,8 +18,9 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
   theme_bw() + theme(legend.position=c(.36, .95),
                      axis.text.x  = element_text(size=7),
                      axis.text.y  = element_text(size=7),
+                     axis.title.x = element_text(face="bold", size=7),
                      legend.text = element_text(size = 7),
-                     legend.title = element_text(size=7),
+                     legend.title = element_text(size=7, face = "bold"),
                      legend.key.size = unit(.5, "line"),
                      legend.background = element_rect(linetype = "solid",
                                                       color = "grey80",
@@ -27,7 +28,7 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
                      legend.key = element_rect(colour = "white")) +
   scale_y_discrete(breaks = p1_data_a$ranked, labels=p1_data_a$country) +
   coord_cartesian(xlim=c(0, 1)) +
-  ylab(NULL) + xlab(NULL)
+  labs(x = "Tolerance", y = NULL)
 
 p1b <- ggplot(p1_data_b, aes(x = estimate,
                              y = ranked)) +
@@ -38,10 +39,11 @@ p1b <- ggplot(p1_data_b, aes(x = estimate,
   geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
   theme_bw() + theme(legend.position="none",
                      axis.text.x  = element_text(size=7),
-                     axis.text.y  = element_text(size=7)) +
+                     axis.text.y  = element_text(size=7),
+                     axis.title.x = element_text(face="bold", size=7)) +
   scale_y_discrete(breaks = p1_data_b$ranked, labels=p1_data_b$country) +
   coord_cartesian(xlim=c(0, 1)) +
-  ylab(NULL) + xlab(NULL)
+  labs(x = "Tolerance", y = NULL)
 
 require(grid)
 
@@ -68,7 +70,6 @@ full_width <- function(g){
 
 
 align_plots <- function(..., width=unit(4, "cm"), height=unit(1, "null")){
-
   pl <- list(...)
   gl <- lapply(pl, set_panel_size, width=width, height=height)
 
@@ -94,7 +95,7 @@ align_plots <- function(..., width=unit(4, "cm"), height=unit(1, "null")){
 
 align_plots(p1a, p1b)
 
-pdf("t1.pdf")
+pdf("paper/figures/cs.pdf")
 align_plots(p1a, p1b)
 dev.off()
 

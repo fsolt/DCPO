@@ -85,8 +85,26 @@ Indicators of Tolerance
 
 Plots:
   tolerance by country, most recent available year
+
+\begin{figure}[p]
+  \caption{Estimates of Tolerance Toward Homosexuality}
+  \label{F:cs}
+  \begin{center}
+    \includegraphics[width=6in]{figures/cs.pdf}
+  \end{center}
+  \begin{footnotesize}
+  \begin{tabular}{p{.5in} p{5.1in}}
+  & \emph{Notes}: Dots depict posterior mean estimate for most recent available year; whiskers trace 80\% posterior credible intervals.
+  \end{tabular}
+  \end{footnotesize}
+\end{figure}
+
+
   tolerance trends, estimate plus raw data, eight countries
-  trends in all countries
+%  trends in all countries
+
+
+
   probability of tolerant answer by tolerance (beta and gamma), selected items
 
 \section{Conclusions}
@@ -119,5 +137,42 @@ table of indicators
 	no. countries
 	no. years
 	major sources
+
+\begin{figure}[p]
+  \caption{Estimates of Trends in Tolerance Toward Homosexuality}
+  \label{F:ts1}
+  \begin{center}
+    \includegraphics[width=5in]{figures/ts1.pdf}
+  \end{center}
+  \begin{footnotesize}
+  \begin{tabular}{p{.1in} p{5.1in}}
+  & \emph{Notes}: Lines depict posterior mean estimate; shaded regions trace 80\% posterior credible intervals.
+  \end{tabular}
+  \end{footnotesize}
+\end{figure}
+
+\begin{figure}[p]
+  \label{F:ts2}
+  \begin{center}
+    \includegraphics[width=5in]{figures/ts2.pdf}
+  \end{center}
+  \begin{footnotesize}
+  \begin{tabular}{p{.1in} p{5.1in}}
+  & \emph{Notes}: Lines depict posterior mean estimate; shaded regions trace 80\% posterior credible intervals.
+  \end{tabular}
+  \end{footnotesize}
+\end{figure}
+
+\begin{figure}[p]
+  \label{F:ts3}
+  \begin{center}
+    \includegraphics[width=5in]{figures/ts3.pdf}
+  \end{center}
+  \begin{footnotesize}
+  \begin{tabular}{p{.1in} p{5.1in}}
+  & \emph{Notes}: Lines depict posterior mean estimate; shaded regions trace 80\% posterior credible intervals.
+  \end{tabular}
+  \end{footnotesize}
+\end{figure}
 
 \end{document}

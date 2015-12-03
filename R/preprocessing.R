@@ -7,6 +7,9 @@ library(reshape2)
 library(beepr)
 library(rstan)
 
+library(ggplot2)
+library(dotwhisker)
+
 datasets_table <- read_csv("data-raw/datasets_table.csv")
 gm0 <- read.csv("data-raw/gay_marriage_surveys.csv", as.is = TRUE)
 gm <- dcpo_setup(gm0)

@@ -51,7 +51,7 @@ dcpo_setup <- function(vars,
           t_data <- merge(t_data, cc)
 
           # Get weights
-          if (ds$wt != "") {
+          if (!is.na(ds$wt)) {
               if (length(unlist(strsplit(ds$wt, split = " "))) == 1) {
                   wt <- with(t_data, get(ds$wt))
               } else eval(parse(text = ds$wt))

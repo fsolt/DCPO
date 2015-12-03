@@ -15,16 +15,21 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
                na.rm = TRUE) +
   scale_fill_manual(values = c("grey50", "white", "black"),
                     breaks=c("Marriage","Civil Union","None"),
-                    name="Recognition of\nHomosexual\nRelationships") +
+                    name = "Legal Recognition") +
   geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
-  theme_bw() + theme(legend.position=c(.37, .87),
+  theme_bw() + theme(legend.position=c(.36, .91),
                      axis.text.x  = element_text(size=7),
                      axis.text.y  = element_text(size=7),
-                     legend.title = element_text(size=8),
-                     legend.key.height = unit(.6, "line")) +
+                     legend.text = element_text(size = 7),
+                     legend.title = element_text(size=7),
+                     legend.key.size = unit(.5, "line"),
+                     legend.background = element_rect(linetype = "solid",
+                                                      color = "grey80",
+                                                      size = .25),
+                     legend.key = element_rect(colour = "white")) +
   scale_y_discrete(breaks = p1_data_a$ranked, labels=p1_data_a$country) +
   coord_cartesian(xlim=c(0, 1)) +
-  ylab("") + xlab("")
+  ylab(NULL) + xlab(NULL)
 
 p1b <- ggplot(p1_data_b, aes(x = estimate,
                              y = ranked)) +
@@ -38,47 +43,9 @@ p1b <- ggplot(p1_data_b, aes(x = estimate,
                      axis.text.y  = element_text(size=7)) +
   scale_y_discrete(breaks = p1_data_b$ranked, labels=p1_data_b$country) +
   coord_cartesian(xlim=c(0, 1)) +
-  ylab("") + xlab("")
-
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  library(grid)
-
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-
-  numPlots = length(plots)
-
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-
-  if (numPlots==1) {
-    print(plots[[1]])
-
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-}
+  ylab(NULL) + xlab(NULL)
 
 require(grid)
-require(ggplot2)
-
 
 set_panel_size <- function(p=NULL, g=ggplotGrob(p), width=unit(3, "cm"), height=unit(3, "cm")){
   panel_index_w<- g$layout$l[g$layout$name=="panel"]

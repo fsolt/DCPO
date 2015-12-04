@@ -48,5 +48,5 @@ a_res <- a_res %>%
 #   1. tolerance by country, most recent available year: cs_plot
 #   2. tolerance trends, estimate plus raw data, eight countries
 #   3. trends in all countries: ts_plot
-#   4. probability of tolerant answer by tolerance (beta and gamma), selected items
-
+#   4. probability of tolerant answer by tolerance (beta and gamma), selected items (modelled on McGann2014, fig 1)
+#   5. bar chart of beta and gamma for all items?

@@ -75,16 +75,16 @@ random walk for flexibility: Linzer and Staton [2013]
 heteroskedastic ideal points: Lauderdale (2010) -- actually not heteroskedastic (no gammas)
     no risk of outside raters doing a worse job with some countries because no outsiders: public opinion is what it is
 
+question of feedback: positive or negative? ("policies create constituencies" vs. thermostatic) under what conditions?
 
 \pagebreak
 \section{An Example: Tolerance of Homosexuality}
 
 Indicators of Tolerance
-	question of feedback: positive or negative? ("policies create constituencies" vs. thermostatic)
 
 
-Plots:
-  tolerance by country, most recent available year
+
+tolerance by country, most recent available year
 
 \begin{figure}[p]
   \caption{Estimates of Tolerance Toward Homosexuality}
@@ -101,9 +101,6 @@ Plots:
 
 
   tolerance trends, estimate plus raw data, eight countries
-%  trends in all countries
-
-
 
   probability of tolerant answer by tolerance (beta and gamma), selected items
 
@@ -146,7 +143,7 @@ table of indicators
   \end{center}
   \begin{footnotesize}
   \begin{tabular}{p{.1in} p{5.1in}}
-  & \emph{Notes}: Lines depict posterior mean estimate; shaded regions trace 80\% posterior credible intervals.
+  & \emph{Notes}: Lines depict posterior mean estimates; shaded regions trace 80\% posterior credible intervals.
   \end{tabular}
   \end{footnotesize}
 \end{figure}
@@ -158,7 +155,7 @@ table of indicators
   \end{center}
   \begin{footnotesize}
   \begin{tabular}{p{.1in} p{5.1in}}
-  & \emph{Notes}: Lines depict posterior mean estimate; shaded regions trace 80\% posterior credible intervals.
+  & \emph{Notes}: Lines depict posterior mean estimates; shaded regions trace 80\% posterior credible intervals.
   \end{tabular}
   \end{footnotesize}
 \end{figure}
@@ -170,7 +167,7 @@ table of indicators
   \end{center}
   \begin{footnotesize}
   \begin{tabular}{p{.1in} p{5.1in}}
-  & \emph{Notes}: Lines depict posterior mean estimate; shaded regions trace 80\% posterior credible intervals.
+  & \emph{Notes}: Lines depict posterior mean estimates; shaded regions trace 80\% posterior credible intervals.
   \end{tabular}
   \end{footnotesize}
 \end{figure}

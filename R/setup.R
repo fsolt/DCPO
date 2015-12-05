@@ -84,7 +84,7 @@ dcpo_setup <- function(vars,
                   item = weighted.mean(target == v$value, wt_dcpo, na.rm=T) * 100,
                   n = length(na.omit(target))
                   )  %>%
-        filter(!is.na(item) & !((item==100 | item==0) & !grepl("_", v$item)))
+        filter(!is.na(item) & item!=100 & item!=0)
       if (v$reverse == TRUE) {
           vars0$item <- 100 - vars0$item
       }

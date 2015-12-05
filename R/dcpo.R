@@ -64,8 +64,8 @@ dcpo_code <- '
   parameters {
       real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
       real<lower=0, upper=1> mu_beta;  // mean public opinion
-      real<lower=0> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Linzer and Stanton 2012, 10; McGann 2014, 118-120 (using lambda))
-      real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; McGann 2014, 118-120 (using 1/alpha))
+      real<lower=0> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+      real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
       real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
       real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
       real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
@@ -73,9 +73,9 @@ dcpo_code <- '
       real<lower=0, upper=10> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
   }
   transformed parameters {
-      real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+      real<lower=0, upper=1> m[K, T]; // expected proportion of population giving selected answer
       for (n in 1:N)
-           m[n] <- Phi((alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta))/gamma[rr[n]]);
+           m[kk[n], tt[n]] <- Phi((alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta))/gamma[rr[n]]);
   }
   model {
       beta ~ normal(0, sigma_beta);

@@ -109,7 +109,7 @@ out1 <- stan(model_code = dcpo_code,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 15,
-                            adapt_delta = .8))
+                            adapt_delta = .81))
 
 lapply(get_sampler_params(out1, inc_warmup = FALSE),
        summary, digits = 2)

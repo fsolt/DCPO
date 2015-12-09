@@ -75,7 +75,7 @@ dcpo_code <- '
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
     for (n in 1:N)
-        m[n] <- Phi((alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta))/gamma[rr[n]]);
+        m[n] <- Phi((gamma[rr[n]] * alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
   }
   model {
     beta ~ normal(0, sigma_beta);

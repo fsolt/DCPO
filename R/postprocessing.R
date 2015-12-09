@@ -1,6 +1,7 @@
 #Postprocessing
+out <- out1
 
-x1 <- summary(out1)
+x1 <- summary(out)
 write.table(as.data.frame(x1$summary), file="x1.csv", sep = ",")
 x1_sum <- as.data.frame(x1$summary)
 x1_sum$parameter <- rownames(x1_sum)
@@ -13,11 +14,14 @@ rcodes <- gm %>% group_by(variable) %>%
   summarize(rcode = first(rcode)) %>%
   arrange(rcode)
 
+
 b_res <- x1_sum %>% filter(parameter_type=="beta") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
 g_res <- x1_sum %>% filter(parameter_type=="gamma") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
+# s_dk_res <- x1_sum %>% filter(parameter_type=="sd_k") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
+
 beep()
 
-a_res <- summary(out1, pars="alpha", probs=c(.1, .9))
+a_res <- summary(out, pars="alpha", probs=c(.1, .9))
 a_res <- as.data.frame(a_res$summary)
 
 a_res$ccode <- as.numeric(gsub("alpha\\[([0-9]*),[0-9]*\\]", "\\1", row.names(a_res)))

@@ -72,7 +72,7 @@ dcpo_code2 <- '
     real<lower=0> sigma_sd_k;  // scale of country sd
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0> sigma_t[K]; 	// country temporal variance parameter (see Linzer and Stanton 2012, 12-13)
-    real<lower=0> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=15> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
@@ -87,7 +87,6 @@ dcpo_code2 <- '
     sigma_beta ~ cauchy(0, 5);
     sigma_gamma ~ cauchy(0, 5);
     sigma_sd_k ~ cauchy(0, 5);
-    b ~ uniform(0, 10);
     sigma_t ~ cauchy(0, 1);
     for (n in 1:N) {
       // actual number of respondents giving selected answer
@@ -108,8 +107,8 @@ dcpo_code2 <- '
 
 out2 <- stan(model_code = dcpo_code2,
              data = dcpo_data,
-             seed = 3034,
-             iter = 200,
+             seed = seed,
+             iter = 100,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 15,

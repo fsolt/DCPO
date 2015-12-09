@@ -16,3 +16,4 @@ gm <- dcpo_setup(gm0)
 write_csv(gm, "data/all_data_gm.csv")
 
 gm <- read_csv("data/all_data_gm.csv")
+gm_a <- gm %>% filter(cc_rank>=5)

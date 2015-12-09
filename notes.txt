@@ -2,3 +2,5 @@
 posterior predictive checking (Stan Reference, 368-369)
 event history analysis (see Box-SteffensmeierJones1997)
 trend analysis
+
+remember that gammas are discrimination of item *for the available obs* . . .

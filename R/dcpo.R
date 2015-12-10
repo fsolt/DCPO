@@ -63,8 +63,8 @@ dcpo_code <- '
   }
   parameters {
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-    real<lower=0, upper=1> mu_beta;  // mean public opinion
-    real<lower=0> beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+    real beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+    real<lower=0, upper=1> mu_beta;  // mean public opinion; i.e., mean position/difficulty
     real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
     real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
@@ -75,14 +75,14 @@ dcpo_code <- '
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
     for (n in 1:N)
-        m[n] <- Phi((gamma[rr[n]] * alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
+        m[n] <- Phi(gamma[rr[n]] * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
   }
   model {
     beta ~ normal(0, sigma_beta);
     gamma ~ lognormal(0, sigma_gamma);
     mu_beta ~ uniform(0, 1);
-    sigma_beta ~ cauchy(0, 1);
-    sigma_gamma ~ cauchy(0, 1);
+    sigma_beta ~ cauchy(0, 5);
+    sigma_gamma ~ cauchy(0, 5);
     b ~ uniform(0, 15);
     sigma_k ~ cauchy(0, 1);
     for (n in 1:N) {
@@ -104,8 +104,8 @@ dcpo_code <- '
 
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
-             seed = 3034,
-             iter = 600,
+             seed = seed,
+             iter = 2000,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 15,

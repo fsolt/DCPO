@@ -69,7 +69,7 @@ dcpo_code <- '
     real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
-    real<lower=0> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+    real<lower=0, upper=1> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=15> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
   }
   transformed parameters {
@@ -84,7 +84,7 @@ dcpo_code <- '
     sigma_beta ~ cauchy(0, 5);
     sigma_gamma ~ cauchy(0, 5);
     b ~ uniform(0, 15);
-    sigma_k ~ cauchy(0, 1);
+    sigma_k ~ uniform(0, 1);
     for (n in 1:N) {
       // actual number of respondents giving selected answer
       y_r[n] ~ binomial(n_r[n], p[n]);

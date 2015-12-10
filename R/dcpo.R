@@ -66,14 +66,18 @@ dcpo_code <- '
     real beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     real<lower=0, upper=1> mu_beta;  // mean public opinion; i.e., mean position/difficulty
     real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-    real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
-    real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
+    real<lower=0, upper=pi()/2> sigma_beta_unif;   // transformed scale of indicator positions (see Stan Development Team 2015, 61)
+    real<lower=0, upper=pi()/2> sigma_gamma_unif;  // transformed scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=15> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+    real sigma_beta;
+    real sigma_gamma;
+    sigma_beta <- 5 * tan(sigma_beta_unif); // sigma_beta ~ cauchy(0, 5); see Stan Development Team 2015, 206-207
+    sigma_gamma <- 5 * tan(sigma_gamma_unif); // sigma_gamma ~ cauchy(0, 5); see Stan Development Team 2015, 206-207
     for (n in 1:N)
         m[n] <- Phi(gamma[rr[n]] * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
   }
@@ -81,8 +85,8 @@ dcpo_code <- '
     beta ~ normal(0, sigma_beta);
     gamma ~ lognormal(0, sigma_gamma);
     mu_beta ~ uniform(0, 1);
-    sigma_beta ~ cauchy(0, 5);
-    sigma_gamma ~ cauchy(0, 5);
+    sigma_beta_unif ~ uniform(0, pi()/2);
+    sigma_gamma_unif ~ uniform(0, pi()/2);
     b ~ uniform(0, 15);
     sigma_k ~ cauchy(0, 1);
     for (n in 1:N) {
@@ -105,7 +109,7 @@ dcpo_code <- '
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = 2000,
+             iter = 1000,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 15,

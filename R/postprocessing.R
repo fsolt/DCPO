@@ -15,8 +15,8 @@ rcodes <- gm %>% group_by(variable) %>%
   arrange(rcode)
 
 
-b_res <- x1_sum %>% filter(parameter_type=="beta") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
-g_res <- x1_sum %>% filter(parameter_type=="gamma") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
+b_res <- x1_sum %>% filter(parameter_type=="beta") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes, by="rcode")
+g_res <- x1_sum %>% filter(parameter_type=="gamma") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes, by="rcode")
 # s_dk_res <- x1_sum %>% filter(parameter_type=="sd_k") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
 
 beep()
@@ -46,7 +46,15 @@ a_res <- a_res %>%
             estimate = mean,
             lb = `10%`,
             ub = `90%`,
-            law = ifelse(!is.na(gm), "Marriage", ifelse(!is.na(civ), "Civil Union", "None")))
+            law = ifelse(!is.na(gm) & (year >= gm | year==lastyr), "Marriage",
+                         ifelse(!is.na(civ) & (year >= civ | year==lastyr), "Civil Union",
+                                "None"))) %>%
+  arrange(kk, year)
+
+count_divergences <- function(fit) {
+  sampler_params <- get_sampler_params(fit, inc_warmup=FALSE)
+  sum(sapply(sampler_params, function(x) c(x[,'n_divergent__']))[,1])
+}
 
 # Plots:
 #   1. tolerance by country, most recent available year: cs_plot

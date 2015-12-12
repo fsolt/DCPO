@@ -24,7 +24,7 @@
 dcpo_setup <- function(vars,
                        datapath = "~/Documents/Projects/Data/",
                        chime = TRUE) {
-  if(class(vars)=="data.frame") {
+  if ("data.frame" %in% class(vars)) {
     vars_table <- vars
   } else {
     vars_table <- read.csv(vars, as.is = TRUE)
@@ -37,7 +37,7 @@ dcpo_setup <- function(vars,
       ds <- datasets_table[datasets_table$survey==v$survey, ]
 
       # Get dataset (if necessary)
-      if (vars_table[i, "survey"] != c(0, head(vars_table[, "survey"],-1))[i]) {
+      if (vars_table[["survey"]][i] != c(0, head(vars_table[["survey"]], -1))[i]) {
           eval(parse(text = ds$load_cmd))
           t_data <- get(v$survey)
           rm(list = v$survey)

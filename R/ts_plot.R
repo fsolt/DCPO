@@ -1,11 +1,16 @@
 # make this a function!
 
 #ts_plot <- function(df, rows = 7, cols = 5) {
+rows = 7
+cols = 5
+npages = 3
+a_res <- df
+
 pages <- c("1:35", "36:70", "71:105")
-a_res <- a_res %>% group_by(country) %>% mutate(
-  last_est = last(estimate)
-)
-for (i in 1:3) {
+a_res <- a_res %>% group_by(country) %>%
+  mutate(last_est = last(estimate))
+for (i in 1:npages) {
+  cpage <- unique(a_res$country)[((i-1)*rows*cols)+1:i*rows*cols]
   cpage <- unique(a_res$country)[c(eval(parse(text=pages[i])))]
   cp <- a_res[a_res$country %in% cpage, ]
   cp$country <- factor(cp$country, levels = cpage)

@@ -19,4 +19,5 @@ gm <- read_csv("data/all_data_gm.csv")
 gm_a <- gm %>% filter(cc_rank>=5)
 
 red0 <- read_csv("../Redistribution/data-raw/redist_vars.csv")
-red <- dcpo_setup(red)
+red <- dcpo_setup(red0)
+write_csv(red, "../Redistribution/data/all_data_red.csv")

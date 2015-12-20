@@ -1,0 +1,115 @@
+*justified 
+	just10
+		X WVS			f118
+		X WVS6			V203
+		X EVS			f118
+		X AsiaBarometer		
+		X Latinobarómetro
+
+*don't like as neighbors
+	neigh2
+		X WVS			a124_09
+		X WVS6			V40
+		X EVS			a124_09
+		CE_post_1990		v87
+
+	X neigh10	
+		EB691-08
+
+*uneasy in presence [only 18-24 year-olds, so don't use]
+	uneasy
+		EB472OVR-97		q17-8
+
+*equal opportunity [don't use]
+	eoe4
+		EB654-06
+		EB712-09		v307
+
+*adopt; raise children
+	X adopt5
+		EVS			d026_01
+	X adopt4
+		EB661-06		v403?
+	X adopt2
+		EB39-93			v639
+		BSA2012			GayAdopt
+	X ff5
+		ISSP Family 2012	V19
+	X mm5
+		ISSP Family 2012	V20
+	ff2
+		BSA2007			FGayAdopt
+	mm2
+		BSA2007			MGayAdopt2
+
+
+*sex between two adults of same sex wrong
+	approve4
+		X ISSP Religion 1991	v11
+		X ISSP Family 1994	v48
+		X ISSP Religion 1998	v9
+		X ISSP Religion 2008	v9
+		X Japan GSS 2000-2003	Q4HOMSEA
+		X Poland GSS 1992-2010	HOMOSEX
+		X US GSS 1972-2010	HOMOSEX
+		X German GSS 90, 00, 02	v528
+		Australia NSSS 84,87,93	HOMOSEX
+		X EB83_4 2015		QC16_2
+	
+	approve5
+		X British Soc Attitudes	HOMOSEX
+				
+
+*people just like others
+	X accept5
+		EB21-84			v128
+	X accept4
+		CEE			v233
+
+*homosexuality is a way of life that should be accepted by society
+	X accept2
+		pew2002			q40
+		pew2007			q50
+
+		uspew199610		q32u
+		uspew199710		q14d
+		uspew1999typo		q38u
+		
+
+*gays and lesbians s/b free to live life as they wish
+	X free5
+		ESS1-5			freehms
+		ESS6			freehms
+
+*public office
+	X run10
+		AmB			d5
+	X highest10 
+		EB691-08
+		EB712-09		EB774-12
+		EB834-15
+
+*marriage
+	X marry4 (throughout Europe)
+		EB66.1-06		v324
+		EB83.4-15		qc16_2
+	marry5
+		X ISSP Family 1988	v36
+		AuSSA 2005
+		X BSA 1989, 2007, 2012 	MARVIEW0, GMLMarry
+		X USGSS 88,04,06,08,10	MARHOMO
+	marry2
+		X EB39-93		v637
+		US CID 2006		GMARRY
+	marry4a
+		US Pew surveys
+
+	X marry10
+		Americasbarometer	d6
+
+*civil union
+	civil2
+		X EB39-93		v638
+		US CID 2006		GMARRY
+
+		

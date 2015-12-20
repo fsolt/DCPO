@@ -1,9 +1,9 @@
 # make this a function!
 
-#ts_plot <- function(df, rows = 7, cols = 5) {
-rows = 7
-cols = 5
-npages = 3
+#ts_plot <- function(df, rows = 7, cols = 5, npages) {
+rows <- 7
+cols <- 5
+npages <- 3
 a_res <- df
 
 pages <- c("1:35", "36:70", "71:105")

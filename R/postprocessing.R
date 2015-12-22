@@ -1,5 +1,5 @@
 #Postprocessing
-out <- out1
+out <- out_gm
 
 x1 <- summary(out)
 write.table(as.data.frame(x1$summary), file="x1.csv", sep = ",")

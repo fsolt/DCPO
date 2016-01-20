@@ -14,7 +14,6 @@
 
 \title{Dynamic Comparative Public Opinion}
 \author[Frederick Solt]{Frederick Solt\\ University of Iowa}
-\date{APSA 2014}
 
 \begin{document}
 
@@ -33,7 +32,7 @@
         \item Current practice
             \begin{itemize}
                 \item One (or a few) cross-sections
-                \item One (or a few) time series 
+                \item One (or a few) time series
             \end{itemize}
         \pause
 		\item Need: Comparable data for many countries and years
@@ -56,7 +55,7 @@
             \item Democracy (Treier and Jackman 2008; Pemstein, Meserve, and Melton 2010)
             \item Judicial Independence (Linzer and Staton 2013)
         \end{itemize}
-    \end{enumerate}    
+    \end{enumerate}
 }
 
 \frame{
@@ -64,16 +63,16 @@
     \vspace{-.35in}
     \begin{itemize}
             \item Latent public opinion $x$ in country $k$ and year $t$, given responses $y$ to item $r$, is modeled as:\\
-    \begin{displaymath}
-        y_{rkt} = \alpha_{r} + \beta_{r}x_{kt} + \epsilon_{rkt}
-    \end{displaymath}
-\vspace{.1in}   
+%     \begin{displaymath}
+%         y_{rkt} = \alpha_{r} + \beta_{r}x_{kt} + \epsilon_{rkt}
+%     \end{displaymath}
+\vspace{.1in}
 
     \item Estimated in Stan with weakly informative priors and a random walk adjustment process.
     \end{itemize}
 }
 
-    
+
 
 \section*{An Example}
 
@@ -83,7 +82,7 @@
 	\frametitle{An Example: Attitudes Toward Homosexuality}
 	\vspace{-.15in}
 	\begin{itemize}
-		\item Q: Does extending legal recognition to same-sex couples trigger a backlash in public opinion? 
+		\item Q: Does extending legal recognition to same-sex couples trigger a backlash in public opinion?
 		\pause
 		\item 21 datasets: WVS, EVS, EB, ESS, ISSP, LB, AmB, GSS
 		\pause
@@ -102,50 +101,50 @@
 	\end{itemize}
 }
 
-\frame{
-	\frametitle{Comparative Public Opinion on Homosexuality}
-	\vspace{-.22in}
-	\begin{figure}[hbtp] 
-		\includegraphics[height=2.25in]{../Paper/up.pdf}
-	\end{figure}
-}
-
-\frame{
-    \frametitle{Comparative Public Opinion on Homosexuality}
-	\vspace{-.22in}
-	\begin{figure}[hbtp] 
-		\includegraphics[height=1.125in]{../Paper/down.pdf}
-	\end{figure}
-}
-
-\frame{
-    \frametitle{Comparative Public Opinion on Homosexuality}
-	\vspace{-.22in}
-	\begin{figure}[hbtp] 
-		\includegraphics[height=2.25in]{../Paper/flat.pdf}
-	\end{figure}
-}
-
-\frame{
-    \frametitle{Comparative Public Opinion on Homosexuality}
-	\vspace{-.22in}
-	\begin{figure}[hbtp] 
-		\includegraphics[height=2.25in]{../Paper/weird.pdf}
-	\end{figure}
-}
-
-\section*{Conclusions}
-
-\frame{
-    \frametitle{Moving Forward}
-	\vspace{-.15in}
-	\begin{itemize}
-		\item IRT model 
-		\pause
-		\item Subsetting opinion
-		\pause
-        \item Data management tools
-	\end{itemize}
-}
+% \frame{
+% 	\frametitle{Comparative Public Opinion on Homosexuality}
+% 	\vspace{-.22in}
+% 	\begin{figure}[hbtp]
+% 		\includegraphics[height=2.25in]{../Paper/up.pdf}
+% 	\end{figure}
+% }
+%
+% \frame{
+%     \frametitle{Comparative Public Opinion on Homosexuality}
+% 	\vspace{-.22in}
+% 	\begin{figure}[hbtp]
+% 		\includegraphics[height=1.125in]{../Paper/down.pdf}
+% 	\end{figure}
+% }
+%
+% \frame{
+%     \frametitle{Comparative Public Opinion on Homosexuality}
+% 	\vspace{-.22in}
+% 	\begin{figure}[hbtp]
+% 		\includegraphics[height=2.25in]{../Paper/flat.pdf}
+% 	\end{figure}
+% }
+%
+% \frame{
+%     \frametitle{Comparative Public Opinion on Homosexuality}
+% 	\vspace{-.22in}
+% 	\begin{figure}[hbtp]
+% 		\includegraphics[height=2.25in]{../Paper/weird.pdf}
+% 	\end{figure}
+% }
+%
+% \section*{Conclusions}
+%
+% \frame{
+%     \frametitle{Moving Forward}
+% 	\vspace{-.15in}
+% 	\begin{itemize}
+% 		\item IRT model
+% 		\pause
+% 		\item Subsetting opinion
+% 		\pause
+%         \item Data management tools
+% 	\end{itemize}
+% }
 
 \end{document}

@@ -59,7 +59,7 @@ problem: 	scarce data
 		perennial problem of public opinion research: exact question wanted is rarely asked
 		no (good) way to (fully) integrate what does exist
 
-
+question of feedback: positive or negative? ("policies create constituencies" vs. thermostatic) under what conditions?
 
 
 
@@ -75,7 +75,45 @@ random walk for flexibility: Linzer and Staton [2013]
 heteroskedastic ideal points: Lauderdale (2010) -- actually not heteroskedastic (no gammas)
     no risk of outside raters doing a worse job with some countries because no outsiders: public opinion is what it is
 
-question of feedback: positive or negative? ("policies create constituencies" vs. thermostatic) under what conditions?
+
+
+
+
+\subsection{The Measurement Model}
+
+To
+
+If m_{ktr} is the percentage of the population in country $k$ in year $t$ providing a positive answer to survey question $r$
+
+public opinion $\alpha$ in country $k$ in year $t$
+discrimination $\gamma$ of question $r$
+difficulty $\beta$
+\begin{equation}
+m_{ktr} = \Phi(\gamma_{r} \times (\alpha_{kt} - \beta_{r}))
+\end{equation}
+
+McGann2014, 125: ``The improvement in fit over the simple probit model is marginal—the closer fit barely justifies the additional parameters. This is not surprising, as the IRT model and the probit model are mathematically extremely similar. However, the IRT model has the added advantages of being better justified in terms of individual-level behavior and the additional parameters (the polarization of the population in terms of policy mood) are substantively interesting.''
+
+% // expected proportion of population giving selected answer
+% m[n] <- Phi(gamma[rr[n]] * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)))
+%
+% // actual number of respondents giving selected answer
+% y_r[n] ~ binomial(n_r[n], p[n])
+%
+% // individual probability of selected answer
+% p[n] ~ beta(b*m[n]/(1 - m[n]), b)
+
+\subsection{Adding Dynamics}
+
+Dynamic Linear Model---CaugheyWarshaw2015
+%alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]) //random walk
+
+3.4 Respondent Weights
+% all_data$y_r = with(all_data, as.integer(round(n * value/100))) # number of 'yes' response equivalents, given data weights
+
+3.5 The Full Model
+3.6 Identification, Priors, and Estimation
+
 
 \pagebreak
 \section{An Example: Tolerance of Homosexuality}

@@ -46,7 +46,7 @@ A wealth of surveys provide information on the state of public opinion on variou
 
     A growing body of work is taking a different tack, examining the dynamics of public opinion in single countries over time.  These studies draw on
 
-(Not using stimson: Hobolt2008, McGann2014, Stubager2015)
+(Not using stimson: Hobolt2008, McGann2014, Stubager2015, Hagemann2016)
 
     field of comparative public opinion
 	lack of dynamics (in contrast to public opinion work in U.S.)
@@ -91,6 +91,14 @@ difficulty $\beta$
 \begin{equation}
 m_{ktr} = \Phi(\gamma_{r} \times (\alpha_{kt} - \beta_{r}))
 \end{equation}
+
+The relative sparsity of cross-national data on many issues of interest, however, makes the full IRT model difficult to estimate.  The model is made more tractable by estimating only the mean of public opinion and not its variance.  Omitting the variance term yields the probit model:
+
+\begin{equation}
+m_{ktr} = \Phi(\gamma_{r} \times (\alpha_{kt} - \beta_{r}))
+\end{equation}
+
+Although the variance in public opinion---the extent to which opinion is polarized---is substantively interesting, including it has been found
 
 McGann2014, 125: ``The improvement in fit over the simple probit model is marginal—the closer fit barely justifies the additional parameters. This is not surprising, as the IRT model and the probit model are mathematically extremely similar. However, the IRT model has the added advantages of being better justified in terms of individual-level behavior and the additional parameters (the polarization of the population in terms of policy mood) are substantively interesting.''
 

@@ -79,28 +79,53 @@ heteroskedastic ideal points: Lauderdale (2010) -- actually not heteroskedastic 
 
 
 
-\subsection{The Measurement Model}
+\subsection{A Measurement Model of Comparative Public Opinion}
 
-To
-
-If m_{ktr} is the percentage of the population in country $k$ in year $t$ providing a positive answer to survey question $r$
-
-public opinion $\alpha$ in country $k$ in year $t$
-discrimination $\gamma$ of question $r$
-difficulty $\beta$
-\begin{equation}
-m_{ktr} = \Phi(\gamma_{r} \times (\alpha_{kt} - \beta_{r}))
-\end{equation}
-
-The relative sparsity of cross-national data on many issues of interest, however, makes the full IRT model difficult to estimate.  The model is made more tractable by estimating only the mean of public opinion and not its variance.  Omitting the variance term yields the probit model:
+Survey responses to questions on a particular issue depend not only on the respondents' attitudes toward the issue but also the exact question asked.  To distill attitudes from item effects, I use a latent variable model.  Latent variable models allow the underlying attitudes to be distilled from item effects.  The relationship between responses to a particular survey item and this latent variable can be described using a two-parameter probit model.  If $m_{ktq}$ denotes the probability that a random individual selected from the population of country $k$ in year $t$ gives a positive response to survey item $q$ [still $r$ in stan file] and $\bar{\alpha}_{kt}$ [no bar in stan file] represents the mean of the latent attitute across that population, the two-parameter probit model is
 
 \begin{equation}
-m_{ktr} = \Phi(\gamma_{r} \times (\alpha_{kt} - \beta_{r}))
+\label{probit}
+m_{ktr} = \Phi(\gamma_{q} \times (\bar{\alpha}_{kt} - \beta_{q}))
 \end{equation}
 
-Although the variance in public opinion---the extent to which opinion is polarized---is substantively interesting, including it has been found
+where $\Phi$ is the cumulative normal distribution function.
 
-McGann2014, 125: ``The improvement in fit over the simple probit model is marginal—the closer fit barely justifies the additional parameters. This is not surprising, as the IRT model and the probit model are mathematically extremely similar. However, the IRT model has the added advantages of being better justified in terms of individual-level behavior and the additional parameters (the polarization of the population in terms of policy mood) are substantively interesting.''
+Equation \ref{probit} describes the relationship between the expected responses to a survey item and the underlying attitudes as depending on the item's discrimination, $\gamma_{q}$, and its difficulty, $\beta_{q}$.  The discrimination parameter refers to the extent to which individuals' responses to this survey item effectively separate those who are more positive on the issue from those with those who are less so.  In other words, items with higher discrimination are less noisy.  The difficulty parameter
+
+Note that, for issues on which polling has been particularly dense, this model specification can be easily extended to include not only the mean attitude but also the variance in attitudes, as in the aggregate two-parameter item-response theory (IRT) model:
+
+\begin{equation}
+\label{irt}
+m_{ktr} = \Phi(\sqrt{(\gamma_{q}^2 + \sigma_{\alpha_{kt}}^2)} \times (\bar{\alpha}_{kt} - \beta_{q}))
+\end{equation}
+
+Although the variance in public opinion---the extent to which opinion is polarized---is frequently substantively interesting, the addition of these parameters requires considerably more data and has been found in a single-country application to yield only a marginal improvement in fit \citep[125]{McGann2014}.
+
+%On most issues, data is quite sparse: surveys only occassionally ask the same questions across countries and over time.
+
+%p_{ir} = \Phi(\gamma_{r} \times (x_{i} - \beta_{r}))
+%
+% If m_{ktr} is the percentage of the population in country $k$ in year $t$ providing a positive answer to survey question $r$
+%
+% public opinion $\alpha$ in country $k$ in year $t$
+% discrimination $\gamma$ of question $r$
+% difficulty $\beta$
+% \begin{equation}
+% m_{ktr} = \Phi(\gamma_{r} \times (\alpha_{kt} - \beta_{r}))
+% \end{equation}
+%
+% For the expected probability of a random respondent giving the affirmative answer to a particular question, m_{ktr}
+
+At the level of the individual survey respondent, if $p_{ktr}$ is the probability of a random respondent in country $k$ in year $t$ giving an affirmative response to a question $r$, it is distributed as
+\begin{equation}
+p_{ktr} \sim beta(b*m_{ktr}/(1 - m_{ktr}), b)
+\end{equation}
+
+%The relative sparsity of cross-national data on many issues of interest, however, makes the full IRT model difficult to estimate.  The model is made more tractable by estimating only the mean of public opinion and not its variance.  Omitting the variance term yields the probit model:
+
+%Although the variance in public opinion---the extent to which opinion is polarized---is substantively interesting, including these parameters has been found to yield only a marginal improvement in fit in a data-rich single-country application \citep[125]{McGann2014}.
+
+%McGann2014, 125: ``The improvement in fit over the simple probit model is marginal—the closer fit barely justifies the additional parameters. This is not surprising, as the IRT model and the probit model are mathematically extremely similar. However, the IRT model has the added advantages of being better justified in terms of individual-level behavior and the additional parameters (the polarization of the population in terms of policy mood) are substantively interesting.''
 
 % // expected proportion of population giving selected answer
 % m[n] <- Phi(gamma[rr[n]] * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)))

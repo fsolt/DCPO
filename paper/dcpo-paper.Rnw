@@ -90,13 +90,20 @@ m_{ktr} = \Phi(\gamma_{q} \times (\bar{\alpha}_{kt} - \beta_{q}))
 
 where $\Phi$ is the cumulative normal distribution function.
 
-Equation \ref{probit} describes the relationship between the expected responses to a survey item and the underlying attitudes as depending on the item's discrimination, $\gamma_{q}$, and its difficulty, $\beta_{q}$.  The discrimination parameter refers to the extent to which individuals' responses to this survey item effectively separate those who are more positive on the issue from those with those who are less so.  In other words, items with higher discrimination are less noisy.  The difficulty parameter
+Equation \ref{probit} describes the relationship between the expected responses to a survey item and the underlying attitudes as depending on the item's discrimination, $\gamma_{q}$, and its difficulty, $\beta_{q}$.  The discrimination parameter refers to the extent to which individuals' responses to a survey item effectively separate those who are more positive on the issue from those with those who are less so.  In other words, items with higher discrimination provide more signal and less noise.  The difficulty parameter indicates the position of the item along the dimension of the latent variable: some questions can be answered in the affirmative   %MORE
 
-Note that, for issues on which polling has been particularly dense, this model specification can be easily extended to include not only the mean attitude but also the variance in attitudes, as in the aggregate two-parameter item-response theory (IRT) model:
+, if $p_{ktr}$ is the probability of a random respondent in country $k$ in year $t$ giving an affirmative response to a question $r$, it is distributed as
+
+\begin{equation}
+p_{ktq} \sim \textrm{beta}(b \times m_{ktq}/(1 - m_{ktq}), b)
+\end{equation}
+
+
+Note that, for issues on which polling has been particularly dense, the two-parameter probit model of public opinion can be easily extended to include not only the mean attitude but also the variance in attitudes, yielding the aggregate two-parameter item-response theory (IRT) model:
 
 \begin{equation}
 \label{irt}
-m_{ktr} = \Phi(\sqrt{(\gamma_{q}^2 + \sigma_{\alpha_{kt}}^2)} \times (\bar{\alpha}_{kt} - \beta_{q}))
+m_{ktq} = \Phi(\sqrt{(\gamma_{q}^2 + \sigma_{\alpha_{kt}}^2)} \times (\bar{\alpha}_{kt} - \beta_{q}))
 \end{equation}
 
 Although the variance in public opinion---the extent to which opinion is polarized---is frequently substantively interesting, the addition of these parameters requires considerably more data and has been found in a single-country application to yield only a marginal improvement in fit \citep[125]{McGann2014}.
@@ -116,10 +123,7 @@ Although the variance in public opinion---the extent to which opinion is polariz
 %
 % For the expected probability of a random respondent giving the affirmative answer to a particular question, m_{ktr}
 
-At the level of the individual survey respondent, if $p_{ktr}$ is the probability of a random respondent in country $k$ in year $t$ giving an affirmative response to a question $r$, it is distributed as
-\begin{equation}
-p_{ktr} \sim beta(b*m_{ktr}/(1 - m_{ktr}), b)
-\end{equation}
+
 
 %The relative sparsity of cross-national data on many issues of interest, however, makes the full IRT model difficult to estimate.  The model is made more tractable by estimating only the mean of public opinion and not its variance.  Omitting the variance term yields the probit model:
 

@@ -20,7 +20,13 @@
 \setcounter{totalnumber}{50}
 \setcounter{topnumber}{50}
 \setcounter{bottomnumber}{50}
+
 \begin{document}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(concordance=TRUE, cache=TRUE, warning=FALSE, message=FALSE, echo=FALSE, results='hide')
+@
 
 \title{Dynamic Comparative Public Opinion}
 \author{Frederick Solt\\
@@ -81,7 +87,11 @@ heteroskedastic ideal points: Lauderdale (2010) -- actually not heteroskedastic 
 
 \subsection{A Measurement Model of Comparative Public Opinion}
 
-Survey responses to questions on a particular issue depend not only on the respondents' attitudes toward the issue but also the exact question asked.  To distill attitudes from item effects, I use a latent variable model.  Latent variable models allow the underlying attitudes to be distilled from item effects.  The relationship between responses to a particular survey item and this latent variable can be described using a two-parameter probit model.  If $m_{ktq}$ denotes the probability that a random individual selected from the population of country $k$ in year $t$ gives a positive response to survey item $q$ [still $r$ in stan file] and $\bar{\alpha}_{kt}$ [no bar in stan file] represents the mean of the latent attitute across that population, the two-parameter probit model is
+Survey responses to questions on a particular issue depend not only on the respondents' attitudes toward the issue but also the exact question asked.
+To distill attitudes from item effects, I use a latent variable model.
+Latent variable models allow the underlying attitudes to be distilled from item effects.
+The relationship between responses to a particular survey item and this latent variable can be described using a two-parameter probit model.
+If $m_{ktq}$ denotes the probability that a random individual selected from the population of country $k$ in year $t$ gives a positive response to survey item $q$ [still $r$ in stan file] and $\bar{\alpha}_{kt}$ [no bar in stan file] represents the mean of the latent attitute across that population, the two-parameter probit model is
 
 \begin{equation}
 \label{probit}
@@ -90,7 +100,12 @@ m_{ktr} = \Phi(\gamma_{q} \times (\bar{\alpha}_{kt} - \beta_{q}))
 
 where $\Phi$ is the cumulative normal distribution function.
 
-Equation \ref{probit} describes the relationship between the expected responses to a survey item and the underlying attitudes as depending on the item's discrimination, $\gamma_{q}$, and its difficulty, $\beta_{q}$.  The discrimination parameter refers to the extent to which individuals' responses to a survey item effectively separate those who are more positive on the issue from those with those who are less so.  In other words, items with higher discrimination provide more signal and less noise.  The difficulty parameter indicates the position of the item along the dimension of the latent variable: some questions can be answered in the affirmative   %MORE
+Equation \ref{probit} describes the relationship between the expected responses to a survey item and the underlying attitudes as depending on the item's discrimination, $\gamma_{q}$, and its difficulty, $\beta_{q}$.
+The discrimination parameter refers to the extent to which individuals' responses to a survey item effectively separate those who are more positive on the issue from those with those who are less so.
+Items with higher discrimination provide more signal and less noise than items with lower discrimation.
+The difficulty parameter indicates the position of the item along the dimension of the latent variable for the issue.
+Some, more difficult, items will only be answered in the affirmative by those who are very positively disposed on the issue in question; other, easier items, can be answered affirmatively even by those who are only somewhat positive.
+
 
 , if $p_{ktr}$ is the probability of a random respondent in country $k$ in year $t$ giving an affirmative response to a question $r$, it is distributed as
 

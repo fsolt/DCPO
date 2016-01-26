@@ -104,7 +104,18 @@ Equation \ref{probit} describes the relationship between the expected responses 
 The discrimination parameter refers to the extent to which individuals' responses to a survey item effectively separate those who are more positive on the issue from those with those who are less so.
 Items with higher discrimination provide more signal and less noise than items with lower discrimation.
 The difficulty parameter indicates the position of the item along the dimension of the latent variable for the issue.
-Some, more difficult, items will only be answered in the affirmative by those who are very positively disposed on the issue in question; other, easier items, can be answered affirmatively even by those who are only somewhat positive.
+Some, more difficult, items will only be answered in the affirmative by those who are very positively disposed on the issue in question; other, easier items, can be answered affirmatively even by those who are only somewhat positively disposed.
+
+<<label=diff_disc>>==
+library(dplyr)
+
+diff_disc <- data_frame(alpha_bar = rep(seq(-4, 4, length.out = 100), times = 6),
+                        gamma_q = c(rep(c(.25, .5, 1), each = 100), rep(.5, 300)),
+                        beta_q = c(rep(0, 300), rep(c(-1, 0, 1), each = 100)),
+                        m = pnorm(gamma_q * (alpha_bar - beta_q)))
+
+
+@
 
 
 , if $p_{ktr}$ is the probability of a random respondent in country $k$ in year $t$ giving an affirmative response to a question $r$, it is distributed as

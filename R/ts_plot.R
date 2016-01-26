@@ -4,7 +4,7 @@
 rows <- 7
 cols <- 5
 npages <- 3
-a_res <- df
+#a_res <- df
 
 pages <- c("1:35", "36:70", "71:105")
 a_res <- a_res %>% group_by(country) %>%

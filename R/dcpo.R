@@ -15,7 +15,7 @@
 
 library(rstan)
 
-# data1 <- gm1
+# data1 <- gm
 #
 # dcpo <- function(x,
 #                  model_code = NULL,
@@ -25,10 +25,10 @@ library(rstan)
 #                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 3034
-iter <- 600
-cores <- 4
-chains <- 4
+seed <- 324
+iter <- 2000
+cores <- 6
+chains <- 6
 x <- gm
 ###
 
@@ -80,7 +80,6 @@ dcpo_code <- '
   model {
     beta ~ normal(0, sigma_beta);
     gamma ~ lognormal(0, sigma_gamma);
-    mu_beta ~ uniform(0, 1);
     sigma_beta ~ cauchy(0, 5);
     sigma_gamma ~ cauchy(0, 5);
     b ~ uniform(0, 15);
@@ -105,10 +104,10 @@ dcpo_code <- '
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = 1000,
+             iter = iter,
              cores = cores,
              chains = chains,
-             control = list(max_treedepth = 15,
+             control = list(max_treedepth = 20,
                             adapt_delta = .8))
 
 lapply(get_sampler_params(out1, inc_warmup = FALSE),

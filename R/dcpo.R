@@ -27,8 +27,8 @@ library(rstan)
 ### Delete these when turning into a function
 seed <- 324
 iter <- 2000
-cores <- 6
-chains <- 6
+cores <- 4
+chains <- 4
 x <- gm
 ###
 

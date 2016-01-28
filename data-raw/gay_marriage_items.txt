@@ -59,6 +59,12 @@
 	approve5
 		X British Soc Attitudes	HOMOSEX
 				
+*morally acceptable
+Next, I’m going to read some behaviors.  For each, please tell me whether you personally believe that it is morally acceptable, morally wrong, or is it not a moral issue? Homosexual behavior
+	approve3
+		X pewrel2009_afr		Q85I
+		X pewrel2014_latam	Q69h
+
 
 *people just like others
 	X accept5
@@ -103,6 +109,7 @@
 		US CID 2006		GMARRY
 	marry4a
 		US Pew surveys
+		X pewrel2014_latam	Q15
 
 	X marry10
 		Americasbarometer	d6

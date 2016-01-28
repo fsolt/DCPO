@@ -15,7 +15,7 @@
 
 library(rstan)
 
-# data1 <- gm
+# data1 <- gm_a
 #
 # dcpo <- function(x,
 #                  model_code = NULL,
@@ -25,11 +25,11 @@ library(rstan)
 #                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 324
+seed <- 3034
 iter <- 2000
 cores <- 4
 chains <- 4
-x <- gm
+x <- gm_a
 ###
 
 dcpo_data <- list(  K=max(x$ccode),
@@ -101,14 +101,17 @@ dcpo_code <- '
   }
 '
 
+start <- proc.time()
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = iter,
+             iter = 1000,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,
                             adapt_delta = .8))
+runtime <- proc.time() - start
+runtime
 
 lapply(get_sampler_params(out1, inc_warmup = FALSE),
        summary, digits = 2)

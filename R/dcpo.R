@@ -25,10 +25,10 @@ library(rstan)
 #                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 3034
+seed <- 3033034
 iter <- 2000
-cores <- 4
 chains <- 4
+cores <- chains
 x <- gm_a
 ###
 
@@ -105,7 +105,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = 1000,
+             iter = iter,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

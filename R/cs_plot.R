@@ -35,7 +35,7 @@ p1b <- ggplot(p1_data_b, aes(x = estimate,
   geom_segment(aes(x = lb, xend = ub,
                    y = ranked, yend = ranked),
                na.rm = TRUE) +
-  scale_fill_manual(values = c("black", "grey50", "white")) +
+  scale_fill_manual(values = c("white", "black"), breaks = c("Marriage", "None")) +
   geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
   theme_bw() + theme(legend.position="none",
                      axis.text.x  = element_text(size=7),

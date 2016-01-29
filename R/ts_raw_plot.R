@@ -1,6 +1,6 @@
 # tolerance trends, estimate plus raw data, eight countries
 
-c8_rd <- gm %>% filter(ccode <= 8) %>% mutate(estimate = y_r/n) %>%
+c8_rd <- gm_a %>% filter(ccode <= 8) %>% mutate(estimate = y_r/n) %>%
   left_join(g_res, by = c("rcode", "variable")) %>% rename(gamma_mean = mean)
 c8_res <- a_res %>% filter(kk <= 8)
 

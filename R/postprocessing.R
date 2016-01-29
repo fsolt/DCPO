@@ -32,7 +32,7 @@ k <- gm %>% group_by(country) %>% summarize(
   firstyr = first(firstyr),
   lastyr = first(lastyr))
 
-gm_laws <- read_csv("gm_laws.csv") %>% merge(k)
+gm_laws <- read_csv("data-raw/gm_laws.csv") %>% merge(k)
 
 a_res <- merge(a_res, k, all=T)
 a_res <- merge(a_res, gm_laws, all=T)
@@ -51,10 +51,10 @@ a_res <- a_res %>%
                                 "None"))) %>%
   arrange(kk, year)
 
-count_divergences <- function(fit) {
-  sampler_params <- get_sampler_params(fit, inc_warmup=FALSE)
-  sum(sapply(sampler_params, function(x) c(x[,'n_divergent__']))[,1])
-}
+# count_divergences <- function(fit) {
+#   sampler_params <- get_sampler_params(fit, inc_warmup=FALSE)
+#   sum(sapply(sampler_params, function(x) c(x[,'n_divergent__']))[,1])
+# }
 
 # Plots:
 #   1. tolerance by country, most recent available year: cs_plot

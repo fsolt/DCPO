@@ -26,7 +26,7 @@ library(rstan)
 
 ### Delete these when turning into a function
 seed <- 3033034
-iter <- 2000
+iter <- 1000
 chains <- 4
 cores <- chains
 x <- gm_a
@@ -70,7 +70,7 @@ dcpo_code <- '
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=1> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-    real<lower=0, upper=15> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
@@ -82,13 +82,12 @@ dcpo_code <- '
     gamma ~ lognormal(0, sigma_gamma);
     sigma_beta ~ cauchy(0, 5);
     sigma_gamma ~ cauchy(0, 5);
-    b ~ uniform(0, 15);
-    sigma_k ~ uniform(0, 1);
+    b ~ uniform(0, 20);
     for (n in 1:N) {
       // actual number of respondents giving selected answer
       y_r[n] ~ binomial(n_r[n], p[n]);
       // individual probability of selected answer
-      p[n] ~ beta(b*m[n]/(1 - m[n]), b);
+      p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
       // prior for alpha for the next observed year by country as well as for all intervening missing years
       if (n < N) {
         if (tt[n] < T) {

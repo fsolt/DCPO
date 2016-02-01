@@ -11,7 +11,8 @@ View(x1_sum[x1_sum$Rhat>1.1,])
 View(x1_sum[x1_sum$Rhat>1.2,])
 
 rcodes <- gm %>% group_by(variable) %>%
-  summarize(rcode = first(rcode)) %>%
+  summarize(rcode = first(rcode),
+            r_n = n()) %>%
   arrange(rcode)
 
 

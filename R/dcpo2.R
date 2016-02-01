@@ -15,21 +15,21 @@
 
 library(rstan)
 
-data1 <- gm1
-
-dcpo <- function(x,
-                 model_code = NULL,
-                 seed = 324,
-                 iter = 100,
-                 cores = 1,
-                 chains = 4)
+# data1 <- gm_a
+#
+# dcpo <- function(x,
+#                  model_code = NULL,
+#                  seed = 324,
+#                  iter = 100,
+#                  cores = 1,
+#                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 324
-iter <- 600
-cores <- 4
+seed <- 3034
+iter <- 500
 chains <- 4
-x <- gm
+cores <- chains
+x <- gm_a
 ###
 
 dcpo_data <- list(  K=max(x$ccode),
@@ -58,7 +58,7 @@ dcpo_code2 <- '
   transformed data {
     int G[N-1];				// number of missing years until next observed country-year (G for "gap")
     for (n in 1:N-1) {
-      G[n] <- tt[n+1] - tt[n] - 1;
+        G[n] <- tt[n+1] - tt[n] - 1;
     }
   }
   parameters {
@@ -66,38 +66,35 @@ dcpo_code2 <- '
     real beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     real<lower=0, upper=1> mu_beta;  // mean public opinion; i.e., mean position/difficulty
     real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-    real<lower=0> sd_k[K]; 	// country sd in opinion (see McGann 2014, 119-120)
+    real<lower=0, upper=.1> var_alpha[K, T]; // country-year sd in opinion (see McGann 2014, 119-120)
     real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
-    real<lower=0> sigma_sd_k;  // scale of country sd
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
-    real<lower=0> sigma_t[K]; 	// country temporal variance parameter (see Linzer and Stanton 2012, 12-13)
-    real<lower=0, upper=15> b;  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=.5> sigma_k[K]; 	// country mean opinion temporal variance parameter (see Linzer and Stanton 2012, 12)
+    real<lower=0, upper=.05> sigma_var_k[K]; 	// country sd opinion temporal variance parameter (cf. Caughfey and Warshaw 2015, 201-202; Linzer and Stanton 2012, 12)
+    real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
     for (n in 1:N)
-      m[n] <- Phi(sqrt(gamma[rr[n]]^2+sd_k[kk[n]]^2) * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
+      m[n] <- Phi_approx(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
   }
   model {
     beta ~ normal(0, sigma_beta);
     gamma ~ lognormal(0, sigma_gamma);
-    sd_k ~ lognormal(0, sigma_sd_k);
-    mu_beta ~ cauchy(0, 5);
     sigma_beta ~ cauchy(0, 5);
     sigma_gamma ~ cauchy(0, 5);
-    sigma_sd_k ~ cauchy(0, 5);
-    sigma_t ~ cauchy(0, 1);
     for (n in 1:N) {
       // actual number of respondents giving selected answer
       y_r[n] ~ binomial(n_r[n], p[n]);
       // individual probability of selected answer
-      p[n] ~ beta(b*m[n]/(1 - m[n]), b);
+      p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
       // prior for alpha for the next observed year by country as well as for all intervening missing years
       if (n < N) {
         if (tt[n] < T) {
           for (g in 0:G[n]) {
-            alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_t[kk[n]]);
+            alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]);
+            var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_var_k[kk[n]]);
           }
         }
       }
@@ -105,16 +102,19 @@ dcpo_code2 <- '
   }
 '
 
-out2 <- stan(model_code = dcpo_code2,
+start <- proc.time()
+out1 <- stan(model_code = dcpo_code2,
              data = dcpo_data,
              seed = seed,
-             iter = 100,
+             iter = iter,
              cores = cores,
              chains = chains,
-             control = list(max_treedepth = 15,
+             control = list(max_treedepth = 20,
                             adapt_delta = .8))
+runtime <- proc.time() - start
+runtime
 
-lapply(get_sampler_params(out2, inc_warmup = FALSE),
+lapply(get_sampler_params(out1, inc_warmup = FALSE),
        summary, digits = 2)
 
 #Chime

@@ -25,23 +25,40 @@ library(rstan)
 #                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 3034
-iter <- 500
+seed <- 3033034
+iter <- 100
 chains <- 4
 cores <- chains
 x <- gm_a
 ###
 
-dcpo_data <- list(  K=max(x$ccode),
-                    T=max(x$tcode),
-                    R=max(x$rcode),
-                    N=length(x$y_r),
-                    kk=x$ccode,
-                    rr=x$rcode,
-                    tt=x$tcode,
-                    y_r=x$y_r,
-                    n_r=x$n
+r_cp0 <- x %>%  # generate a unique numbered subscript for each cutpoint
+  select(rcode, cutpoint) %>%
+  unique() %>%
+  arrange(rcode, cutpoint) %>%
+  mutate(ss = 1:n()) %>%
+  tidyr::complete(rcode, cutpoint, fill = list(ss = 0))
+
+r_cp <- matrix(data = r_cp0$ss, nrow = max(x$rcode), ncol = max(x$cutpoint),
+               byrow = TRUE)
+
+dcpo_data <- list(  K = max(x$ccode),
+                    T = max(x$tcode),
+                    R = max(x$rcode),
+                    N = length(x$y_r),
+                    MCP = max(x$cutpoint),
+                    TCP = max(r_cp0$ss),
+                    CP = r_cp,
+                    kk = x$ccode,
+                    rr = x$rcode,
+                    tt = x$tcode,
+                    cp = x$cutpoint,
+                    y_r = x$y_r,
+                    n_r = x$n,
+                    var_r = x$variance
 )
+
+#need to make betas within r ordinal! One dimensional array of ordered vectors?
 
 dcpo_code2 <- '
   data {
@@ -49,11 +66,16 @@ dcpo_code2 <- '
     int<lower=1> R; 				// number of indicators
     int<lower=1> T; 				// number of years
     int<lower=1> N; 				// number of actual observations
+    int<lower=1> MCP;       // maximum number of cutpoints for any indicator
+    int<lower=1> TCP;       // total number of cutpoints for all indicators
+    int<lower=0, upper=TCP> CP[R, MCP]; // key to cutpoints for each indicator
     int<lower=1, upper=K> kk[N]; 	// country for observation n
     int<lower=1, upper=R> rr[N]; 	// indicator for observation n
     int<lower=1, upper=T> tt[N]; 	// year for observation n
+    int<lower=1> cp[N]; 	  // cutpoint for observation n
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
+    real<lower=0> var_r[N]; 	// variance in responses to indicator rr for observation n
   }
   transformed data {
     int G[N-1];				// number of missing years until next observed country-year (G for "gap")
@@ -63,21 +85,22 @@ dcpo_code2 <- '
   }
   parameters {
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-    real beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+    real beta[TCP]; // position ("difficulty") of each cutpoint for all indicators (cf. logistic versions in Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     real<lower=0, upper=1> mu_beta;  // mean public opinion; i.e., mean position/difficulty
     real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-    real<lower=0, upper=.1> var_alpha[K, T]; // country-year sd in opinion (see McGann 2014, 119-120)
+    real<lower=0, upper=.25> var_alpha[K, T]; // country-year sd in opinion (see McGann 2014, 119-120)
     real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=.5> sigma_k[K]; 	// country mean opinion temporal variance parameter (see Linzer and Stanton 2012, 12)
-    real<lower=0, upper=.05> sigma_var_k[K]; 	// country sd opinion temporal variance parameter (cf. Caughfey and Warshaw 2015, 201-202; Linzer and Stanton 2012, 12)
-    real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=.1> sigma_var_kt[K]; 	// country sd opinion temporal variance parameter (cf. Caughfey and Warshaw 2015, 201-202; Linzer and Stanton 2012, 12)
+    real<lower=0, upper=.1> sigma_var_k[K]; 	// country sd opinion variance parameter
+    real<lower=0, upper=10> b[R];  // "the degree of stochastic variation between question administrations" of indicator r (McGann 2014, 122)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
     for (n in 1:N)
-      m[n] <- Phi_approx(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
+      m[n] <- Phi_approx(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) * (alpha[kk[n], tt[n]] - (beta[CP[rr[n], cp[n]]] + mu_beta)));
   }
   model {
     beta ~ normal(0, sigma_beta);
@@ -89,12 +112,14 @@ dcpo_code2 <- '
       y_r[n] ~ binomial(n_r[n], p[n]);
       // individual probability of selected answer
       p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
-      // prior for alpha for the next observed year by country as well as for all intervening missing years
+      // variance in public opinion
+      var_alpha[kk[n], tt[n]] ~ normal(var_r[n], sigma_var_k[kk[n]]);
+      // prior for alpha and var_alpha for the next observed year by country as well as for all intervening missing years
       if (n < N) {
         if (tt[n] < T) {
           for (g in 0:G[n]) {
             alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]);
-            var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_var_k[kk[n]]);
+            var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_var_kt[kk[n]]);
           }
         }
       }
@@ -110,7 +135,7 @@ out1 <- stan(model_code = dcpo_code2,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,
-                            adapt_delta = .8))
+                            adapt_delta = .85))
 runtime <- proc.time() - start
 runtime
 

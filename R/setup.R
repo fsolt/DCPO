@@ -110,15 +110,17 @@ dcpo_setup <- function(vars,
     ungroup() %>%
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)
-              firstyr = first(year, order_by = year),
-              lastyr = last(year, order_by = year)) %>%
+           firstyr = first(year, order_by = year),
+           lastyr = last(year, order_by = year)) %>%
     ungroup() %>%
     arrange(desc(cc_rank), country, year) %>% # order by data-richness
-    # Generate numeric codes for countries, years, and questions
-    mutate(ccode = as.numeric(factor(country, levels = unique(country))),
+    # Generate numeric codes for countries, years, questions, and question-cuts
+    mutate(variable_cp = paste(variable, cutpoint, sep="_gt"),
+      ccode = as.numeric(factor(country, levels = unique(country))),
       tcode = as.integer(year - min(year) + 1),
-      rcode = as.numeric(factor(variable, levels = unique(variable)))) %>%
-    arrange(ccode, tcode, rcode, cutpoint)
+      qcode = as.numeric(factor(variable, levels = unique(variable))),
+      rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp)))) %>%
+    arrange(ccode, tcode, qcode, rcode)
 
   # Chime
   if(chime) {

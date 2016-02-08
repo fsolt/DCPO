@@ -11,7 +11,7 @@ library(stringr)
 library(ggplot2)
 
 datasets_table <- read_csv("data-raw/datasets_table.csv")
-gm0 <- read_csv("data-raw/gay_marriage_surveys.csv")
+gm0 <- read_csv("data-raw/surveys_gm.csv")
 gm <- dcpo_setup(gm0)
 write_csv(gm, "data/all_data_gm.csv")
 

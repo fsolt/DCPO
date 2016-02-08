@@ -32,6 +32,9 @@ cores <- chains
 x <- gm
 ###
 
+qr <- x %>% group_by(rcode) %>% summarize(qr = first(qcode),
+                                          mcp = max(cutpoint))
+
 dcpo_data <- list(  K=max(x$ccode),
                     T=max(x$tcode),
                     Q=max(x$qcode),
@@ -41,6 +44,8 @@ dcpo_data <- list(  K=max(x$ccode),
                     tt=x$tcode,
                     qq=x$qcode,
                     rr=x$rcode,
+                    qr=qr$qr,
+                    mcp=qr$mcp,
                     y_r=x$y_r,
                     n_r=x$n
 )
@@ -56,6 +61,8 @@ dcpo_code <- '
     int<lower=1, upper=T> tt[N]; 	// year for observation n
     int<lower=1, upper=Q> qq[N];  // question for observation n
     int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
+    int<lower=1, upper=R> qr[R];  // question for question-cutpoint r
+    int<lower=1, upper=R> mcp[R]; // cutpoint for question-cutpoint r
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
   }
@@ -68,25 +75,31 @@ dcpo_code <- '
   parameters {
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
     real<lower=0> gamma[Q]; // discrimination of question q (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-    real beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-    real<lower=0, upper=1> mu_beta;  // mean public opinion; i.e., mean position/difficulty
-    real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=1> sigma_alpha[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=1> tau[R];
+    real<lower=0> sigma_tau;   // scale of indicator positions (see Stan Development Team 2015, 61)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+    real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+    beta <- tau;
+    for (r in 2:R) {
+      if (qr[r]==qr[r-1])
+        beta[r] <- beta[r-1] + (tau[r] * (1 - beta[r - 1]));
+    }
+
     for (n in 1:N)
-        m[n] <- Phi(gamma[qq[n]] * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
+        m[n] <- inv_logit(gamma[qq[n]] * (alpha[kk[n], tt[n]] - beta[rr[n]]));
   }
   model {
     sigma_gamma ~ cauchy(0, 5);
-    sigma_beta ~ cauchy(0, 5);
+    sigma_tau ~ cauchy(0, .35);
 
     gamma ~ lognormal(0, sigma_gamma);
-    beta ~ normal(0, sigma_beta);
+    tau ~ normal(0, sigma_tau);
 
     b ~ uniform(0, 20);
     for (n in 1:N) {
@@ -110,7 +123,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = 60,
+             iter = 120,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

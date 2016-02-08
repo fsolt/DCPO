@@ -26,40 +26,30 @@ library(rstan)
 
 ### Delete these when turning into a function
 seed <- 3033034
-iter <- 10
-chains <- 1
+iter <- 30
+chains <- 4
 cores <- chains
 x <- gm_a
 ###
 
 # generate a unique numbered subscript for each cutpoint
 x <- gm_a
-x <- x %>% group_by(rcode) %>% mutate(mcp = max(cutpoint)) %>% filter(mcp>1)
-
+#x <- x %>% group_by(rcode) %>% mutate(mcp = max(cutpoint)) %>% filter(mcp>1)
 #x <- x %>% filter(rcode<3)
 
-
-r_cp0 <- x %>%
+r_cp <- x %>%
   select(rcode, cutpoint) %>%
   unique() %>%
   arrange(rcode, cutpoint) %>%
-  mutate(ss = 1:n()) %>%
-  tidyr::complete(rcode, cutpoint, fill = list(ss = 0))
-
-# arrange subscripts for each cutpoint in matrix with row for each indicator
-r_cp <- matrix(data = r_cp0$ss, nrow = max(x$rcode), ncol = max(x$cutpoint),
-               byrow = TRUE)
-
-
+  group_by(rcode) %>%
+  summarize(mcp = max(cutpoint))
 
 dcpo_data <- list(  K = max(x$ccode),
                     T = max(x$tcode),
                     R = max(x$rcode),
                     N = length(x$y_r),
                     MCP = max(x$cutpoint),
-                    TCP = max(r_cp0$ss),
-                    CP = r_cp,
-                    mcp = apply(r_cp, 1, max),
+                    mcp = r_cp$mcp,
                     kk = x$ccode,
                     rr = x$rcode,
                     tt = x$tcode,
@@ -76,15 +66,14 @@ dcpo_code <- '
     int<lower=1> T; 				// number of years
     int<lower=1> N; 				// number of actual observations
     int<lower=1> MCP;       // maximum number of cutpoints for any indicator
-    int<lower=1> TCP;       // total number of cutpoints for all indicators
-    int<lower=0, upper=TCP> CP[R, MCP]; // key to cutpoints for each indicator
-//    int<lower=1> mcp[R];    // key location of maximum cutpoint for each indictor
+    int<lower=1> mcp[R];    // maximum cutpoint for each indicator
     int<lower=1, upper=K> kk[N]; 	// country for observation n
     int<lower=1, upper=R> rr[N]; 	// indicator for observation n
     int<lower=1, upper=T> tt[N]; 	// year for observation n
     int<lower=1> cp[N]; 	  // cutpoint for observation n
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
+    real<lower=0> var_r[N]; 	// variance in respondents to indicator rr for observation n
   }
   transformed data {
     int G[N-1];				// number of missing years until next observed country-year (G for "gap")
@@ -94,36 +83,30 @@ dcpo_code <- '
   }
   parameters {
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-    ordered[TCP] beta; // position ("difficulty") of each cutpoint for all indicators (cf. logistic versions in Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-//    ordered[R] mu_beta_r; // mean difficulty for each item r
-    real<lower=-1, upper=1> mu_beta_r_free[R]; // mean difficulty for each item r
     real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-    real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
+    ordered[MCP] beta[R]; // position ("difficulty") of each cutpoint for all indicators (cf. logistic versions in Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+    real<lower=0, upper=1> mu_beta[MCP]; // vector of mean cutpoint difficulties
+    real<lower=0> sigma_beta[MCP];   // scale of indicator positions (see Stan Development Team 2015, 61)
+    real<lower=0, upper=.5> sigma_alpha[K]; 	// country mean opinion temporal variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
-    real<lower=0, upper=1> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-    real<lower=0, upper=10> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=10> b[R];  // "the degree of stochastic variation between question administrations" of indicator r (McGann 2014, 122)
   }
   transformed parameters {
-    ordered[R] mu_beta_r; // mean difficulty for each item r, with ordering
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
     for (n in 1:N) {
-        mu_beta_r[rr[n]] <- mu_beta_r_free[rr[n]] + (rr[n] * 2);
-        m[n] <- Phi(gamma[rr[n]] * (alpha[kk[n], tt[n]] - ((mu_beta_r[rr[n]] - (rr[n] * 2)))));
+        m[n] <- inv_logit(gamma[rr[n]] * (alpha[kk[n], tt[n]] - beta[rr[n], cp[n]]));
     }
-
   }
   model {
-//    real<lower=0, upper=1> mu_beta;  // mean public opinion; i.e., mean position/difficulty
-
-//    ordered[R] mu_beta_r;
-//    mu_beta_r[1] <- 0.0;
-//    tail(mu_beta_r, R - 1) <- mu_beta_r_free - R;
-//    mu_beta_r_free ~
-    beta ~ normal(0, sigma_beta);
+    sigma_gamma ~ cauchy(0, 2.5);
+    sigma_beta ~ cauchy(0, 2.5);
     gamma ~ lognormal(0, sigma_gamma);
-    sigma_beta ~ cauchy(0, 5);
-    sigma_gamma ~ cauchy(0, 5);
+    for (r in 1:R) {
+      for (c in 1:MCP) {
+        beta[r, c] ~ normal(mu_beta[c], sigma_beta[c]);
+      }
+    }
     for (n in 1:N) {
       // actual number of respondents giving selected answer
       y_r[n] ~ binomial(n_r[n], p[n]);
@@ -133,7 +116,7 @@ dcpo_code <- '
       if (n < N) {
         if (tt[n] < T) {
           for (g in 0:G[n]) {
-              alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]);
+              alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha[kk[n]]);
           }
         }
       }
@@ -145,7 +128,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = iter,
+             iter = 1000,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

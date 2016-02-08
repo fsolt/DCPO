@@ -79,8 +79,8 @@ dcpo_code <- '
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=1> sigma_alpha[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
-    real<lower=0, upper=1> tau[R];
-    real<lower=0> sigma_tau;   // scale of indicator positions (see Stan Development Team 2015, 61)
+    real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
+    real<lower=0> sigma_tau;   // scale of cutpoint difficulties (cf. Stan Development Team 2015, 61)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
@@ -101,7 +101,6 @@ dcpo_code <- '
     gamma ~ lognormal(0, sigma_gamma);
     tau ~ normal(0, sigma_tau);
 
-    b ~ uniform(0, 20);
     for (n in 1:N) {
       // actual number of respondents giving selected answer
       y_r[n] ~ binomial(n_r[n], p[n]);

@@ -29,16 +29,18 @@ seed <- 3033034
 iter <- 1000
 chains <- 4
 cores <- chains
-x <- gm_a
+x <- gm
 ###
 
 dcpo_data <- list(  K=max(x$ccode),
                     T=max(x$tcode),
+                    Q=max(x$qcode),
                     R=max(x$rcode),
                     N=length(x$y_r),
                     kk=x$ccode,
-                    rr=x$rcode,
                     tt=x$tcode,
+                    qq=x$qcode,
+                    rr=x$rcode,
                     y_r=x$y_r,
                     n_r=x$n
 )
@@ -46,12 +48,14 @@ dcpo_data <- list(  K=max(x$ccode),
 dcpo_code <- '
   data {
     int<lower=1> K;     		// number of countries
-    int<lower=1> R; 				// number of indicators
     int<lower=1> T; 				// number of years
-    int<lower=1> N; 				// number of actual observations
+    int<lower=1> Q; 				// number of questions
+    int<lower=1> R;         // number of question-cutpoints
+    int<lower=1> N; 				// number of KTQR observations
     int<lower=1, upper=K> kk[N]; 	// country for observation n
-    int<lower=1, upper=R> rr[N]; 	// indicator for observation n
     int<lower=1, upper=T> tt[N]; 	// year for observation n
+    int<lower=1, upper=Q> qq[N];  // question for observation n
+    int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
   }
@@ -63,25 +67,27 @@ dcpo_code <- '
   }
   parameters {
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-    real beta[R]; // position ("difficulty") of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+    real<lower=0> gamma[Q]; // discrimination of question q (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
+    real beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     real<lower=0, upper=1> mu_beta;  // mean public opinion; i.e., mean position/difficulty
-    real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
     real<lower=0> sigma_beta;   // scale of indicator positions (see Stan Development Team 2015, 61)
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
-    real<lower=0, upper=1> sigma_k[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+    real<lower=0, upper=1> sigma_alpha[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
   }
   transformed parameters {
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
     for (n in 1:N)
-        m[n] <- Phi(gamma[rr[n]] * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
+        m[n] <- Phi(gamma[qq[n]] * (alpha[kk[n], tt[n]] - (beta[rr[n]] + mu_beta)));
   }
   model {
-    beta ~ normal(0, sigma_beta);
-    gamma ~ lognormal(0, sigma_gamma);
-    sigma_beta ~ cauchy(0, 5);
     sigma_gamma ~ cauchy(0, 5);
+    sigma_beta ~ cauchy(0, 5);
+
+    gamma ~ lognormal(0, sigma_gamma);
+    beta ~ normal(0, sigma_beta);
+
     b ~ uniform(0, 20);
     for (n in 1:N) {
       // actual number of respondents giving selected answer
@@ -92,7 +98,7 @@ dcpo_code <- '
       if (n < N) {
         if (tt[n] < T) {
           for (g in 0:G[n]) {
-              alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_k[kk[n]]);
+              alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha[kk[n]]);
           }
         }
       }
@@ -104,7 +110,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = iter,
+             iter = 60,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

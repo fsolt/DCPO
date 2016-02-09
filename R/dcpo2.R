@@ -32,40 +32,38 @@ cores <- chains
 x <- gm_a
 ###
 
-r_cp <- x %>%
-  select(rcode, cutpoint) %>%
-  unique() %>%
-  arrange(rcode, cutpoint) %>%
-  group_by(rcode) %>%
-  summarize(mcp = max(cutpoint))
+qr <- x %>% group_by(rcode) %>% summarize(qr = first(qcode),
+                                          mcp = max(cutpoint))
 
-dcpo_data <- list(  K = max(x$ccode),
-                    T = max(x$tcode),
-                    R = max(x$rcode),
-                    N = length(x$y_r),
-                    MCP = max(x$cutpoint),
-                    mcp = r_cp$mcp,
-                    kk = x$ccode,
-                    rr = x$rcode,
-                    tt = x$tcode,
-                    cp = x$cutpoint,
-                    y_r = x$y_r,
-                    n_r = x$n,
+dcpo_data <- list(  K=max(x$ccode),
+                    T=max(x$tcode),
+                    Q=max(x$qcode),
+                    R=max(x$rcode),
+                    N=length(x$y_r),
+                    kk=x$ccode,
+                    tt=x$tcode,
+                    qq=x$qcode,
+                    rr=x$rcode,
+                    qr=qr$qr,
+                    mcp=qr$mcp,
+                    y_r=x$y_r,
+                    n_r=x$n,
                     var_r = x$variance
 )
 
 dcpo_code2 <- '
   data {
     int<lower=1> K;     		// number of countries
-    int<lower=1> R; 				// number of indicators
     int<lower=1> T; 				// number of years
-    int<lower=1> N; 				// number of actual observations
-    int<lower=1> MCP;       // maximum number of cutpoints for any indicator
-    int<lower=1> mcp[R];    // maximum cutpoint for each indicator
+    int<lower=1> Q; 				// number of questions
+    int<lower=1> R;         // number of question-cutpoints
+    int<lower=1> N; 				// number of KTQR observations
     int<lower=1, upper=K> kk[N]; 	// country for observation n
-    int<lower=1, upper=R> rr[N]; 	// indicator for observation n
     int<lower=1, upper=T> tt[N]; 	// year for observation n
-    int<lower=1> cp[N]; 	  // cutpoint for observation n
+    int<lower=1, upper=Q> qq[N];  // question for observation n
+    int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
+    int<lower=1, upper=R> qr[R];  // question for question-cutpoint r
+    int<lower=1, upper=R> mcp[R]; // cutpoint for question-cutpoint r
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
     real<lower=0> var_r[N]; 	// variance in respondents to indicator rr for observation n
@@ -78,47 +76,48 @@ dcpo_code2 <- '
   }
   parameters {
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-    real<lower=0> gamma[R]; // discrimination of indicator r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
+    real<lower=0> gamma[Q]; // discrimination of each question (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
-    ordered[MCP] beta[R]; // position ("difficulty") of each cutpoint for all indicators (cf. logistic versions in Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-    real<lower=0, upper=1> mu_beta[MCP]; // vector of mean cutpoint difficulties
     real<lower=0, upper=.25> var_alpha[K, T]; // country-year sd in opinion (see McGann 2014, 119-120)
-    real<lower=0> sigma_beta[MCP];   // scale of indicator positions (see Stan Development Team 2015, 61)
-    real<lower=0, upper=.1> sigma_alpha_var[K]; 	// country sd opinion variance parameter
-    real<lower=0, upper=.5> sigma_alpha_t[K]; 	// country mean opinion temporal variance parameter (see Linzer and Stanton 2012, 12)
-    real<lower=0, upper=.1> sigma_alpha_var_t[K]; 	// country sd opinion temporal variance parameter (cf. Caughfey and Warshaw 2015, 201-202; Linzer and Stanton 2012, 12)
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
-    real<lower=0, upper=10> b[R];  // "the degree of stochastic variation between question administrations" of indicator r (McGann 2014, 122)
+    real<lower=0, upper=1> sigma_alpha[K]; 	// country mean opinion variance parameter (see Linzer and Stanton 2012, 12)
+    real<lower=0, upper=.1> sigma_alpha_var[K]; 	// country sd opinion variance parameter
+    real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
+    real<lower=0> sigma_tau;   // scale of cutpoint difficulties (see Stan Development Team 2015, 61)
   }
   transformed parameters {
+    real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+    beta <- tau;
+    for (r in 2:R) {
+      if (qr[r]==qr[r-1])
+      beta[r] <- beta[r-1] + (tau[r] * (1 - beta[r - 1]));
+    }
+
     for (n in 1:N) {
-      m[n] <- inv_logit(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) * (alpha[kk[n], tt[n]] - beta[rr[n], cp[n]]));
+      m[n] <- inv_logit(sqrt(gamma[qq[n]]^2+var_alpha[kk[n], tt[n]]) * (alpha[kk[n], tt[n]] - beta[rr[n]]));
     }
   }
 
   model {
-    sigma_gamma ~ cauchy(0, 2.5);
-    sigma_beta ~ cauchy(0, 2.5);
+    sigma_gamma ~ cauchy(0, 2);
+    sigma_tau ~ cauchy(0, .5);
+
     gamma ~ lognormal(0, sigma_gamma);
-    for (r in 1:R) {
-      for (c in 1:MCP) {
-        beta[r, c] ~ normal(mu_beta[c], sigma_beta[c]);
-      }
-    }
+    tau ~ normal(0, sigma_tau);
+
     for (n in 1:N) {
       // actual number of respondents giving selected answer
       y_r[n] ~ binomial(n_r[n], p[n]);
       // individual probability of selected answer
       p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
-      // variance in public opinion
-      var_alpha[kk[n], tt[n]] ~ normal(var_r[n], sigma_alpha_var[kk[n]]);
       // prior for alpha and var_alpha for the next observed year by country as well as for all intervening missing years
       if (n < N) {
         if (tt[n] < T) {
           for (g in 0:G[n]) {
-            alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha_t[kk[n]]);
-            var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_alpha_var_t[kk[n]]);
+            alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha[kk[n]]);
+            var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_alpha_var[kk[n]]);
           }
         }
       }
@@ -130,7 +129,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code2,
              data = dcpo_data,
              seed = seed,
-             iter = 120,
+             iter = 1000,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

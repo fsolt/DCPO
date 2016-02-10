@@ -8,6 +8,9 @@
 *.log
 *.out
 *.tex
+*.nav
+*.snm
+*.toc
 data-raw/cy_data/*
 dev/*
 framed.sty

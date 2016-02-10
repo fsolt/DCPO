@@ -10,10 +10,16 @@ View(x1_sum)
 View(x1_sum[x1_sum$Rhat>1.1,])
 View(x1_sum[x1_sum$Rhat>1.2,])
 
-rcodes <- gm %>% group_by(variable) %>%
+qcodes <- gm %>% group_by(variable) %>%
+  summarize(qcode = first(qcode),
+            r_n = n()) %>%
+  arrange(qcode)
+
+rcodes <- gm %>% group_by(variable_cp) %>%
   summarize(rcode = first(rcode),
             r_n = n()) %>%
   arrange(rcode)
+
 
 
 b_res <- x1_sum %>% filter(parameter_type=="beta") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes, by="rcode")
@@ -31,7 +37,8 @@ a_res$tcode <- as.numeric(gsub("alpha\\[[0-9]*,([0-9]*)\\]", "\\1", row.names(a_
 k <- gm %>% group_by(country) %>% summarize(
   ccode = first(ccode),
   firstyr = first(firstyr),
-  lastyr = first(lastyr))
+  lastyr = first(lastyr)) %>%
+  ungroup()
 
 gm_laws <- read_csv("data-raw/gm_laws.csv") %>% merge(k)
 

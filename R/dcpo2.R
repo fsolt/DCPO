@@ -107,9 +107,10 @@ dcpo_code2 <- '
     gamma ~ lognormal(0, sigma_gamma);
     tau ~ normal(0, sigma_tau);
 
+    // actual number of respondents giving selected answer
+    y_r ~ binomial(n_r, p);
+
     for (n in 1:N) {
-      // actual number of respondents giving selected answer
-      y_r[n] ~ binomial(n_r[n], p[n]);
       // individual probability of selected answer
       p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
 

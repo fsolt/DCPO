@@ -25,7 +25,7 @@ library(rstan)
 #                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 3033034
+seed <- 324
 iter <- 1000
 chains <- 4
 cores <- chains
@@ -79,6 +79,7 @@ dcpo_code2 <- '
     real<lower=0> gamma[R]; // discrimination of each question-cutpoint (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=.25> var_alpha[K, T]; // country-year sd in opinion (see McGann 2014, 119-120)
+    real<lower=0, upper=.05> sigma_var_alpha; // scale of country-year sd in opinion
     real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=1> sigma_alpha[K]; 	// country mean opinion variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=.1> sigma_alpha_var[K]; 	// country sd opinion variance parameter
@@ -102,7 +103,8 @@ dcpo_code2 <- '
 
   model {
     sigma_gamma ~ cauchy(0, 2);
-    sigma_tau ~ cauchy(0, .5);
+    sigma_tau ~ cauchy(0, .25);
+    sigma_var_alpha ~ cauchy(0, .01);
 
     gamma ~ lognormal(0, sigma_gamma);
     tau ~ normal(0, sigma_tau);
@@ -114,7 +116,7 @@ dcpo_code2 <- '
       // individual probability of selected answer
       p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
 
-      var_alpha[kk[n], tt[n]] ~ normal(var_r[n], .05);
+      var_alpha[kk[n], tt[n]] ~ normal(var_r[n], sigma_var_alpha);
       // prior for alpha and var_alpha for the next observed year by country as well as for all intervening missing years
       if (n < N) {
         if (tt[n] < T) {

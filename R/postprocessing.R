@@ -10,12 +10,12 @@ View(x1_sum)
 View(x1_sum[x1_sum$Rhat>1.1,])
 View(x1_sum[x1_sum$Rhat>1.2,])
 
-qcodes <- gm %>% group_by(variable) %>%
+qcodes <- gm_a %>% group_by(variable) %>%
   summarize(qcode = first(qcode),
             r_n = n()) %>%
   arrange(qcode)
 
-rcodes <- gm %>% group_by(variable_cp) %>%
+rcodes <- gm_a %>% group_by(variable_cp) %>%
   summarize(rcode = first(rcode),
             r_n = n()) %>%
   arrange(rcode)
@@ -34,7 +34,7 @@ a_res <- as.data.frame(a_res$summary)
 a_res$ccode <- as.numeric(gsub("alpha\\[([0-9]*),[0-9]*\\]", "\\1", row.names(a_res)))
 a_res$tcode <- as.numeric(gsub("alpha\\[[0-9]*,([0-9]*)\\]", "\\1", row.names(a_res)))
 
-k <- gm %>% group_by(country) %>% summarize(
+k <- gm_a %>% group_by(country) %>% summarize(
   ccode = first(ccode),
   firstyr = first(firstyr),
   lastyr = first(lastyr)) %>%
@@ -57,7 +57,8 @@ a_res <- a_res %>%
             law = ifelse(!is.na(gm) & (year >= gm | year==lastyr), "Marriage",
                          ifelse(!is.na(civ) & (year >= civ | year==lastyr), "Civil Union",
                                 "None"))) %>%
-  arrange(kk, year)
+  arrange(kk, year) %>%
+  ungroup()
 
 # count_divergences <- function(fit) {
 #   sampler_params <- get_sampler_params(fit, inc_warmup=FALSE)

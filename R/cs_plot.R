@@ -11,8 +11,9 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
   geom_segment(aes(x = lb, xend = ub,
                    y = ranked, yend = ranked),
                na.rm = TRUE) +
-  scale_fill_manual(values = c("grey50", "white", "black"),
-                    breaks=c("Marriage","Civil Union","None"),
+  scale_fill_manual(values = c("Civil Union"="grey50",
+                               "Marriage"="white",
+                               "None"="black"),
                     name = "Legal Recognition") +
   geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
   theme_bw() + theme(legend.position=c(.36, .95),
@@ -35,7 +36,9 @@ p1b <- ggplot(p1_data_b, aes(x = estimate,
   geom_segment(aes(x = lb, xend = ub,
                    y = ranked, yend = ranked),
                na.rm = TRUE) +
-  scale_fill_manual(values = c("white", "black"), breaks = c("Marriage", "None")) +
+  scale_fill_manual(values = c("Civil Union"="grey50",
+                               "Marriage"="white",
+                               "None"="black")) +
   geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
   theme_bw() + theme(legend.position="none",
                      axis.text.x  = element_text(size=7),

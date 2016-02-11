@@ -16,7 +16,8 @@ gm <- dcpo_setup(gm0)
 write_csv(gm, "data/all_data_gm.csv")
 
 gm <- read_csv("data/all_data_gm.csv")
-gm_a <- gm %>% filter(cc_rank>=10 & firstyr!=lastyr)
+gm_a <- gm %>% filter(cc_rank>=10 & firstyr!=lastyr) %>%
+  mutate(ccode = as.numeric(factor(ccode)))
 
 red0 <- read_csv("../Redistribution/data-raw/redist_vars.csv")
 red <- dcpo_setup(red0)

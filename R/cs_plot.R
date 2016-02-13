@@ -11,11 +11,12 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
   geom_segment(aes(x = lb, xend = ub,
                    y = ranked, yend = ranked),
                na.rm = TRUE) +
-  scale_fill_manual(values = c("Civil Union"="grey50",
-                               "Marriage"="white",
+  scale_fill_manual(values = c("Marriage"="white",
+                               "Civil Union"="grey50",
                                "None"="black"),
+                    breaks=c("Marriage", "Civil Union", "None"),
                     name = "Legal Recognition") +
-  geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
+  geom_point(aes(fill = as.factor(law)), shape = 21, size = 1.1, na.rm = TRUE) +
   theme_bw() + theme(legend.position=c(.36, .95),
                      axis.text.x  = element_text(size=7),
                      axis.text.y  = element_text(size=7),
@@ -36,10 +37,11 @@ p1b <- ggplot(p1_data_b, aes(x = estimate,
   geom_segment(aes(x = lb, xend = ub,
                    y = ranked, yend = ranked),
                na.rm = TRUE) +
-  scale_fill_manual(values = c("Civil Union"="grey50",
-                               "Marriage"="white",
-                               "None"="black")) +
-  geom_point(aes(fill = as.factor(law)), shape = 21, na.rm = TRUE) +
+  scale_fill_manual(values = c("Marriage"="white",
+                               "Civil Union"="grey50",
+                               "None"="black"),
+                    breaks=c("Marriage", "Civil Union", "None")) +
+  geom_point(aes(fill = as.factor(law)), shape = 21, size = 1.1, na.rm = TRUE) +
   theme_bw() + theme(legend.position="none",
                      axis.text.x  = element_text(size=7),
                      axis.text.y  = element_text(size=7),

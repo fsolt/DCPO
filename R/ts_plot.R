@@ -8,7 +8,8 @@ npages <- 3
 
 pages <- c("1:35", "36:70", "71:105")
 a_res <- a_res %>% group_by(country) %>%
-  mutate(last_est = last(estimate))
+  mutate(last_est = last(estimate)) %>%
+  ungroup()
 for (i in 1:npages) {
   cpage <- unique(a_res$country)[((i-1)*rows*cols)+1:i*rows*cols]
   cpage <- unique(a_res$country)[c(eval(parse(text=pages[i])))]

@@ -5,6 +5,8 @@ x1 <- summary(out)
 write.table(as.data.frame(x1$summary), file="x1.csv", sep = ",")
 x1_sum <- as.data.frame(x1$summary)
 x1_sum$parameter <- rownames(x1_sum)
+# x1_sum <- read_csv("x1.csv")
+# names(x1_sum)[2] <- "mean"
 x1_sum$parameter_type <- gsub("([^[]*).*", "\\1", x1_sum$parameter)
 View(x1_sum)
 View(x1_sum[x1_sum$Rhat>1.1,])
@@ -57,8 +59,7 @@ a_res <- a_res %>%
             law = ifelse(!is.na(gm) & (year >= gm | year==lastyr), "Marriage",
                          ifelse(!is.na(civ) & (year >= civ | year==lastyr), "Civil Union",
                                 "None"))) %>%
-  arrange(kk, year) %>%
-  ungroup()
+  arrange(kk, year)
 
 # count_divergences <- function(fit) {
 #   sampler_params <- get_sampler_params(fit, inc_warmup=FALSE)

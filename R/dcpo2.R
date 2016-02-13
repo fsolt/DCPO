@@ -25,8 +25,8 @@ library(rstan)
 #                  chains = 4)
 
 ### Delete these when turning into a function
-seed <- 324
-iter <- 1000
+seed <- 3033034
+iter <- 2000
 chains <- 4
 cores <- chains
 x <- gm_a
@@ -80,7 +80,7 @@ dcpo_code2 <- '
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=.25> var_alpha[K, T]; // country-year sd in opinion (see McGann 2014, 119-120)
     real<lower=0, upper=.05> sigma_var_alpha; // scale of country-year sd in opinion
-    real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
+    real<lower=0, upper=1> p[N]; // final probability of random individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=1> sigma_alpha[K]; 	// country mean opinion variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=.1> sigma_alpha_var[K]; 	// country sd opinion variance parameter
     real<lower=0, upper=30> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
@@ -89,7 +89,7 @@ dcpo_code2 <- '
   }
   transformed parameters {
     real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-    real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+    real<lower=0, upper=1> m[N]; // expected probability of random individual giving selected answer
     beta <- tau;
     for (r in 2:R) {
       if (qr[r]==qr[r-1])
@@ -100,7 +100,6 @@ dcpo_code2 <- '
       m[n] <- inv_logit(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) * (alpha[kk[n], tt[n]] - beta[rr[n]]));
     }
   }
-
   model {
     sigma_gamma ~ cauchy(0, 2);
     sigma_tau ~ cauchy(0, .25);

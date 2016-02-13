@@ -24,5 +24,4 @@ p_rd <- ggplot(data = c8_rd, aes(x = year, y = estimate)) +
   facet_wrap(~country, nrow = 2) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         strip.background = element_rect(fill = "white", colour = "white"))
-
 ggsave("paper/figures/sc_line.pdf", plot = p_rd, width = 6, height = 4)

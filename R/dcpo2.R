@@ -76,14 +76,14 @@ dcpo_code2 <- '
   }
   parameters {
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-    real<lower=0> gamma[R]; // discrimination of each question-cutpoint (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
+    real<lower=0> gamma[R]; // discrimination of each question-cutpoint (see Stan Development Team 2015, 61 (using 1/gamma); Gelman and Hill 2007, 314-320 (using 1/gamma); McGann 2014, 118-120 (using alpha))
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
     real<lower=0, upper=.25> var_alpha[K, T]; // country-year sd in opinion (see McGann 2014, 119-120)
     real<lower=0, upper=.05> sigma_var_alpha; // scale of country-year sd in opinion
     real<lower=0, upper=1> p[N]; // final probability of random individual respondent giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=1> sigma_alpha[K]; 	// country mean opinion variance parameter (see Linzer and Stanton 2012, 12)
     real<lower=0, upper=.1> sigma_alpha_var[K]; 	// country sd opinion variance parameter
-    real<lower=0> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=30> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
     real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
     real<lower=0> sigma_tau;   // scale of cutpoint difficulties (see Stan Development Team 2015, 61)
   }
@@ -97,14 +97,13 @@ dcpo_code2 <- '
     }
 
     for (n in 1:N) {
-      m[n] <- inv_logit(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) * (alpha[kk[n], tt[n]] - beta[rr[n]]));
+      m[n] <- inv_logit(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) / (alpha[kk[n], tt[n]] - beta[rr[n]]));
     }
   }
   model {
-    sigma_gamma ~ cauchy(0, 2);
+    sigma_gamma ~ cauchy(0, .5);
     sigma_tau ~ cauchy(0, .25);
     sigma_var_alpha ~ cauchy(0, .01);
-    b ~ cauchy(0, 5);
 
     gamma ~ lognormal(0, sigma_gamma);
     tau ~ normal(0, sigma_tau);
@@ -134,7 +133,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code2,
              data = dcpo_data,
              seed = seed,
-             iter = 60,
+             iter = iter,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

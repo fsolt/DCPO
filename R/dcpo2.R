@@ -97,7 +97,7 @@ dcpo_code2 <- '
     }
 
     for (n in 1:N) {
-      m[n] <- inv_logit(sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]) / (alpha[kk[n], tt[n]] - beta[rr[n]]));
+      m[n] <- inv_logit((alpha[kk[n], tt[n]] - beta[rr[n]]) / sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]));
     }
   }
   model {
@@ -133,7 +133,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code2,
              data = dcpo_data,
              seed = seed,
-             iter = iter,
+             iter = 60,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

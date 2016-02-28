@@ -1,7 +1,7 @@
 # tolerance trends, estimate plus raw data, selected countries
 
 countries <- c("United States", "Ireland", "Sweden", "Russia", "Japan",
-               "Argentina", "Spain", "South Africa", "India", "Australia")
+               "Uruguay", "Spain", "South Africa", "India", "Australia")
 
 c8_rd <- gm %>%
   filter(country %in% countries) %>%
@@ -14,8 +14,8 @@ c8_res <- a_res %>%
   mutate(country = factor(country, levels = countries))
 
 p_rd <- ggplot(data = c8_rd, aes(x = year, y = estimate)) +
-  geom_line(aes(color = variable_cp, alpha = gamma_mean)) +
-  geom_point(aes(color = variable_cp, alpha = gamma_mean)) + theme_bw() +
+  geom_line(aes(color = variable_cp, alpha = 1/gamma_mean)) +
+  geom_point(aes(color = variable_cp, alpha = 1/gamma_mean)) + theme_bw() +
   theme(legend.position="none") +
   coord_cartesian(xlim = c(1975, 2016), ylim = c(0, 1)) +
   labs(x = NULL, y = "Tolerance") +

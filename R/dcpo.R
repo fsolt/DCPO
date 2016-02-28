@@ -76,14 +76,14 @@ dcpo_code <- '
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
     real<lower=0> gamma[Q]; // discrimination of question q (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
-    real<lower=0, upper=1> p[N]; // probability of individual respondent giving selected answer for observation n (see McGann 2014, 120)
+    real<lower=0, upper=1> p[N]; // predicted probability of random individual giving selected answer for observation n (see McGann 2014, 120)
     real<lower=0, upper=1> sigma_alpha[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-    real<lower=0, upper=20> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0, upper=100> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
     real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
     real<lower=0> sigma_tau;   // scale of cutpoint difficulties (cf. Stan Development Team 2015, 61)
   }
   transformed parameters {
-    real<lower=0, upper=1> m[N]; // expected proportion of population giving selected answer
+    real<lower=0, upper=1> m[N]; // expected probability of random individual giving selected answer
     real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     beta <- tau;
     for (r in 2:R) {
@@ -95,8 +95,8 @@ dcpo_code <- '
         m[n] <- inv_logit(gamma[qq[n]] * (alpha[kk[n], tt[n]] - beta[rr[n]]));
   }
   model {
-    sigma_gamma ~ cauchy(0, 5);
-    sigma_tau ~ cauchy(0, .35);
+    sigma_gamma ~ cauchy(0, 2);
+    sigma_tau ~ cauchy(0, .25);
 
     gamma ~ lognormal(0, sigma_gamma);
     tau ~ normal(0, sigma_tau);

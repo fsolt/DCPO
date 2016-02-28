@@ -1,4 +1,5 @@
 #Postprocessing
+save(out1, file = "data/output.rda")
 out <- out1
 
 x1 <- summary(out)

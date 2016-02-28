@@ -26,7 +26,7 @@ library(rstan)
 
 ### Delete these when turning into a function
 seed <- 3033034
-iter <- 2000
+iter <- 1000
 chains <- 4
 cores <- chains
 x <- gm_a
@@ -90,6 +90,7 @@ dcpo_code2 <- '
   transformed parameters {
     real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     real<lower=0, upper=1> m[N]; // expected probability of random individual giving selected answer
+
     beta <- tau;
     for (r in 2:R) {
       if (qr[r]==qr[r-1])
@@ -99,6 +100,8 @@ dcpo_code2 <- '
     for (n in 1:N) {
       m[n] <- inv_logit((alpha[kk[n], tt[n]] - beta[rr[n]]) / sqrt(gamma[rr[n]]^2+var_alpha[kk[n], tt[n]]));
     }
+
+
   }
   model {
     sigma_gamma ~ cauchy(0, .5);
@@ -115,13 +118,15 @@ dcpo_code2 <- '
       // individual probability of selected answer
       p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
 
-      var_alpha[kk[n], tt[n]] ~ normal(var_r[n], sigma_var_alpha);
       // prior for alpha and var_alpha for the next observed year by country as well as for all intervening missing years
       if (n < N) {
         if (tt[n] < T) {
           for (g in 0:G[n]) {
             alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha[kk[n]]);
-            var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_alpha_var[kk[n]]);
+            if (var_alpha[kk[n], tt[n]+g] < (alpha[kk[n], tt[n]+g]*(1-alpha[kk[n], tt[n]+g])))
+              var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_alpha_var[kk[n]]);
+            else
+              var_alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g]*(1-alpha[kk[n], tt[n]+g]), sigma_alpha_var[kk[n]]);
           }
         }
       }
@@ -133,7 +138,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code2,
              data = dcpo_data,
              seed = seed,
-             iter = 60,
+             iter = 120,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20,

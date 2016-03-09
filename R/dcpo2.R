@@ -123,9 +123,10 @@ dcpo_code2 <- '
         if (tt[n] < T) {
           for (g in 0:G[n]) {
             alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha[kk[n]]);
-            if (var_alpha[kk[n], tt[n]+g] > (alpha[kk[n], tt[n]+g]*(1-alpha[kk[n], tt[n]+g])));
-              var_alpha[kk[n], tt[n]+g] ~ normal(alpha[kk[n], tt[n]+g]*(1-alpha[kk[n], tt[n]+g])-3*sigma_alpha_var[kk[n]], sigma_alpha_var[kk[n]]);
-            var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_alpha_var[kk[n]]);
+            if (var_alpha[kk[n], tt[n]+g] > (alpha[kk[n], tt[n]+g]*(1-alpha[kk[n], tt[n]+g])))
+              var_alpha[kk[n], tt[n]+g+1] ~ normal(var_alpha[kk[n], tt[n]+g], sigma_alpha_var[kk[n]]);
+            else
+              var_alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g]*(1-alpha[kk[n], tt[n]+g]), sigma_alpha_var[kk[n]]);
           }
         }
       }

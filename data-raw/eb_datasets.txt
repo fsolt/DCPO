@@ -1,7 +1,7 @@
 Eurobarometer
 
 1. Set up a Gesis account
-2. download each file
+2. download each codebook (and maybe file)
 3. build a load_cmd with
 	eb05 <- read_dta(paste0(datapath, "gesis_files/ZA0989/ZA0989_v1-0-1.dta"))
 	a. survey name (eb05)
@@ -16,4 +16,4 @@ Eurobarometer
 	EB often offers multiple weights; follow examples
 	I want united Germany (where available) and UK (rather than GB and NI)
 	separate commands with semicolons
-6. 
+6. fill in source and uid

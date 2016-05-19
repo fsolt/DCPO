@@ -1,0 +1,19 @@
+Eurobarometer
+
+1. Set up a Gesis account
+2. download each file
+3. build a load_cmd with
+	eb05 <- read_dta(paste0(datapath, "gesis_files/ZA0989/ZA0989_v1-0-1.dta"))
+	a. survey name (eb05)
+	b. uid (ZA0989)
+	c. file name (ZA0989_v1-0-1.dta)
+4. build cy_data by looking at codebook
+	data_frame(v4 = 1:10, c_dcpo = c("France", "Belgium", "Netherlands", "Germany", "Italy", "Luxembourg", "Denmark", "Ireland", "United Kingdom", "United Kingdom"), y_dcpo = 1976)
+	a. first variable is the dataset's variable that identifies countries (v4 here)
+	b. then c_dcpo is vector of country names
+	c. then y_dcpo is the year of the survey
+5. find wt variable
+	EB often offers multiple weights; follow examples
+	I want united Germany (where available) and UK (rather than GB and NI)
+	separate commands with semicolons
+6. 

@@ -4,6 +4,7 @@ Eurobarometer
 2. download each codebook (and maybe file)
 3. build a load_cmd with
 	eb05 <- read_dta(paste0(datapath, "gesis_files/ZA0989/ZA0989_v1-0-1.dta"))
+*Erico: in haven, the code should be: read_dta(path)
 	a. survey name (eb05)
 	b. uid (ZA0989)
 	c. file name (ZA0989_v1-0-1.dta)

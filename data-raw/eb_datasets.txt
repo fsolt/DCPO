@@ -17,4 +17,22 @@ Eurobarometer
 	EB often offers multiple weights; follow examples
 	I want united Germany (where available) and UK (rather than GB and NI)
 	separate commands with semicolons
+
+
+
+Erico's Notes about weights:
+1. two weights for UK(v6 National Weight and v7 UK weight); for example, eb10
+
+2. [NEED HELP] 
+(1) In eb17, all countries are applied with 6 different weights for different sets of questions (not by countries, thus cannot separate weight by countries)
+: v7 National Weight I-Stand Cross, V8 European Weight-Stand Cross, v9 National Weight I-Youth Sample, V10 European Weight-Youth Sample, 
+v11 National Weight I-Combination, and V12 European Weight-Combination
+
+(2) from eb17, weighting factor for the U.K. is embedded in the National Weight; 
+
+*Erico: the NATION WEIGHT I=UK Weight; 
+        the EUROPEAN WEIGHT= adjusts each sample in proportion of tis share in the total population, aged 15 and over, 
+of the European Comunity as a whole in its respective composition.
+
+       
 6. fill in source and uid

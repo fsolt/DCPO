@@ -13,6 +13,13 @@ Eurobarometer
 	a. first variable is the dataset's variable that identifies countries (v4 here)
 	b. then c_dcpo is vector of country names
 	c. then y_dcpo is the year of the survey
+
+Erico's note on data.frame
+(1)in eb35a, survey uses nation ID NATION II, in which Northern Ireland is excluded; thus NATION II is uncontinous(1:9 and 11:14);
+how should I code it in order to merge with the data? 
+data_frame(v6 = 1:13, c_dcpo = c("FRANCE", "BELGIUM", "NETHERLANDS", "WEST GERMANY", "ITALY", "LUXEMBOURG", "DENMARK", "IREAND", "GREAT BRITAIN", "GREECE", "SPAIN", "PORTUGAL", "EAST GERMANY"), y_dcpo=1991)
+
+
 5. find wt variable
 	EB often offers multiple weights; follow examples
 	I want united Germany (where available) and UK (rather than GB and NI)
@@ -23,8 +30,7 @@ Eurobarometer
 Erico's Notes about weights:
 1. two weights for UK(v6 National Weight and v7 UK weight); for example, eb10
 
-2. [NEED HELP] 
-(1) In eb17, all countries are applied with 6 different weights for different sets of questions (not by countries, thus cannot separate weight by countries)
+2. [NEED HELP] (1) In eb17, all countries are applied with 6 different weights for different sets of questions (not by countries, thus cannot separate weight by countries)
 : v7 National Weight I-Stand Cross, V8 European Weight-Stand Cross, v9 National Weight I-Youth Sample, V10 European Weight-Youth Sample, 
 v11 National Weight I-Combination, and V12 European Weight-Combination
 
@@ -34,5 +40,19 @@ v11 National Weight I-Combination, and V12 European Weight-Combination
         the EUROPEAN WEIGHT= adjusts each sample in proportion of tis share in the total population, aged 15 and over, 
 of the European Comunity as a whole in its respective composition.
 
-       
+3. EB32(ZA1752): two Euro Weight; Euro Weight I: the same as Euro Weight Before; Euro Weight II:does not include Spain and Portugal(weighted as 0)       
+
+
+4.[NEED CLARIFICATION]:
+(1)from eb 34, "East" and "West Germany"; there are only three nation ID: (united UK and separate Germany; separate UK and separate Germany; 
+and separate UK and united Germany); which one do we use for the data frame?
+(2)unlike the "Nation Weight I" in earlier eb (up to 31), the weight adjusts all samples to the standard size
+also, Norway is excluded (weighted as 0)
+
+
+5.[NEED DOUBLE CHECK]
+eb35A, neither normal "Nation Weight I" nor "Weight Special United Kingdom" in eb 34; there is only v7, "Weight_A Result from Target", 
+but it corresponds to "Nation Weight II" in earlier Eb up to 31
+
+
 6. fill in source and uid

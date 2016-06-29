@@ -40,9 +40,9 @@ Eurobarometer
 
 
 Erico's Notes about weights:
-1. two weights for UK(v6 National Weight and v7 UK weight); for example, eb10
+A. two weights for UK(v6 National Weight and v7 UK weight); for example, eb10
 
-2. [NEED HELP] (1) In eb17, all countries are applied with 6 different weights for different sets of questions (not by countries, thus cannot separate weight by countries)
+B. [NEED HELP] (1) In eb17, all countries are applied with 6 different weights for different sets of questions (not by countries, thus cannot separate weight by countries)
 : v7 National Weight I-Stand Cross, V8 European Weight-Stand Cross, v9 National Weight I-Youth Sample, V10 European Weight-Youth Sample, 
 v11 National Weight I-Combination, and V12 European Weight-Combination
 
@@ -52,17 +52,20 @@ v11 National Weight I-Combination, and V12 European Weight-Combination
         the EUROPEAN WEIGHT= adjusts each sample in proportion of tis share in the total population, aged 15 and over, 
 of the European Comunity as a whole in its respective composition.
 
-3. EB32(ZA1752): two Euro Weight; Euro Weight I: the same as Euro Weight Before; Euro Weight II:does not include Spain and Portugal(weighted as 0)       
+C. EB32(ZA1752): two Euro Weight; Euro Weight I: the same as Euro Weight Before; Euro Weight II:does not include Spain and Portugal(weighted as 0)       
 
 
-4.[NEED CLARIFICATION]:
+D.[NEED CLARIFICATION]:
 (1)from eb 34, "East" and "West Germany"; there are only three nation ID: (united UK and separate Germany; separate UK and separate Germany; 
 and separate UK and united Germany); which one do we use for the data frame?
 (2)unlike the "Nation Weight I" in earlier eb (up to 31), the weight adjusts all samples to the standard size
 also, Norway is excluded (weighted as 0)
 
+(3)in eb73.1(ZA5000), for the nation variable, it is not continuous (from 1 to 32; then 41 to 43), thus I use v7 (country iso code) to code
+[June 25 update: problem sovled with code "country = c(1:14, 16:30, 32)"; revise code of data.frame from eb731 to eb844]
 
-5.[NEED DOUBLE CHECK]
+
+E.[NEED DOUBLE CHECK]
 eb35A, neither normal "Nation Weight I" nor "Weight Special United Kingdom" in eb 34; there is only v7, "Weight_A Result from Target", 
 but it corresponds to "Nation Weight II" in earlier Eb up to 31
 

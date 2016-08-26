@@ -71,3 +71,16 @@ but it corresponds to "Nation Weight II" in earlier Eb up to 31
 
 
 6. fill in source and uid
+
+
+
+
+
+
+
+8/26/2016
+1.Finishing up the dataset input in excel
+(1)lb
+(2)pew-global
+(3)Trans-Atlantic: -->GESIS; possible recoding;
+(4)

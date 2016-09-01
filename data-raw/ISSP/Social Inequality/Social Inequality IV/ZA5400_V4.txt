@@ -1,6 +1,0 @@
-missing value labels in V4 (STATA):
-
-56.1 - FLA-Flanders
-276.1 - DE-W-Germany-West
-276.2 - DE-E-Germany-East
-826.1 - GB-Great Britain

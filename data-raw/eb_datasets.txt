@@ -83,4 +83,11 @@ but it corresponds to "Nation Weight II" in earlier Eb up to 31
 (1)lb
 (2)pew-global
 (3)Trans-Atlantic: -->GESIS; possible recoding;
-(4)
+
+
+9/15/2016
+1.Capitalize only the first letter of country;
+2.Correct typo
+3.Revise some inconsistencies:
+(1) Slovak Republic (in issp) --> Slovakia
+(2) Because of the name dispute,  Macedonia is named as Macedonia(FYROM) in Eurobarometer between 2007 and 2010; after 2011, it is called Macedonia; to be consistent, I use Macedonia for all surveys

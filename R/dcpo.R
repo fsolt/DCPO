@@ -76,13 +76,14 @@ dcpo_code <- '
     real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
     real<lower=0> gamma[Q]; // discrimination of question q (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
     real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
-    real<lower=0, upper=.5> sigma_alpha[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-    real<lower=0, upper=.1> u[N];  //
+    real<lower=0, upper=1> p[N]; // predicted probability of random individual giving selected answer for observation n (see McGann 2014, 120)
+    real<lower=0, upper=1> sigma_alpha[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+    real<lower=0, upper=100> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
     real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
     real<lower=0> sigma_tau;   // scale of cutpoint difficulties (cf. Stan Development Team 2015, 61)
   }
   transformed parameters {
-    real logit_p[N]; // predicted probability of random individual giving selected answer for observation n (see McGann 2014, 120)
+    real<lower=0, upper=1> m[N]; // expected probability of random individual giving selected answer
     real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     beta = tau;
     for (r in 2:R) {
@@ -91,7 +92,7 @@ dcpo_code <- '
     }
 
     for (n in 1:N)
-        logit_p[n] = gamma[qq[n]] * (alpha[kk[n], tt[n]] - beta[rr[n]]) + u[N];
+        m[n] = inv_logit(gamma[qq[n]] * (alpha[kk[n], tt[n]] - beta[rr[n]]));
   }
   model {
     sigma_gamma ~ cauchy(0, 2);
@@ -100,16 +101,11 @@ dcpo_code <- '
     gamma ~ lognormal(0, sigma_gamma);
     tau ~ normal(0, sigma_tau);
 
-    y_r ~ binomial_logit(n_r, logit_p);
-
     for (n in 1:N) {
-//      // actual number of respondents giving selected answer
-//      y_r[n] ~ binomial(n_r[n], p[n]);
-//      // individual probability of selected answer
-//      p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
-
-
-//      y_r[n] ~ binomial_logit(n_r[n], logit_p[n])
+      // actual number of respondents giving selected answer
+      y_r[n] ~ binomial(n_r[n], p[n]);
+      // individual probability of selected answer
+      p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
       // prior for alpha for the next observed year by country as well as for all intervening missing years
       if (n < N) {
         if (tt[n] < T) {

@@ -65,8 +65,9 @@ dcpo_data <- list(  K=max(x$ccode),
 )
 
 # hierarchical_2pl lacks:
-#   1. aggregation
-#   2. time-series and random walks
+# X 1. aggregation
+#   2. time-series
+#   3. random-walk priors
 #   3. ordinal betas
 # take them in that order
 #
@@ -89,6 +90,9 @@ dcpo_code <- '
     int<lower=1, upper=R> rcp[R]; // cutpoint for question-cutpoint r
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
+//    int<lower=0> NM;    // number of KT observations without data (interpolated only)
+//    int<lower=1, upper=K> km[NM]; 	// country for missing observation nm
+//    int<lower=1, upper=T> tm[NM]; 	// year for missing observation nm
 //    int<lower=1> I;               // # items
 //    int<lower=1> J;               // # persons
 //    int<lower=1> N;               // # observations
@@ -168,7 +172,9 @@ dcpo_code <- '
     mu[2] ~ normal(0,5);
     tau[2] ~ exponential(.1);
 //    y ~ bernoulli_logit(alpha[ii] .* (theta[jj] - beta[ii]));
-    y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kt] - beta[rr]));
+    for (n in 1:N) {
+      y_r[n] ~ binomial_logit(n_r[n], alpha[rr[n]] .* (theta[kt[n]] - beta[rr[n]]));
+    }
   }
   generated quantities {
     corr_matrix[2] Omega;

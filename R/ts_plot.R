@@ -7,13 +7,14 @@ npages <- 3
 #a_res <- df
 
 pages <- c("1:35", "36:70", "71:105")
-a_res <- a_res %>% group_by(country) %>%
+t_res1 <- t_res1 %>%
+  group_by(country) %>%
   mutate(last_est = last(estimate)) %>%
   ungroup()
 for (i in 1:npages) {
-  cpage <- unique(a_res$country)[((i-1)*rows*cols)+1:i*rows*cols]
-  cpage <- unique(a_res$country)[c(eval(parse(text=pages[i])))]
-  cp <- a_res[a_res$country %in% cpage, ]
+  cpage <- unique(t_res1$country)[((i-1)*rows*cols)+1:i*rows*cols]
+  cpage <- unique(t_res1$country)[c(eval(parse(text=pages[i])))]
+  cp <- t_res1[t_res1$country %in% cpage, ]
   cp$country <- factor(cp$country, levels = cpage)
 
   plotx <- ggplot(data=cp, aes(x=year, y=estimate)) +

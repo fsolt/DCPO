@@ -20,7 +20,7 @@ for (i in 1:npages) {
   plotx <- ggplot(data=cp, aes(x=year, y=estimate)) +
     geom_line() + theme_bw() +
     theme(legend.position="none") +
-    coord_cartesian(xlim=c(1980,2016), ylim = c(0, 1)) +
+    coord_cartesian(xlim=c(1980,2016)) +
     labs(x = NULL, y = "Tolerance") +
     geom_ribbon(aes(ymin = lb, ymax = ub, linetype=NA), alpha = .25) +
     facet_wrap(~country, ncol = 5) +

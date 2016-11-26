@@ -1,4 +1,6 @@
 #Postprocessing
+library(stringr)
+
 save(out1, file = "data/output.rda")
 out <- out1
 
@@ -13,6 +15,11 @@ View(x1_sum)
 View(x1_sum[x1_sum$Rhat>1.1,])
 View(x1_sum[x1_sum$Rhat>1.2,])
 
+ggplot(x1_sum) +
+  aes(x = parameter_type, y = Rhat, color = parameter_type) +
+  geom_jitter(height = 0, width = .5, show.legend = FALSE) +
+  ylab(expression(hat(italic(R))))
+
 qcodes <- gm_a %>% group_by(variable) %>%
   summarize(qcode = first(qcode),
             r_n = n()) %>%
@@ -25,30 +32,47 @@ rcodes <- gm_a %>% group_by(variable_cp) %>%
 
 
 
-b_res <- x1_sum %>% filter(parameter_type=="beta") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes, by="rcode")
-g_res <- x1_sum %>% filter(parameter_type=="gamma") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes, by="rcode")
+b_res <- x1_sum %>%
+  filter(parameter_type=="beta") %>%
+  select(parameter, mean, `2.5%`, `97.5%`) %>%
+  mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
+  left_join(rcodes, by="rcode")
+a_res <- x1_sum %>% filter(parameter_type=="alpha") %>%
+  select(parameter, mean, `2.5%`, `97.5%`) %>%
+  mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
+  left_join(rcodes, by="rcode")
 # s_dk_res <- x1_sum %>% filter(parameter_type=="sd_k") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
 
 beep()
 
-a_res <- summary(out, pars="alpha", probs=c(.1, .9))
-a_res <- as.data.frame(a_res$summary)
+ktcodes <- x %>%
+  group_by(country) %>%
+  mutate(firstyr = first(firstyr),
+         lastyr = first(lastyr)) %>%
+  ungroup() %>%
+  select(ktcode, ccode, tcode, country, year, firstyr, lastyr) %>%
+  unique()
 
-a_res$ccode <- as.numeric(gsub("alpha\\[([0-9]*),[0-9]*\\]", "\\1", row.names(a_res)))
-a_res$tcode <- as.numeric(gsub("alpha\\[[0-9]*,([0-9]*)\\]", "\\1", row.names(a_res)))
+t_res <- summary(out, pars="theta", probs=c(.1, .9)) %>%
+  first() %>%
+  as.data.frame() %>%
+  rownames_to_column("parameter") %>%
+  as_tibble() %>%
+  mutate(ktcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
+  left_join(ktcodes, by="ktcode")
 
-k <- gm_a %>% group_by(country) %>% summarize(
-  ccode = first(ccode),
-  firstyr = first(firstyr),
-  lastyr = first(lastyr)) %>%
+k <- x %>%
+  group_by(country) %>%
+  summarize(ccode = first(ccode),
+         firstyr = first(firstyr),
+         lastyr = first(lastyr)) %>%
   ungroup()
 
 gm_laws <- read_csv("data-raw/gm_laws.csv") %>% merge(k)
 
-a_res <- merge(a_res, k, all=T)
-a_res <- merge(a_res, gm_laws, all=T)
-a_res$year <- min(a_res$firstyr) + a_res$tcode - 1
-a_res <- a_res %>%
+t_res <- merge(t_res, gm_laws)
+t_res$year <- min(t_res$firstyr) + t_res$tcode - 1
+t_res1 <- t_res %>%
   filter(year <= lastyr & year >= firstyr) %>%
   transmute(country = country,
             term = country,
@@ -73,3 +97,11 @@ a_res <- a_res %>%
 #   3. trends in all countries: ts_plot
 #   4. probability of tolerant answer by tolerance (beta and gamma), selected items (modelled on McGann2014, fig 1)
 #   5. bar chart of beta and gamma for all items?
+
+sat_monitor <- as.data.frame(monitor(sat_fit, print = FALSE))
+sat_monitor$Parameter <- as.factor(gsub("\\[.*]", "", rownames(sat_monitor)))
+ggplot(subset(x1_sum, !is.nan(Rhat))) +
+  aes(x = parameter, y = Rhat, color = parameter) +
+  geom_jitter(height = 0, width = .5, show.legend = FALSE) +
+  ylab(expression(hat(italic(R))))
+

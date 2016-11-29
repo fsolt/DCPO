@@ -29,24 +29,35 @@ library(tidyverse)
 library(rstan)
 library(beepr)
 
-gm <- read_csv("data/all_data_gm.csv")
-gm_a <- gm %>% filter(cc_rank>=10 & firstyr!=lastyr) %>%
-  mutate(ccode = as.numeric(factor(ccode)))
 
 ### Delete these when turning into a function
 seed <- 324
-iter <- 180
+iter <- 500
 chains <- 4
 cores <- chains
-x <- gm_a
+x <- gm_a2
 ###
 
 x <- x %>%
-  mutate(ktcode = as.numeric(factor(paste(ccode, tcode), levels = unique(paste(ccode, tcode)))),
-         p = y_r/n)
+  mutate(ktcode = (ccode-1)*max(tcode)+tcode)
 
-rq <- x %>% group_by(rcode) %>% summarize(rq = first(qcode),
-                                          rcp = max(cutpoint))
+# t <- x %>%
+#   group_by(ktcode) %>%
+#   summarize(ccode = first(ccode),
+#             tcode = first(tcode)) %>%
+#   group_by(ccode) %>%
+#   mutate(G = if_else(!is.na(lead(tcode)), lead(tcode) - tcode - 1, 0)) %>%
+#   ungroup() %>%
+#   mutate(mm = cumsum(if_else(!is.na(lag(G)), lag(G), 0))) %>%
+#   select(ktcode, G, mm)
+#
+# x <- x %>%
+#   left_join(t, by = "ktcode")
+
+rq <- x %>%
+  group_by(rcode) %>%
+  summarize(rq = first(qcode),
+            rcp = max(cutpoint))
 
 dcpo_data <- list(  K=max(x$ccode),
                     T=max(x$tcode),
@@ -55,19 +66,22 @@ dcpo_data <- list(  K=max(x$ccode),
                     N=length(x$y_r),
                     kk=x$ccode,
                     tt=x$tcode,
-                    kt=x$ktcode,
+                    kktt=x$ktcode,
                     qq=x$qcode,
                     rr=x$rcode,
                     rq=rq$rq,
                     rcp=rq$rcp,
                     y_r=x$y_r,
                     n_r=x$n
+                    # ,
+                    # M=max(x$mm),
+                    # mm=x$mm,
+                    # G=x$G
 )
 
 # hierarchical_2pl lacks:
 # X 1. aggregation
-#   2. time-series
-#   3. random-walk priors
+# X 2. time-series/random-walk priors
 #   3. ordinal betas
 # take them in that order
 #
@@ -83,39 +97,27 @@ dcpo_code <- '
     int<lower=1> N; 				// number of KTQR observations
     int<lower=1, upper=K> kk[N]; 	// country for observation n
     int<lower=1, upper=T> tt[N]; 	// year for observation n
-    int<lower=1> kt[N];           // country-year for observation n
+    int<lower=1> kktt[N];         // country-year for observation n
     int<lower=1, upper=Q> qq[N];  // question for observation n
     int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
     int<lower=1, upper=R> rq[R];  // question for question-cutpoint r
     int<lower=1, upper=R> rcp[R]; // cutpoint for question-cutpoint r
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
-//    int<lower=0> NM;    // number of KT observations without data (interpolated only)
-//    int<lower=1, upper=K> km[NM]; 	// country for missing observation nm
-//    int<lower=1, upper=T> tm[NM]; 	// year for missing observation nm
-//    int<lower=1> I;               // # items
-//    int<lower=1> J;               // # persons
-//    int<lower=1> N;               // # observations
-//    int<lower=1, upper=I> ii[N];  // item for n
-//    int<lower=1, upper=J> jj[N];  // person for n
-//    int<lower=0, upper=1> y[N];   // correctness for n
+//    int<lower=0> M;    // number of KT observations without data (interpolated only)
+//    int<lower=1, upper=K> km[M]; 	// country for missing observation nm
+//    int<lower=1, upper=T> tm[M]; 	// year for missing observation nm
+//    int<lower=0, upper=M> mm[N];    // number of missing KT preceding observation n
+//    int<lower=0> G[N];              // number of missing years from observation until next observation in country k
   }
-//  transformed data {
-//    int G[N-1];				// number of missing years until next observed country-year (G for "gap")
-//    for (n in 1:N-1) {
-//        G[n] = tt[n+1] - tt[n] - 1;
-//    }
-//  }
   parameters {
-    vector[N] theta; // public opinion (ability)
+    vector[K*T] theta; // public opinion ("ability") for all kt
+//    vector[M] theta_miss; // public opinion ("ability") for kt without data
     vector[2] xi[R]; // alpha/beta (discrimination/difficulty) pair vectors
     vector[2] mu; // vector for alpha/beta means
     vector<lower=0>[2] tau; // vector for alpha/beta residual sds
     cholesky_factor_corr[2] L_Omega; // Cholesky decomposition of the correlation matrix for log(alpha) and beta
-
-//    real<lower=0, upper=1> p[N]; // predicted probability of random individual giving selected answer for observation n (see McGann 2014, 120)
-//    real<lower=0, upper=.1> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-//    real<lower=0, upper=30> b[Q];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
+    real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
 //    real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
 //    real<lower=0> sigma_tau;   // scale of cutpoint difficulties (cf. Stan Development Team 2015, 61)
   }
@@ -131,50 +133,37 @@ dcpo_code <- '
 //      m[n] = inv_logit((theta[kk[n], tt[n]] - beta[rr[n]]) / gamma[qq[n]]);
 //    }
 
-    vector[R] alpha;
-    vector[R] beta;
+    vector[R] alpha; // discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
+    vector[R] beta; // difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     for (r in 1:R) {
       alpha[r] = exp(xi[r,1]);
       beta[r] = xi[r,2];
     }
   }
   model {
-//    sigma_gamma ~ cauchy(0, .5);
-//    sigma_tau ~ cauchy(0, .25);
-//
-//    gamma ~ lognormal(0, sigma_gamma);
-//    tau ~ normal(0, sigma_tau);
-//
-//    for (n in 1:N) {
-//      // actual number of respondents giving selected answer
-//      y_r[n] ~ binomial(n_r[n], p[n]);
-//      // individual probability of selected answer
-//      p[n] ~ beta(b[qq[n]]*m[n]/(1 - m[n]), b[qq[n]]);
-//      if (n < N) {
-//      // prior for alpha for the next observed year by country as well as for all intervening missing years
-//        if (tt[n] < T) {
-//          for (g in 0:G[n]) {
-//              alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha[kk[n]]);
-//          }
-//        }
-//      }
-//    }
-
     matrix[2,2] L_Sigma;
     L_Sigma = diag_pre_multiply(tau, L_Omega);
     for (r in 1:R) {
       xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
     }
-    theta ~ normal(0, 1);
+    sigma_theta ~ normal(0, .05);
+
     L_Omega ~ lkj_corr_cholesky(4);
     mu[1] ~ normal(0,1);
     tau[1] ~ exponential(.1);
     mu[2] ~ normal(0,5);
     tau[2] ~ exponential(.1);
-//    y ~ bernoulli_logit(alpha[ii] .* (theta[jj] - beta[ii]));
-    for (n in 1:N) {
-      y_r[n] ~ binomial_logit(n_r[n], alpha[rr[n]] .* (theta[kt[n]] - beta[rr[n]]));
+
+    // random-walk prior for theta
+    for (k in 1:K) {
+      theta[(k-1)*T+1] ~ normal(0, 1);
+      for (t in 2:T) {
+        theta[(k-1)*T+t] ~ normal(theta[(k-1)*T+t-1], sigma_theta[k]);
+      }
     }
+
+    y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr]));
+
   }
   generated quantities {
     corr_matrix[2] Omega;
@@ -192,7 +181,7 @@ out1 <- stan(model_code = dcpo_code,
              control = list(max_treedepth = 20,
                             adapt_delta = .8)) # this is the default, btw
 runtime <- proc.time() - start
-runtime
+runtime/60
 
 lapply(get_sampler_params(out1, inc_warmup = FALSE),
        summary, digits = 2)

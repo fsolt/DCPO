@@ -29,30 +29,21 @@ library(tidyverse)
 library(rstan)
 library(beepr)
 
+# to do
+# - full aggregate IRT?
+# - robust dynamic priors (per Reuning2016)?
+# - explicitly ordinal betas?
 
 ### Delete these when turning into a function
 seed <- 324
 iter <- 500
 chains <- 4
 cores <- chains
-x <- gm_a2
+x <- gm
 ###
 
 x <- x %>%
   mutate(ktcode = (ccode-1)*max(tcode)+tcode)
-
-# t <- x %>%
-#   group_by(ktcode) %>%
-#   summarize(ccode = first(ccode),
-#             tcode = first(tcode)) %>%
-#   group_by(ccode) %>%
-#   mutate(G = if_else(!is.na(lead(tcode)), lead(tcode) - tcode - 1, 0)) %>%
-#   ungroup() %>%
-#   mutate(mm = cumsum(if_else(!is.na(lag(G)), lag(G), 0))) %>%
-#   select(ktcode, G, mm)
-#
-# x <- x %>%
-#   left_join(t, by = "ktcode")
 
 rq <- x %>%
   group_by(rcode) %>%
@@ -73,20 +64,7 @@ dcpo_data <- list(  K=max(x$ccode),
                     rcp=rq$rcp,
                     y_r=x$y_r,
                     n_r=x$n
-                    # ,
-                    # M=max(x$mm),
-                    # mm=x$mm,
-                    # G=x$G
 )
-
-# hierarchical_2pl lacks:
-# X 1. aggregation
-# X 2. time-series/random-walk priors
-#   3. ordinal betas
-# take them in that order
-#
-#  ignoring for the moment time-series by considering each
-#   country-year an independent observation
 
 dcpo_code <- '
   data {
@@ -104,33 +82,23 @@ dcpo_code <- '
     int<lower=1, upper=R> rcp[R]; // cutpoint for question-cutpoint r
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
-//    int<lower=0> M;    // number of KT observations without data (interpolated only)
-//    int<lower=1, upper=K> km[M]; 	// country for missing observation nm
-//    int<lower=1, upper=T> tm[M]; 	// year for missing observation nm
-//    int<lower=0, upper=M> mm[N];    // number of missing KT preceding observation n
-//    int<lower=0> G[N];              // number of missing years from observation until next observation in country k
   }
   parameters {
     vector[K*T] theta; // public opinion ("ability") for all kt
-//    vector[M] theta_miss; // public opinion ("ability") for kt without data
     vector[2] xi[R]; // alpha/beta (discrimination/difficulty) pair vectors
     vector[2] mu; // vector for alpha/beta means
     vector<lower=0>[2] tau; // vector for alpha/beta residual sds
     cholesky_factor_corr[2] L_Omega; // Cholesky decomposition of the correlation matrix for log(alpha) and beta
     real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-//    real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
-//    real<lower=0> sigma_tau;   // scale of cutpoint difficulties (cf. Stan Development Team 2015, 61)
   }
   transformed parameters {
-//    real<lower=0, upper=1> m[N]; // expected probability of random individual giving selected answer
+//    real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
+//    real<lower=0> sigma_tau;   // scale of cutpoint difficulties (cf. Stan Development Team 2015, 61)
 //    real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
 //    beta = tau;
 //    for (r in 2:R) {
 //      if (rq[r]==rq[r-1])
 //        beta[r] = beta[r-1] + (tau[r] * (1 - beta[r - 1]));
-//    }
-//    for (n in 1:N) {
-//      m[n] = inv_logit((theta[kk[n], tt[n]] - beta[rr[n]]) / gamma[qq[n]]);
 //    }
 
     vector[R] alpha; // discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
@@ -178,8 +146,7 @@ out1 <- stan(model_code = dcpo_code,
              iter = iter,
              cores = cores,
              chains = chains,
-             control = list(max_treedepth = 20,
-                            adapt_delta = .8)) # this is the default, btw
+             control = list(max_treedepth = 20))
 runtime <- proc.time() - start
 runtime/60
 

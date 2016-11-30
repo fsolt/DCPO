@@ -31,8 +31,8 @@ library(beepr)
 
 # to do
 # - full aggregate IRT?
-# - robust dynamic priors (per Reuning2016)?
-# - explicitly ordinal betas?
+# X robust dynamic priors (per Reuning2016)?
+# X explicitly ordinal betas?
 
 ### Delete these when turning into a function
 seed <- 324
@@ -116,13 +116,21 @@ dcpo_code <- '
     mu[2] ~ normal(0, 1);
     tau[2] ~ exponential(.1);
 
-    // random-walk prior for theta
+    // robust dynamic prior for theta
     for (k in 1:K) {
-      theta[(k-1)*T+1] ~ normal(0, 1);
+      theta[(k-1)*T+1] ~ student_t(1000, 0, 1);
       for (t in 2:T) {
-        theta[(k-1)*T+t] ~ normal(theta[(k-1)*T+t-1], sigma_theta[k]);
+        theta[(k-1)*T+t] ~ student_t(4, theta[(k-1)*T+t-1], sigma_theta[k]);
       }
     }
+
+//    // random-walk prior for theta
+//    for (k in 1:K) {
+//      theta[(k-1)*T+1] ~ normal(0, 1);
+//      for (t in 2:T) {
+//        theta[(k-1)*T+t] ~ normal(theta[(k-1)*T+t-1], sigma_theta[k]);
+//      }
+//    }
 
     y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr]));
 

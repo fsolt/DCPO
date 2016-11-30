@@ -24,16 +24,31 @@ library(rstan)
 #                  cores = 1,
 #                  chains = 4)
 
+# preprocessing
+library(tidyverse)
+library(rstan)
+library(beepr)
+
+# to do
+# - full aggregate IRT?
+# - robust dynamic priors (per Reuning2016)?
+# - explicitly ordinal betas?
+
 ### Delete these when turning into a function
-seed <- 3033034
-iter <- 1000
+seed <- 324
+iter <- 500
 chains <- 4
 cores <- chains
-x <- gm
+x <- gm_a1
 ###
 
-qr <- x %>% group_by(rcode) %>% summarize(qr = first(qcode),
-                                          mcp = max(cutpoint))
+x <- x %>%
+  mutate(ktcode = (ccode-1)*max(tcode)+tcode)
+
+rq <- x %>%
+  group_by(rcode) %>%
+  summarize(rq = first(qcode),
+            rcp = max(cutpoint))
 
 dcpo_data <- list(  K=max(x$ccode),
                     T=max(x$tcode),
@@ -42,10 +57,11 @@ dcpo_data <- list(  K=max(x$ccode),
                     N=length(x$y_r),
                     kk=x$ccode,
                     tt=x$tcode,
+                    kktt=x$ktcode,
                     qq=x$qcode,
                     rr=x$rcode,
-                    qr=qr$qr,
-                    mcp=qr$mcp,
+                    rq=rq$rq,
+                    rcp=rq$rcp,
                     y_r=x$y_r,
                     n_r=x$n
 )
@@ -59,62 +75,65 @@ dcpo_code <- '
     int<lower=1> N; 				// number of KTQR observations
     int<lower=1, upper=K> kk[N]; 	// country for observation n
     int<lower=1, upper=T> tt[N]; 	// year for observation n
+    int<lower=1> kktt[N];         // country-year for observation n
     int<lower=1, upper=Q> qq[N];  // question for observation n
     int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
-    int<lower=1, upper=R> qr[R];  // question for question-cutpoint r
-    int<lower=1, upper=R> mcp[R]; // cutpoint for question-cutpoint r
+    int<lower=1, upper=R> rq[R];  // question for question-cutpoint r
+    int<lower=1, upper=R> rcp[R]; // cutpoint for question-cutpoint r
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
   }
-  transformed data {
-    int G[N-1];				// number of missing years until next observed country-year (G for "gap")
-    for (n in 1:N-1) {
-        G[n] = tt[n+1] - tt[n] - 1;
-    }
-  }
   parameters {
-    real<lower=0, upper=1> alpha[K, T]; // public opinion, minus (grand) mean public opinion
-    real<lower=0> gamma[Q]; // discrimination of question q (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-    real<lower=0> sigma_gamma;  // scale of indicator discriminations (see Stan Development Team 2015, 61)
-    real<lower=0, upper=1> p[N]; // predicted probability of random individual giving selected answer for observation n (see McGann 2014, 120)
-    real<lower=0, upper=1> sigma_alpha[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
-    real<lower=0, upper=100> b[R];  // "the degree of stochastic variation between question administrations" (McGann 2014, 122)
-    real<lower=0, upper=1> tau[R]; // shift in difficulty across each cutpoint of each question
-    real<lower=0> sigma_tau;   // scale of cutpoint difficulties (cf. Stan Development Team 2015, 61)
+    vector[K*T] theta; // public opinion ("ability") for all kt
+    vector[2] xi[R]; // alpha/beta (discrimination/difficulty) pair vectors
+    vector[2] mu; // vector for alpha/beta means
+    vector<lower=0>[2] tau; // vector for alpha/beta residual sds
+    cholesky_factor_corr[2] L_Omega; // Cholesky decomposition of the correlation matrix for log(alpha) and beta
+    real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
   }
   transformed parameters {
-    real<lower=0, upper=1> m[N]; // expected probability of random individual giving selected answer
-    real<lower=0, upper=1> beta[R]; // position ("difficulty") of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-    beta = tau;
     for (r in 2:R) {
-      if (qr[r]==qr[r-1])
-        beta[r] = beta[r-1] + (tau[r] * (1 - beta[r - 1]));
+      if (rq[r]==rq[r-1])
+        beta[r] = beta[r-1] + beta_free[r];
     }
 
-    for (n in 1:N)
-        m[n] = inv_logit(gamma[qq[n]] * (alpha[kk[n], tt[n]] - beta[rr[n]]));
+    vector[R] alpha; // discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
+    vector[R] beta; // difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+    for (r in 1:R) {
+      alpha[r] = exp(xi[r,1]);
+      beta[r] = xi[r,2]^2;  // positive beta
+      if (rq[r]==rq[r-1])
+        beta[r] = beta[r-1] + beta[r];
+    }
   }
   model {
-    sigma_gamma ~ cauchy(0, 2);
-    sigma_tau ~ cauchy(0, .25);
+    matrix[2,2] L_Sigma;
+    L_Sigma = diag_pre_multiply(tau, L_Omega);
+    for (r in 1:R) {
+      xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
+    }
+    sigma_theta ~ normal(0, .05);
 
-    gamma ~ lognormal(0, sigma_gamma);
-    tau ~ normal(0, sigma_tau);
+    L_Omega ~ lkj_corr_cholesky(4);
+    mu[1] ~ normal(0, 1);
+    tau[1] ~ exponential(.1);
+    mu[2] ~ normal(0, 5);
+    tau[2] ~ exponential(.1);
 
-    for (n in 1:N) {
-      // actual number of respondents giving selected answer
-      y_r[n] ~ binomial(n_r[n], p[n]);
-      // individual probability of selected answer
-      p[n] ~ beta(b[rr[n]]*m[n]/(1 - m[n]), b[rr[n]]);
-      // prior for alpha for the next observed year by country as well as for all intervening missing years
-      if (n < N) {
-        if (tt[n] < T) {
-          for (g in 0:G[n]) {
-              alpha[kk[n], tt[n]+g+1] ~ normal(alpha[kk[n], tt[n]+g], sigma_alpha[kk[n]]);
-          }
-        }
+    // random-walk prior for theta
+    for (k in 1:K) {
+      theta[(k-1)*T+1] ~ normal(0, 1);
+      for (t in 2:T) {
+        theta[(k-1)*T+t] ~ normal(theta[(k-1)*T+t-1], sigma_theta[k]);
       }
     }
+
+    y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr]));
+
+  }
+  generated quantities {
+    corr_matrix[2] Omega;
+    Omega = multiply_lower_tri_self_transpose(L_Omega);
   }
 '
 
@@ -122,13 +141,12 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = 60,
+             iter = iter,
              cores = cores,
              chains = chains,
-             control = list(max_treedepth = 20,
-                            adapt_delta = .8))
+             control = list(max_treedepth = 20))
 runtime <- proc.time() - start
-runtime
+runtime/60
 
 lapply(get_sampler_params(out1, inc_warmup = FALSE),
        summary, digits = 2)

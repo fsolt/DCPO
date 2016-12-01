@@ -13,8 +13,6 @@
 #'
 #' @export
 
-library(rstan)
-
 # data1 <- gm_a
 #
 # dcpo <- function(x,
@@ -24,22 +22,22 @@ library(rstan)
 #                  cores = 1,
 #                  chains = 4)
 
-# preprocessing
+# to do
+# - full aggregate IRT?
+# X robust dynamic priors (per Reuning2016)?
+# X explicitly ordinal betas?
+
 library(tidyverse)
 library(rstan)
 library(beepr)
-
-# to do
-# - full aggregate IRT?
-# - robust dynamic priors (per Reuning2016)?
-# - explicitly ordinal betas?
 
 ### Delete these when turning into a function
 seed <- 324
 iter <- 500
 chains <- 4
 cores <- chains
-x <- gm_a1
+x <- gm
+robust <- TRUE
 ###
 
 x <- x %>%
@@ -50,20 +48,21 @@ rq <- x %>%
   summarize(rq = first(qcode),
             rcp = max(cutpoint))
 
-dcpo_data <- list(  K=max(x$ccode),
-                    T=max(x$tcode),
-                    Q=max(x$qcode),
-                    R=max(x$rcode),
-                    N=length(x$y_r),
-                    kk=x$ccode,
-                    tt=x$tcode,
-                    kktt=x$ktcode,
-                    qq=x$qcode,
-                    rr=x$rcode,
-                    rq=rq$rq,
-                    rcp=rq$rcp,
-                    y_r=x$y_r,
-                    n_r=x$n
+dcpo_data <- list(  K    = max(x$ccode),
+                    T    = max(x$tcode),
+                    Q    = max(x$qcode),
+                    R    = max(x$rcode),
+                    N    = length(x$y_r),
+                    kk   = x$ccode,
+                    tt   = x$tcode,
+                    kktt = x$ktcode,
+                    qq   = x$qcode,
+                    rr   = x$rcode,
+                    rq   = rq$rq,
+                    rcp  = rq$rcp,
+                    y_r  = x$y_r,
+                    n_r  = x$n,
+                    rob  = as.numeric(robust)
 )
 
 dcpo_code <- '
@@ -82,7 +81,9 @@ dcpo_code <- '
     int<lower=1, upper=R> rcp[R]; // cutpoint for question-cutpoint r
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
+    int<lower=0, upper=1> rob;    // robust dynamic model indicator
   }
+
   parameters {
     vector[K*T] theta; // public opinion ("ability") for all kt
     vector[2] xi[R]; // alpha/beta (discrimination/difficulty) pair vectors
@@ -91,21 +92,19 @@ dcpo_code <- '
     cholesky_factor_corr[2] L_Omega; // Cholesky decomposition of the correlation matrix for log(alpha) and beta
     real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
   }
-  transformed parameters {
-    for (r in 2:R) {
-      if (rq[r]==rq[r-1])
-        beta[r] = beta[r-1] + beta_free[r];
-    }
 
+  transformed parameters {
     vector[R] alpha; // discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
     vector[R] beta; // difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     for (r in 1:R) {
       alpha[r] = exp(xi[r,1]);
-      beta[r] = xi[r,2]^2;  // positive beta
-      if (rq[r]==rq[r-1])
-        beta[r] = beta[r-1] + beta[r];
+      beta[r] = exp(xi[r,2]);
+      if (r > 1)
+        if (rq[r]==rq[r-1])
+          beta[r] = beta[r-1] + beta[r];
     }
   }
+
   model {
     matrix[2,2] L_Sigma;
     L_Sigma = diag_pre_multiply(tau, L_Omega);
@@ -117,20 +116,31 @@ dcpo_code <- '
     L_Omega ~ lkj_corr_cholesky(4);
     mu[1] ~ normal(0, 1);
     tau[1] ~ exponential(.1);
-    mu[2] ~ normal(0, 5);
+    mu[2] ~ normal(0, 1);
     tau[2] ~ exponential(.1);
 
-    // random-walk prior for theta
-    for (k in 1:K) {
-      theta[(k-1)*T+1] ~ normal(0, 1);
-      for (t in 2:T) {
-        theta[(k-1)*T+t] ~ normal(theta[(k-1)*T+t-1], sigma_theta[k]);
+    // transition model for theta (random-walk prior)
+    if (rob == 1) {  // robust dynamic prior (see Reuning, Kenwick, and Fariss 2016)
+      for (k in 1:K) {
+        theta[(k-1)*T+1] ~ student_t(1000, 0, 1);
+        for (t in 2:T) {
+          theta[(k-1)*T+t] ~ student_t(4, theta[(k-1)*T+t-1], sigma_theta[k]);
+        }
+      }
+    } else { // standard dynamic prior
+      for (k in 1:K) {
+        theta[(k-1)*T+1] ~ normal(0, 1);
+        for (t in 2:T) {
+          theta[(k-1)*T+t] ~ normal(theta[(k-1)*T+t-1], sigma_theta[k]);
+        }
       }
     }
 
-    y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr]));
+    // measurement model
+    y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr])); // likelihood
 
   }
+
   generated quantities {
     corr_matrix[2] Omega;
     Omega = multiply_lower_tri_self_transpose(L_Omega);

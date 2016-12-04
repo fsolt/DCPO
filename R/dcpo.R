@@ -65,6 +65,8 @@ dcpo_data <- list(  K    = max(x$ccode),
                     rob  = as.numeric(robust)
 )
 
+
+
 dcpo_code <- '
   data {
     int<lower=1> K;     		// number of countries
@@ -98,10 +100,13 @@ dcpo_code <- '
     vector[R] beta; // difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
     for (r in 1:R) {
       alpha[r] = exp(xi[r,1]);
-      beta[r] = exp(xi[r,2]);
-      if (r > 1)
-        if (rq[r]==rq[r-1])
-          beta[r] = beta[r-1] + beta[r];
+      beta[r] = xi[r,2];
+      if (r > 1) {
+        if (rq[r]==rq[r-1]) {
+          alpha[r] = alpha[r-1];
+          beta[r] = beta[r-1] + exp(beta[r]);
+        }
+      }
     }
   }
 

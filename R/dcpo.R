@@ -36,7 +36,7 @@ seed <- 324
 iter <- 500
 chains <- 4
 cores <- chains
-x <- gm_a1
+x <- gm_3y
 robust <- FALSE
 ###
 
@@ -137,7 +137,7 @@ dcpo_code <- '
     if (rob == 1) {  // robust dynamic prior (see Reuning, Kenwick, and Fariss 2016)
       theta_raw ~ student_t(10, 0, 1);
     } else { // standard dynamic prior
-	    theta_raw ~ normal(0, 1);
+      theta_raw ~ normal(0, 1);
     }
 
     // measurement model
@@ -155,7 +155,7 @@ start <- proc.time()
 out1 <- stan(model_code = dcpo_code,
              data = dcpo_data,
              seed = seed,
-             iter = 500,
+             iter = iter,
              cores = cores,
              chains = chains,
              control = list(max_treedepth = 20))
@@ -164,6 +164,8 @@ runtime/60
 
 lapply(get_sampler_params(out1, inc_warmup = FALSE),
        summary, digits = 2)
+
+save(out1, file = str_c("data/output_", str_replace(Sys.time(), " ", "_"), ".rda"))
 
 #Chime
 beep()

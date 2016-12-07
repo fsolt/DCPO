@@ -33,11 +33,12 @@ library(beepr)
 
 ### Delete these when turning into a function
 seed <- 324
-iter <- 500
+iter <- 2000
 chains <- 4
 cores <- chains
 x <- gm_3y
 robust <- FALSE
+constant_alpha <- FALSE
 ###
 
 x <- x %>%
@@ -62,7 +63,8 @@ dcpo_data <- list(  K    = max(x$ccode),
                     rcp  = rq$rcp,
                     y_r  = x$y_r,
                     n_r  = x$n,
-                    rob  = as.numeric(robust)
+                    rob  = as.numeric(robust),
+                    c_a  = as.numeric(constant_alpha)
 )
 
 
@@ -84,6 +86,7 @@ dcpo_code <- '
     int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
     int<lower=0> n_r[N];    // total number of respondents for observation n
     int<lower=0, upper=1> rob;    // robust dynamic model indicator
+		int<lower=0, upper=1> c_a;		// constant alpha indicator
   }
 
   parameters {
@@ -105,8 +108,10 @@ dcpo_code <- '
       beta[r] = xi[r,2];
       if (r > 1) {
         if (rq[r]==rq[r-1]) {
-          alpha[r] = alpha[r-1];
           beta[r] = beta[r-1] + exp(beta[r]);
+          if (c_a == 1) {
+            alpha[r] = alpha[r-1];
+          }
         }
       }
     }

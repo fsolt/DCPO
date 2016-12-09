@@ -5,7 +5,7 @@ save(out1, file = "data/output.rda")
 out <- out1
 
 x1 <- summary(out)
-write.table(as.data.frame(x1$summary), file="x1.csv", sep = ",")
+write.table(as.data.frame(x1$summary), file="data/x1.csv", sep = ",")
 x1_sum <- as.data.frame(x1$summary)
 x1_sum$parameter <- rownames(x1_sum)
 # x1_sum <- read_csv("x1.csv")

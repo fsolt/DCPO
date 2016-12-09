@@ -25,7 +25,3 @@ gm_3y <- gm %>%
   filter(year_obs >= 3) %>%
   mutate(ccode = as.numeric(factor(ccode)))
 
-
-red0 <- read_csv("../Redistribution/data-raw/redist_vars.csv")
-red <- dcpo_setup(red0)
-write_csv(red, "../Redistribution/data/all_data_red.csv")

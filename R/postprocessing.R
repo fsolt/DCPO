@@ -1,10 +1,8 @@
 #Postprocessing
 library(stringr)
 
-save(out1, file = "data/output.rda")
-out <- out1
 
-x1 <- summary(out)
+x1 <- summary(out1)
 write.table(as.data.frame(x1$summary), file="data/x1.csv", sep = ",")
 x1_sum <- as.data.frame(x1$summary)
 x1_sum$parameter <- rownames(x1_sum)
@@ -53,7 +51,7 @@ ktcodes <- x %>%
   select(ktcode, ccode, tcode, country, year, firstyr, lastyr) %>%
   unique()
 
-t_res <- summary(out, pars="theta", probs=c(.1, .9)) %>%
+t_res <- summary(out1, pars="theta", probs=c(.1, .9)) %>%
   first() %>%
   as.data.frame() %>%
   rownames_to_column("parameter") %>%
@@ -97,11 +95,3 @@ t_res1 <- t_res %>%
 #   3. trends in all countries: ts_plot
 #   4. probability of tolerant answer by tolerance (beta and gamma), selected items (modelled on McGann2014, fig 1)
 #   5. bar chart of beta and gamma for all items?
-
-sat_monitor <- as.data.frame(monitor(sat_fit, print = FALSE))
-sat_monitor$Parameter <- as.factor(gsub("\\[.*]", "", rownames(sat_monitor)))
-ggplot(subset(x1_sum, !is.nan(Rhat))) +
-  aes(x = parameter, y = Rhat, color = parameter) +
-  geom_jitter(height = 0, width = .5, show.legend = FALSE) +
-  ylab(expression(hat(italic(R))))
-

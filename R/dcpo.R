@@ -33,7 +33,7 @@ library(beepr)
 
 ### Delete these when turning into a function
 seed <- 324
-iter <- 2000
+iter <- 3000
 chains <- 4
 cores <- chains
 x <- gm_3y

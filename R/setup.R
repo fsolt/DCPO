@@ -103,10 +103,7 @@ dcpo_setup <- function(vars,
   all_data2 <- all_data %>% select(-value, -L1, -survey) %>%
     group_by(country, year, variable, cutpoint) %>%
     summarize(y_r = sum(y_r),     # When two surveys ask the same question in
-              n = sum(n),         # the same country-year, add samples together
-              variance = min(.25,
-                             Hmisc::wtd.var((target - 1)/(max(target) - 1),
-                                            wt_dcpo))) %>%
+              n = sum(n)) %>%         # the same country-year, add samples together
     ungroup() %>%
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)

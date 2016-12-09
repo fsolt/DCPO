@@ -80,10 +80,7 @@ dcpo_setup <- function(vars,
           summarise(survey = ds$survey,
                     item = weighted.mean(target > j, wt_dcpo),
                     n = length(na.omit(target)),
-                    cutpoint = j,
-                    variance = min(.25,
-                                   Hmisc::wtd.var((target - 1)/(max(target) - 1),
-                                                  wt_dcpo)))
+                    cutpoint = j)
         if (j == 1) vars1 <- vars0 else vars1 <- rbind(vars1, vars0)
       }
 
@@ -97,16 +94,19 @@ dcpo_setup <- function(vars,
 
   for (i in seq(length(all_sets))) {
       add <- melt(all_sets[i], id.vars = c("country", "year", "survey", "n",
-                                           "cutpoint", "variance"), na.rm=T)
+                                           "cutpoint"), na.rm=T)
       if (i == 1) all_data <- add else all_data <- rbind(all_data, add)
   }
   rm(add)
   all_data$y_r = with(all_data, as.integer(round(n * value))) # number of 'yes' response equivalents, given data weights
 
   all_data2 <- all_data %>% select(-value, -L1, -survey) %>%
-    group_by(country, year, variable, cutpoint, variance) %>%
+    group_by(country, year, variable, cutpoint) %>%
     summarize(y_r = sum(y_r),     # When two surveys ask the same question in
-              n = sum(n)) %>%     # the same country-year, add samples together
+              n = sum(n),         # the same country-year, add samples together
+              variance = min(.25,
+                             Hmisc::wtd.var((target - 1)/(max(target) - 1),
+                                            wt_dcpo))) %>%
     ungroup() %>%
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)

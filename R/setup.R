@@ -86,7 +86,7 @@ dcpo_setup <- function(vars,
 
       # Rename vars in summary
       names(vars1) <- c("country", "year", "survey", v$item,
-                        "n", "cutpoint", "variance")
+                        "n", "cutpoint")
       all_sets[[i]] <- vars1
       rm(vars0, vars1)
   }

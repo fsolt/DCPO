@@ -1,7 +1,6 @@
 #Postprocessing
 library(stringr)
 
-
 x1 <- summary(out1)
 write.table(as.data.frame(x1$summary), file="data/x1.csv", sep = ",")
 x1_sum <- as.data.frame(x1$summary)
@@ -15,33 +14,20 @@ View(x1_sum[x1_sum$Rhat>1.2,])
 
 ggplot(x1_sum) +
   aes(x = parameter_type, y = Rhat, color = parameter_type) +
-  geom_jitter(height = 0, width = .5, show.legend = FALSE) +
+  geom_jitter(height = 0, width = .5, show.legend = FALSE, alpha = .2) +
   ylab(expression(hat(italic(R))))
+ggsave(str_c("paper/figures/rhat_", iter, ".pdf"))
 
-qcodes <- gm_a %>% group_by(variable) %>%
+
+qcodes <- x %>% group_by(variable) %>%
   summarize(qcode = first(qcode),
             r_n = n()) %>%
   arrange(qcode)
 
-rcodes <- gm_a %>% group_by(variable_cp) %>%
+rcodes <- x %>% group_by(variable_cp) %>%
   summarize(rcode = first(rcode),
             r_n = n()) %>%
   arrange(rcode)
-
-
-
-b_res <- x1_sum %>%
-  filter(parameter_type=="beta") %>%
-  select(parameter, mean, `2.5%`, `97.5%`) %>%
-  mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
-  left_join(rcodes, by="rcode")
-a_res <- x1_sum %>% filter(parameter_type=="alpha") %>%
-  select(parameter, mean, `2.5%`, `97.5%`) %>%
-  mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
-  left_join(rcodes, by="rcode")
-# s_dk_res <- x1_sum %>% filter(parameter_type=="sd_k") %>% select(parameter, mean, `2.5%`, `97.5%`)  %>% mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>% left_join(rcodes)
-
-beep()
 
 ktcodes <- x %>%
   group_by(country) %>%
@@ -50,6 +36,18 @@ ktcodes <- x %>%
   ungroup() %>%
   select(ktcode, ccode, tcode, country, year, firstyr, lastyr) %>%
   unique()
+
+
+b_res <- x1_sum %>%
+  filter(parameter_type=="beta") %>%
+  select(parameter, mean, `2.5%`, `97.5%`) %>%
+  mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
+  left_join(rcodes, by="rcode")
+
+a_res <- x1_sum %>% filter(parameter_type=="alpha") %>%
+  select(parameter, mean, `2.5%`, `97.5%`) %>%
+  mutate(rcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
+  left_join(rcodes, by="rcode")
 
 t_res <- summary(out1, pars="theta", probs=c(.1, .9)) %>%
   first() %>%

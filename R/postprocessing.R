@@ -29,14 +29,18 @@ rcodes <- x %>% group_by(variable_cp) %>%
             r_n = n()) %>%
   arrange(rcode)
 
-ktcodes <- x %>%
+kcodes <- x %>%
   group_by(country) %>%
-  mutate(firstyr = first(firstyr),
-         lastyr = first(lastyr)) %>%
-  ungroup() %>%
-  select(ktcode, ccode, tcode, country, year, firstyr, lastyr) %>%
-  unique()
+  summarize(ccode = first(ccode),
+            firstyr = first(firstyr),
+            lastyr = first(lastyr)) %>%
+  ungroup()
 
+ktcodes <- tibble(ccode = rep(1:max(x$ccode), each = max(x$tcode)),
+                  tcode = rep(1:max(x$tcode), times = max(x$ccode)),
+                  ktcode = (ccode-1)*max(tcode)+tcode) %>%
+  left_join(kcodes, by = "ccode") %>%
+  mutate(year = min(firstyr) + tcode - 1)
 
 b_res <- x1_sum %>%
   filter(parameter_type=="beta") %>%
@@ -55,21 +59,13 @@ t_res <- summary(out1, pars="theta", probs=c(.1, .9)) %>%
   rownames_to_column("parameter") %>%
   as_tibble() %>%
   mutate(ktcode = as.numeric(str_extract(parameter, "\\d+"))) %>%
-  left_join(ktcodes, by="ktcode")
+  left_join(ktcodes, by="ktcode") %>%
+  arrange(ccode, tcode)
 
-k <- x %>%
-  group_by(country) %>%
-  summarize(ccode = first(ccode),
-         firstyr = first(firstyr),
-         lastyr = first(lastyr)) %>%
-  ungroup()
+gm_laws <- read_csv("data-raw/gm_laws.csv") %>% right_join(k, by = "country")
 
-gm_laws <- read_csv("data-raw/gm_laws.csv") %>% merge(k)
-
-t_res <- merge(t_res, gm_laws)
-t_res$year <- min(t_res$firstyr) + t_res$tcode - 1
 t_res1 <- t_res %>%
-  filter(year <= lastyr & year >= firstyr) %>%
+  left_join(gm_laws, by = c("ccode", "country", "firstyr", "lastyr")) %>%
   transmute(country = country,
             term = country,
             kk = ccode,
@@ -81,11 +77,6 @@ t_res1 <- t_res %>%
                          ifelse(!is.na(civ) & (year >= civ | year==lastyr), "Civil Union",
                                 "None"))) %>%
   arrange(kk, year)
-
-# count_divergences <- function(fit) {
-#   sampler_params <- get_sampler_params(fit, inc_warmup=FALSE)
-#   sum(sapply(sampler_params, function(x) c(x[,'n_divergent__']))[,1])
-# }
 
 # Plots:
 #   1. tolerance by country, most recent available year: cs_plot

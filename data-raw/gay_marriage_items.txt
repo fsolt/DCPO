@@ -12,31 +12,23 @@
 		X WVS6			V40
 		X EVS			a124_09
 		CE_post_1990		v87
+		X AmB			dis35a
 
-	X neigh10	
-		EB691-08
-
-*uneasy in presence [only 18-24 year-olds, so don't use]
-	uneasy
-		EB472OVR-97		q17-8
-
-*equal opportunity [don't use]
-	eoe4
-		EB654-06
-		EB712-09		v307
+	neigh10	
+		X EB691-08
 
 *adopt; raise children
-	X adopt5
-		EVS			d026_01
-	X adopt4
-		EB661-06		v403?
-	X adopt2
-		EB39-93			v639
-		BSA2012			GayAdopt
-	X ff5
-		ISSP Family 2012	V19
-	X mm5
-		ISSP Family 2012	V20
+	adopt5
+		X EVS			d026_01
+	adopt4
+		X EB661-06		v403?
+	adopt2
+		X EB39-93		v639
+		X BSA2012		GayAdopt
+	ff5
+		X ISSP Family 2012	V19
+	mm5
+		X ISSP Family 2012	V20
 	ff2
 		BSA2007			FGayAdopt
 	mm2
@@ -53,11 +45,17 @@
 		X Poland GSS 1992-2010	HOMOSEX
 		X US GSS 1972-2010	HOMOSEX
 		X German GSS 90, 00, 02	v528
-		Australia NSSS 84,87,93	HOMOSEX
-		X EB83_4 2015		QC16_2
+		Australia NSSS 84,87,93	HOMOSEX [ADA charges for $1k access]
 	
 	approve5
 		X British Soc Attitudes	HOMOSEX
+		BHPS 98,00,02,04,06,08	_OPFAMR (HJLNPR)
+		BEPS 92,94,95,96,97	gaysexXX [survey in wide format]
+
+*There is nothing wrong in a sexual relationship between two persons of the same sex
+	approve4a
+		X EB83_4 2015		QC16_2
+
 				
 *morally acceptable
 Next, I’m going to read some behaviors.  For each, please tell me whether you personally believe that it is morally acceptable, morally wrong, or is it not a moral issue? Homosexual behavior
@@ -67,56 +65,52 @@ Next, I’m going to read some behaviors.  For each, please tell me whether you 
 
 
 *people just like others
-	X accept5
-		EB21-84			v128
-	X accept4
-		CEE			v233
+	accept5
+		X EB21-84		v128
+	accept4
+		X CEE			v233
 
 *homosexuality is a way of life that should be accepted by society
-	X accept2
-		pew2002			q40
-		pew2007			q50
-
-		uspew199610		q32u
-		uspew199710		q14d
-		uspew1999typo		q38u
+	accept2
+		X pew2002			q40
+		X pew2007			q50
+		X pew2011			q18
+		X pew2013			q27
 		
 
 *gays and lesbians s/b free to live life as they wish
-	X free5
-		ESS1-5			freehms
-		ESS6			freehms
+	free5
+		X ESS1-5			freehms
+		X ESS6			freehms
 
 *public office
-	X run10
-		AmB			d5
-	X highest10 
-		EB691-08
-		EB712-09		EB774-12
-		EB834-15
+	run10
+		X AmB			d5
+	highest10 
+		X EB691-08
+		X EB712-09		X EB774-12
+		X EB834-15
 
 *marriage
-	X marry4 (throughout Europe)
-		EB66.1-06		v324
-		EB83.4-15		qc16_2
+	marry4 (throughout Europe)
+		X EB66.1-06		v324
+		X EB83.4-15		qc16_2
 	marry5
 		X ISSP Family 1988	v36
-		AuSSA 2005
+		AuSSA 2005		[ADA charges for $1k access]
 		X BSA 1989, 2007, 2012 	MARVIEW0, GMLMarry
 		X USGSS 88,04,06,08,10	MARHOMO
 	marry2
 		X EB39-93		v637
-		US CID 2006		GMARRY
 	marry4a
-		US Pew surveys
+		X US Pew surveys
 		X pewrel2014_latam	Q15
 
-	X marry10
-		Americasbarometer	d6
+	marry10
+		X Americasbarometer	d6
 
 *civil union
 	civil2
 		X EB39-93		v638
-		US CID 2006		GMARRY
 
 		

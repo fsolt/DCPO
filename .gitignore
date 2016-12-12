@@ -12,6 +12,10 @@
 *.snm
 *.toc
 data-raw/cy_data/*
+data-raw/from_erico/*
+data-raw/old/*
 dev/*
 framed.sty
 paper/cache/*
+slides/*mpsa*
+data/output*.rda

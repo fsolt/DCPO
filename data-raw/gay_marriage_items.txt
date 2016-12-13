@@ -20,8 +20,8 @@
 *adopt; raise children
 	adopt5
 		X EVS			d026_01
-	adopt4
-		X EB661-06		v403?
+	adopt4 (throughout Europe)
+		X EB661-06		v325
 	adopt2
 		X EB39-93		v639
 		X BSA2012		GayAdopt
@@ -33,6 +33,8 @@
 		BSA2007			FGayAdopt
 	mm2
 		BSA2007			MGayAdopt2
+	adopt4
+		LISS2012_71		fu12a007
 
 
 *sex between two adults of same sex wrong
@@ -46,16 +48,12 @@
 		X US GSS 1972-2010	HOMOSEX
 		X German GSS 90, 00, 02	v528
 		Australia NSSS 84,87,93	HOMOSEX [ADA charges for $1k access]
+		X EB83_4 2015		QC16_2
 	
 	approve5
 		X British Soc Attitudes	HOMOSEX
 		BHPS 98,00,02,04,06,08	_OPFAMR (HJLNPR)
 		BEPS 92,94,95,96,97	gaysexXX [survey in wide format]
-
-*There is nothing wrong in a sexual relationship between two persons of the same sex
-	approve4a
-		X EB83_4 2015		QC16_2
-
 				
 *morally acceptable
 Next, I’m going to read some behaviors.  For each, please tell me whether you personally believe that it is morally acceptable, morally wrong, or is it not a moral issue? Homosexual behavior
@@ -76,6 +74,8 @@ Next, I’m going to read some behaviors.  For each, please tell me whether you 
 		X pew2007			q50
 		X pew2011			q18
 		X pew2013			q27
+	
+		X uspew
 		
 
 *gays and lesbians s/b free to live life as they wish

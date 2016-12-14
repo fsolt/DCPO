@@ -1,23 +1,27 @@
 # make this a function!
 
-p1_data <- a_res %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
-  arrange(-estimate) %>% mutate(half = ntile(estimate, 2))
+p1_data <- t_res1 %>%
+  group_by(country) %>%
+    top_n(1, year) %>%
+  ungroup() %>%
+  arrange(-estimate) %>%
+  mutate(half = ntile(estimate, 2))
 
-p1_data_a <- p1_data %>% filter(half==2) %>% mutate(ranked = row_number(estimate))
-p1_data_b <- p1_data %>% filter(half==1) %>% mutate(ranked = row_number(estimate))
+p1_data_a <- p1_data %>% filter(half==2) %>% mutate(ranked = as.factor(row_number(estimate)))
+p1_data_b <- p1_data %>% filter(half==1) %>% mutate(ranked = as.factor(row_number(estimate)))
 
 p1a <- ggplot(p1_data_a, aes(x = estimate,
                              y = ranked)) +
   geom_segment(aes(x = lb, xend = ub,
-                   y = ranked, yend = ranked),
+                   y = ranked, yend = as.factor(ranked)),
                na.rm = TRUE) +
   scale_fill_manual(values = c("Marriage"="white",
-                               "Civil Union"="grey50",
+                               "Civil Union"="gray75",
                                "None"="black"),
                     breaks=c("Marriage", "Civil Union", "None"),
                     name = "Legal Recognition") +
   geom_point(aes(fill = as.factor(law)), shape = 21, size = 1.1, na.rm = TRUE) +
-  theme_bw() + theme(legend.position=c(.36, .95),
+  theme_bw() + theme(legend.position=c(.22, .95),
                      axis.text.x  = element_text(size=7),
                      axis.text.y  = element_text(size=7),
                      axis.title.x = element_text(face="bold", size=7),
@@ -29,7 +33,7 @@ p1a <- ggplot(p1_data_a, aes(x = estimate,
                                                       size = .25),
                      legend.key = element_rect(colour = "white")) +
   scale_y_discrete(breaks = p1_data_a$ranked, labels=p1_data_a$country) +
-  coord_cartesian(xlim=c(0, 1)) +
+  coord_cartesian(xlim=c(-1, 1)) +
   labs(x = "Tolerance", y = NULL)
 
 p1b <- ggplot(p1_data_b, aes(x = estimate,
@@ -47,66 +51,28 @@ p1b <- ggplot(p1_data_b, aes(x = estimate,
                      axis.text.y  = element_text(size=7),
                      axis.title.x = element_text(face="bold", size=7)) +
   scale_y_discrete(breaks = p1_data_b$ranked, labels=p1_data_b$country) +
-  coord_cartesian(xlim=c(0, 1)) +
+  coord_cartesian(xlim=c(-1, 1)) +
   labs(x = "Tolerance", y = NULL)
 
-require(grid)
+library(gtable)
+library(grid) # low-level grid functions are required
 
-set_panel_size <- function(p=NULL, g=ggplotGrob(p), width=unit(3, "cm"), height=unit(3, "cm")){
-  panel_index_w<- g$layout$l[g$layout$name=="panel"]
-  panel_index_h<- g$layout$t[g$layout$name=="panel"]
-  g$widths[[panel_index_w]] <- width
-  g$heights[[panel_index_h]] <- height
-  class(g) <- c("fixed", class(g), "ggplot")
-  g
-}
-
-print.fixed <- function(x) grid.draw(x)
-
-left_width <- function(g){
-  axis_l_index <- g$layout$r[g$layout$name=="axis-l"]
-  ylab_index <- g$layout$r[g$layout$name=="ylab"]
-  g$widths[[axis_l_index]] + g$widths[[ylab_index]]
-}
-
-full_width <- function(g){
-  sum(g$widths)
-}
-
-
-align_plots <- function(..., width=unit(4, "cm"), height=unit(1, "null")){
-  pl <- list(...)
-  gl <- lapply(pl, set_panel_size, width=width, height=height)
-
-  left <- lapply(gl, left_width)
-  max_left <- max(do.call(unit.c, left))
-
-  widths <- lapply(gl, full_width)
-  max_width <- max(do.call(unit.c, widths))
-
-  lay <- grid.layout(nrow=1, ncol=2)
-  vp <- viewport(layout=lay)
-  pushViewport(vp)
-
-  for(ii in seq_along(gl)){
-    pushViewport(viewport(layout.pos.col = ii))
-    pushViewport(viewport(x=unit(0.5, "npc") - 0.5*max_width + max_left - left[[ii]],
-                          just="left", width=widths[[ii]]))
-    grid.draw(gl[[ii]])
-    upViewport(2)
-  }
-  upViewport()
-}
-
-align_plots(p1a, p1b)
+g1 <- ggplotGrob(p1a)
+g1 <- gtable_add_cols(g1, unit(0,"mm")) # add a column for missing legend
+g2 <- ggplotGrob(p1b)
+g <- cbind(g1, g2, size="first") # put the two plots side-by-side
+g$heights <- unit.pmax(g1$heights, g2$heights) # use the largest height
+g$layout[grepl("guide", g$layout$name),c("l","r")] <- c(ncol(g), 1) # center the legend horizontally
+grid.newpage()
+grid.draw(g)
 
 pdf("paper/figures/cs.pdf")
-align_plots(p1a, p1b)
+grid.draw(g)
 dev.off()
 
 # With year colors
 #
-# p1_data <- a_res %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
+# p1_data <- t_res1 %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
 #   arrange(-estimate) %>% mutate(half = ntile(estimate, 2),
 #                                 ranked = row_number(estimate),
 #                                 yr = year)
@@ -128,7 +94,7 @@ dev.off()
 #   coord_cartesian(xlim=c(0, 1)) +
 #   ylab("") + xlab("")
 
-p1_data <- a_res %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
+p1_data <- t_res1 %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%
   arrange(-estimate) %>% mutate(quarter = ntile(estimate, 4))
 
 p1_data_a <- p1_data %>% filter(quarter==4) %>% mutate(ranked = row_number(estimate))

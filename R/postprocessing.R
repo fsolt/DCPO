@@ -2,21 +2,18 @@
 library(stringr)
 
 x1 <- summary(out1)
-write.table(as.data.frame(x1$summary), file="data/x1.csv", sep = ",")
+write_csv(as.data.frame(x1$summary), path="data/x1.csv")
 x1_sum <- as.data.frame(x1$summary)
 x1_sum$parameter <- rownames(x1_sum)
-# x1_sum <- read_csv("x1.csv")
-# names(x1_sum)[2] <- "mean"
 x1_sum$parameter_type <- gsub("([^[]*).*", "\\1", x1_sum$parameter)
 View(x1_sum)
 View(x1_sum[x1_sum$Rhat>1.1,])
-View(x1_sum[x1_sum$Rhat>1.2,])
 
 ggplot(x1_sum) +
   aes(x = parameter_type, y = Rhat, color = parameter_type) +
   geom_jitter(height = 0, width = .5, show.legend = FALSE, alpha = .2) +
   ylab(expression(hat(italic(R))))
-ggsave(str_c("paper/figures/rhat_", iter, ".pdf"))
+ggsave(str_c("paper/figures/rhat_", iter, ".pdf"), width = 10, height = 7)
 
 
 qcodes <- x %>% group_by(variable) %>%
@@ -62,7 +59,7 @@ t_res <- summary(out1, pars="theta", probs=c(.1, .9)) %>%
   left_join(ktcodes, by="ktcode") %>%
   arrange(ccode, tcode)
 
-gm_laws <- read_csv("data-raw/gm_laws.csv") %>% right_join(k, by = "country")
+gm_laws <- read_csv("data-raw/gm_laws.csv") %>% right_join(kcodes, by = "country")
 
 t_res1 <- t_res %>%
   left_join(gm_laws, by = c("ccode", "country", "firstyr", "lastyr")) %>%
@@ -82,5 +79,5 @@ t_res1 <- t_res %>%
 #   1. tolerance by country, most recent available year: cs_plot
 #   2. tolerance trends, estimate plus raw data, eight countries
 #   3. trends in all countries: ts_plot
-#   4. probability of tolerant answer by tolerance (beta and gamma), selected items (modelled on McGann2014, fig 1)
-#   5. bar chart of beta and gamma for all items?
+#   4. probability of tolerant answer by tolerance (alpha and beta), selected items (modelled on McGann2014, fig 1)
+#   5. bar chart of alpha and beta for all items?

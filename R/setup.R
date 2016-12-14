@@ -116,7 +116,8 @@ dcpo_setup <- function(vars,
       ccode = as.numeric(factor(country, levels = unique(country))),
       tcode = as.integer(year - min(year) + 1),
       qcode = as.numeric(factor(variable, levels = unique(variable))),
-      rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp)))) %>%
+      rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp))),
+      ktcode = (ccode-1)*max(tcode)+tcode) %>%
     arrange(ccode, tcode, qcode, rcode)
 
   # Chime

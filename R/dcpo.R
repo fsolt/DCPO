@@ -41,9 +41,6 @@ robust <- FALSE
 constant_alpha <- FALSE
 ###
 
-x <- x %>%
-  mutate(ktcode = (ccode-1)*max(tcode)+tcode)
-
 rq <- x %>%
   group_by(rcode) %>%
   summarize(rq = first(qcode),

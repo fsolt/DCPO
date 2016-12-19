@@ -7,167 +7,79 @@
 #' @details \code{dcpo_setup}, when passed a data frame of survey items, collects the
 #' responses and formats them for use with the \code{dcpo} function.
 #'
-#' @return a data frame
+#' @return a stanfit object
 #'
 #' @import rstan
+#' @import beepr
+#' @importFrom dplyr `%>%` group_by summarize first
 #'
 #' @export
 
-# data1 <- gm_a
-#
-# dcpo <- function(x,
-#                  model_code = NULL,
-#                  seed = 324,
-#                  iter = 100,
-#                  cores = 1,
-#                  chains = 4)
+dcpo <- function(x,
+                 exclude_yrs = NA,
+                 seed = 324,
+                 iter = 3000,
+                 cores = 4,
+                 chains = 4,
+                 robust = FALSE,
+                 constant_alpha = FALSE,
+                 chime = TRUE) {
 
-# to do
-# - full aggregate IRT?
-# X robust dynamic priors (per Reuning2016)?
-# X explicitly ordinal betas?
-
-library(tidyverse)
-library(rstan)
-library(beepr)
-
-### Delete these when turning into a function
-seed <- 324
-iter <- 3000
-chains <- 4
-cores <- chains
-x <- gm_3y
-robust <- FALSE
-constant_alpha <- FALSE
-###
-
-rq <- x %>%
-  group_by(rcode) %>%
-  summarize(rq = first(qcode),
-            rcp = max(cutpoint))
-
-dcpo_data <- list(  K    = max(x$ccode),
-                    T    = max(x$tcode),
-                    Q    = max(x$qcode),
-                    R    = max(x$rcode),
-                    N    = length(x$y_r),
-                    kk   = x$ccode,
-                    tt   = x$tcode,
-                    kktt = x$ktcode,
-                    qq   = x$qcode,
-                    rr   = x$rcode,
-                    rq   = rq$rq,
-                    rcp  = rq$rcp,
-                    y_r  = x$y_r,
-                    n_r  = x$n,
-                    rob  = as.numeric(robust),
-                    c_a  = as.numeric(constant_alpha)
-)
-
-
-
-dcpo_code <- '
-  data {
-    int<lower=1> K;     		// number of countries
-    int<lower=1> T; 				// number of years
-    int<lower=1> Q; 				// number of questions
-    int<lower=1> R;         // number of question-cutpoints
-    int<lower=1> N; 				// number of KTQR observations
-    int<lower=1, upper=K> kk[N]; 	// country for observation n
-    int<lower=1, upper=T> tt[N]; 	// year for observation n
-    int<lower=1> kktt[N];         // country-year for observation n
-    int<lower=1, upper=Q> qq[N];  // question for observation n
-    int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
-    int<lower=1, upper=R> rq[R];  // question for question-cutpoint r
-    int<lower=1, upper=R> rcp[R]; // cutpoint for question-cutpoint r
-    int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
-    int<lower=0> n_r[N];    // total number of respondents for observation n
-    int<lower=0, upper=1> rob;    // robust dynamic model indicator
-		int<lower=0, upper=1> c_a;		// constant alpha indicator
+  if (!is.na(min_yrs)) {
+    x <- x %>%
+      filter(year_obs >= min_yrs) %>%
+      mutate(tcode = as.integer(year - min(year) + 1),
+             qcode = as.numeric(factor(variable, levels = unique(variable))),
+             rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp))),
+             ktcode = (ccode-1)*max(tcode)+tcode) %>%
+      arrange(ccode, tcode, qcode, rcode) %>%
+      group_by(ccode) %>%
+      mutate(tq = length(unique(paste(tcode, qcode))),
+             year_obs = length(unique(tcode))) %>%
+      ungroup()
   }
 
-  parameters {
-    vector[K*T] theta_raw; // non-centered public opinion ("ability")
-    vector[2] xi[R]; // alpha/beta (discrimination/difficulty) pair vectors
-    vector[2] mu; // vector for alpha/beta means
-    vector<lower=0>[2] tau; // vector for alpha/beta residual sds
-    cholesky_factor_corr[2] L_Omega; // Cholesky decomposition of the correlation matrix for log(alpha) and beta
-    real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+  rq <- x %>%
+    group_by(rcode) %>%
+    summarize(rq = first(qcode),
+              rcp = max(cutpoint))
+
+  dcpo_data <- list(  K    = max(x$ccode),
+                      T    = max(x$tcode),
+                      Q    = max(x$qcode),
+                      R    = max(x$rcode),
+                      N    = length(x$y_r),
+                      kk   = x$ccode,
+                      tt   = x$tcode,
+                      kktt = x$ktcode,
+                      qq   = x$qcode,
+                      rr   = x$rcode,
+                      rq   = rq$rq,
+                      rcp  = rq$rcp,
+                      y_r  = x$y_r,
+                      n_r  = x$n,
+                      rob  = as.numeric(robust),
+                      c_a  = as.numeric(constant_alpha)
+  )
+
+  start <- proc.time()
+  out1 <- stan(model_code = dcpo_code,
+               file = "dcpo_data.stan",
+               seed = seed,
+               iter = iter,
+               cores = cores,
+               chains = chains,
+               control = list(max_treedepth = 20))
+  runtime <- proc.time() - start
+  cat("Runtime:", runtime%/%3600, "hours,", (runtime%%3600)%/%60, "minutes, and", (runtime%%3600)%%60, "seconds")
+
+  # Chime
+  if(chime) {
+    beep()
   }
 
-  transformed parameters {
-    vector[R] alpha; // discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-    vector[R] beta; // difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-    vector[K*T] theta; // public opinion ("ability")
+  return(out1)
+}
 
-    for (r in 1:R) {
-      alpha[r] = exp(xi[r,1]);
-      beta[r] = xi[r,2];
-      if (r > 1) {
-        if (rq[r]==rq[r-1]) {
-          beta[r] = beta[r-1] + exp(beta[r]);
-          if (c_a == 1) {
-            alpha[r] = alpha[r-1];
-          }
-        }
-      }
-    }
+# save(out1, file = str_c("results/dcpo_", str_replace(Sys.time(), " ", "_"), ".rda"))
 
-    for (k in 1:K) {
-      theta[(k-1)*T+1] = theta_raw[(k-1)*T+1];
-      for (t in 2:T) {
-        theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + sigma_theta[k] * theta_raw[(k-1)*T+t];
-      }
-    }
-  }
-
-  model {
-    matrix[2,2] L_Sigma;
-    L_Sigma = diag_pre_multiply(tau, L_Omega);
-    for (r in 1:R) {
-      xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
-    }
-    sigma_theta ~ normal(0, .05);
-
-    L_Omega ~ lkj_corr_cholesky(4);
-    mu[1] ~ normal(1, 1);
-    tau[1] ~ exponential(.2);
-    mu[2] ~ normal(-1, 1);
-    tau[2] ~ exponential(.2);
-
-    // transition model
-    if (rob == 1) {  // robust dynamic prior (see Reuning, Kenwick, and Fariss 2016)
-      theta_raw ~ student_t(10, 0, 1);
-    } else { // standard dynamic prior
-      theta_raw ~ normal(0, 1);
-    }
-
-    // measurement model
-    y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr])); // likelihood
-
-  }
-
-  generated quantities {
-    corr_matrix[2] Omega;
-    Omega = multiply_lower_tri_self_transpose(L_Omega);
-  }
-'
-
-start <- proc.time()
-out1 <- stan(model_code = dcpo_code,
-             data = dcpo_data,
-             seed = seed,
-             iter = iter,
-             cores = cores,
-             chains = chains,
-             control = list(max_treedepth = 20))
-runtime <- proc.time() - start
-runtime/60
-
-lapply(get_sampler_params(out1, inc_warmup = FALSE),
-       summary, digits = 2)
-
-save(out1, file = str_c("data/output_", str_replace(Sys.time(), " ", "_"), ".rda"))
-
-#Chime
-beep()

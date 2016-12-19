@@ -9,15 +9,10 @@ library(stringr)
 
 
 datasets_table <- read_csv("data-raw/datasets_table.csv")
-gm0 <- read_csv("data-raw/surveys_gm.csv")
-gm <- dcpo_setup(gm0)
-write_csv(gm, "data/all_data_gm.csv")
+gm <- dcpo_setup(vars = "data-raw/surveys_gm.csv",
+                 file = "data/all_data_gm.csv")
 
-gm <- read_csv("data/all_data_gm.csv") %>%
-  group_by(ccode) %>%
-  mutate(tq = length(unique(paste(tcode, qcode))),
-         year_obs = length(unique(tcode))) %>%
-  ungroup()
+gm <- read_csv("data/all_data_gm.csv")
 gm_2y <- gm %>%
   filter(year_obs >= 2) %>%
   mutate(ccode = as.numeric(factor(ccode)))

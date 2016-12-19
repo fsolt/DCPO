@@ -23,11 +23,12 @@
 
 dcpo_setup <- function(vars,
                        datapath = "~/Documents/Projects/Data/",
+                       file = "",
                        chime = TRUE) {
   if ("data.frame" %in% class(vars)) {
     vars_table <- vars
   } else {
-    vars_table <- read.csv(vars, as.is = TRUE)
+    vars_table <- read_csv(vars)
   }
 
   all_sets <- list()
@@ -118,11 +119,19 @@ dcpo_setup <- function(vars,
       qcode = as.numeric(factor(variable, levels = unique(variable))),
       rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp))),
       ktcode = (ccode-1)*max(tcode)+tcode) %>%
-    arrange(ccode, tcode, qcode, rcode)
+    arrange(ccode, tcode, qcode, rcode) %>%
+    group_by(ccode) %>%
+    mutate(tq = length(unique(paste(tcode, qcode))),
+           year_obs = length(unique(tcode))) %>%
+    ungroup()
 
   # Chime
   if(chime) {
     beep()
+  }
+
+  if(file!="") {
+    write_csv(all_data2, file)
   }
 
   return(all_data2)

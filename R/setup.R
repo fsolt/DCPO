@@ -35,7 +35,7 @@ dcpo_setup <- function(vars,
   for (i in seq(dim(vars_table)[1])) {
       cat(i, " ")
       v <- vars_table[i, ]
-      ds <- datasets_table[datasets_table$survey==v$survey, ]
+      ds <- surveys_data[surveys_data$survey==v$survey, ]
 
       # Get dataset (if necessary)
       if (vars_table[["survey"]][i] != c(0, head(vars_table[["survey"]], -1))[i]) {

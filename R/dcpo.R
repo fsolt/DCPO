@@ -16,11 +16,12 @@
 #' @export
 
 dcpo <- function(x,
-                 exclude_yrs = NA,
+                 min_yrs = NA,
                  seed = 324,
                  iter = 3000,
                  cores = 4,
                  chains = 4,
+                 adapt_delta = .95,
                  robust = FALSE,
                  constant_alpha = FALSE,
                  chime = TRUE) {
@@ -63,13 +64,13 @@ dcpo <- function(x,
   )
 
   start <- proc.time()
-  out1 <- stan(model_code = dcpo_code,
-               file = "dcpo_data.stan",
+  out1 <- stan(file = "exec/dcpo.stan",
+               data = dcpo_data,
                seed = seed,
                iter = iter,
                cores = cores,
                chains = chains,
-               control = list(max_treedepth = 20))
+               control = list(max_treedepth = 20, adapt_delta=adapt_delta))
   runtime <- proc.time() - start
   cat("Runtime:", runtime%/%3600, "hours,", (runtime%%3600)%/%60, "minutes, and", (runtime%%3600)%%60, "seconds")
 

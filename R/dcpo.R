@@ -26,19 +26,7 @@ dcpo <- function(x,
                  constant_alpha = FALSE,
                  chime = TRUE) {
 
-  if (!is.na(min_yrs)) {
-    x <- x %>%
-      filter(year_obs >= min_yrs) %>%
-      mutate(tcode = as.integer(year - min(year) + 1),
-             qcode = as.numeric(factor(variable, levels = unique(variable))),
-             rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp))),
-             ktcode = (ccode-1)*max(tcode)+tcode) %>%
-      arrange(ccode, tcode, qcode, rcode) %>%
-      group_by(ccode) %>%
-      mutate(tq = length(unique(paste(tcode, qcode))),
-             year_obs = length(unique(tcode))) %>%
-      ungroup()
-  }
+  x <- with_min_yrs(x, min_yrs) # include only countries that meet minimum number of observed years
 
   rq <- x %>%
     group_by(rcode) %>%
@@ -84,3 +72,19 @@ dcpo <- function(x,
 
 # save(out1, file = str_c("results/dcpo_", str_replace(Sys.time(), " ", "_"), ".rda"))
 
+with_min_yrs <- function(x, min_yrs) {
+  if (!is.na(min_yrs)) {
+    x <- x %>%
+      filter(year_obs >= min_yrs) %>%
+      mutate(tcode = as.integer(year - min(year) + 1),
+             qcode = as.numeric(factor(variable, levels = unique(variable))),
+             rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp))),
+             ktcode = (ccode-1)*max(tcode)+tcode) %>%
+      arrange(ccode, tcode, qcode, rcode) %>%
+      group_by(ccode) %>%
+      mutate(tq = length(unique(paste(tcode, qcode))),
+             year_obs = length(unique(tcode))) %>%
+      ungroup()
+  }
+  return(x)
+}

@@ -18,7 +18,7 @@
 dcpo <- function(x,
                  seed = 324,
                  iter = 3000,
-                 cores = min(4, parallel::detectCores()/2)
+                 cores = min(4, parallel::detectCores()/2),
                  chains = 4,
                  adapt_delta = .95,
                  robust = FALSE,

@@ -11,12 +11,11 @@
 #'
 #' @import rstan
 #' @import beepr
-#' @importFrom dplyr `%>%` group_by summarize first
+#' @importFrom dplyr "%>%" group_by summarize first
 #'
 #' @export
 
 dcpo <- function(x,
-                 min_yrs = NA,
                  seed = 324,
                  iter = 3000,
                  cores = 4,
@@ -25,8 +24,6 @@ dcpo <- function(x,
                  robust = FALSE,
                  constant_alpha = FALSE,
                  chime = TRUE) {
-
-  x <- with_min_yrs(x, min_yrs) # include only countries that meet minimum number of observed years
 
   rq <- x %>%
     group_by(rcode) %>%
@@ -70,13 +67,13 @@ dcpo <- function(x,
   return(out1)
 }
 
-# save(out1, file = str_c("results/dcpo_", str_replace(Sys.time(), " ", "_"), ".rda"))
-
+#' @export
 with_min_yrs <- function(x, min_yrs) {
   if (!is.na(min_yrs)) {
     x <- x %>%
       filter(year_obs >= min_yrs) %>%
-      mutate(tcode = as.integer(year - min(year) + 1),
+      mutate(ccode = as.integer(factor(ccode)),
+             tcode = as.integer(year - min(year) + 1),
              qcode = as.numeric(factor(variable, levels = unique(variable))),
              rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp))),
              ktcode = (ccode-1)*max(tcode)+tcode) %>%

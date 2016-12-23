@@ -3,7 +3,7 @@
 ^cran-comments\.md$
 ^data-raw$
 ^R/.*_plot.*$
-^R/.*processing\.R$
+^R/.*process*\.R$
 ^R/sysdata\.rda$
 ^paper/.*$
 ^slides/.*$

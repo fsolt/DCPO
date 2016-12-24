@@ -70,6 +70,8 @@ pdf("paper/figures/cs.pdf")
 grid.draw(g)
 dev.off()
 
+
+
 # With year colors
 #
 # p1_data <- t_res1 %>% group_by(country) %>% top_n(1, year) %>% ungroup() %>%

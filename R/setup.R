@@ -39,9 +39,10 @@ dcpo_setup <- function(vars,
 
       # Get dataset (if necessary)
       if (vars_table[["survey"]][i] != c(0, head(vars_table[["survey"]], -1))[i]) {
+          current <- ls()
           eval(parse(text = ds$load_cmd))
           t_data <- get(v$survey)
-          rm(list = v$survey)
+          if (!v$survey %in% current) rm(list = v$survey)
 
           # Fix column names (sometimes necessary)
           valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE)
@@ -49,7 +50,7 @@ dcpo_setup <- function(vars,
 
           # Get country-years
           cc <- eval(parse(text = ds$cy_data))
-          t_data <- merge(t_data, cc)
+          t_data <- left_join(t_data, cc)
 
           # Get weights
           if (!is.na(ds$wt)) {

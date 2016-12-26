@@ -1,0 +1,76 @@
+survey,item,variable,values,to_na
+wvs_combo,just10,F120,c(1:10),c(-5:-1)
+wvs_combo,a_health2,A046,c(0:1),c(-5:-1)
+wvs_combo,a_defect2,A047,c(0:1),c(-5:-1)
+wvs_combo,a_single2,A048,c(0:1),c(-5:-1)
+wvs_combo,a_nomore2,A049,c(0:1),c(-5:-1)
+evs_combo,just10,f120,c(1:10),
+evs_combo,a_health2,a046,c(0:1),
+evs_combo,a_defect2,a047,c(0:1),
+evs_combo,a_single2,a048,c(0:1),
+evs_combo,a_nomore2,a049,c(0:1),
+asiab2004,just10,Q45C,c(1:10),99
+asiab2005,just10,q45c,c(1:10),
+asiab2006,just10,q50c,c(1:10),
+asiab2007,just10,q50c,c(1:10),
+lb2002,just10,p52wvsd,c(1:10),"c(-4, -2)"
+lb2004,just10,p38stb,c(1:10),"c(-4, -2)"
+lb2007,just10,p95st_b,c(1:10),-2
+usgss,l_defect2,ABDEFECT,c(2:1),
+usgss,l_nomore2,ABNOMORE,c(2:1),
+usgss,l_health2,ABHLTH,c(2:1),
+usgss,l_poor2,ABPOOR,c(2:1),
+usgss,l_rape2,ABRAPE,c(2:1),
+usgss,l_single2,ABSINGLE,c(2:1),
+usgss,l_any2,ABANY,c(2:1),
+usgss,l_nca3,ABLEGAL,c(3:1),
+allbus,l_defect2,v379,c(2:1),"c(0, 8, 9)"
+allbus,l_nomore2,v380,c(2:1),"c(0, 8, 9)"
+allbus,l_health2,v381,c(2:1),"c(0, 8, 9)"
+allbus,l_poor2,v382,c(2:1),"c(0, 8, 9)"
+allbus,l_rape2,v383,c(2:1),"c(0, 8, 9)"
+allbus,l_single2,v384,c(2:1),"c(0, 8, 9)"
+allbus,l_any2,v385,c(2:1),"c(0, 8, 9)"
+allbus,free7,v115,c(1:7),"c(0, 97, 98, 99)"
+eb11,free4,v78,c(4:1),
+eb21,free5b,v133,c(1:5),
+eb38,free5,v492,c(5:1),
+issp91,a_defect4,v14,c(1:4),
+issp91,a_poor4,v15,c(1:4),
+issp91,l_defect4,v12,c(1:4),
+issp91,l_poor4,v13,c(1:4),
+issp98,a_defect4,v10,c(1:4),
+issp98,a_poor4,v11,c(1:4),
+issp08,a_defect4,V10,c(1:4),
+issp08,a_poor4,V11,c(1:4),
+issp94,free5a,v44,c(5:1),
+cdcee,free4,v234,c(4:1),
+bsa_combo,l_any2,abort1,c(2:1),"c(8, 9)"
+bsa_combo,l_couple2,abort2,c(2:1),"c(8, 9)"
+bsa_combo,l_single2,abort3,c(2:1),"c(8, 9)"
+bsa_combo,l_poor2,abort4,c(2:1),"c(8, 9)"
+bsa_combo,l_defect2,abort5,c(2:1),"c(8, 9)"
+bsa_combo,l_health2,abort6,c(2:1),"c(8, 9)"
+bsa_combo,l_rape2,abort7,c(2:1),"c(8, 9)"
+bsa1994,l_any2,abort1,c(2:1),"c(8, 9)"
+bsa1994,l_couple2,abort2,c(2:1),"c(8, 9)"
+bsa1994,l_single2,abort3,c(2:1),"c(8, 9)"
+bsa1994,l_poor2,abort4,c(2:1),"c(8, 9)"
+bsa1994,l_defect2,abort5,c(2:1),"c(8, 9)"
+bsa1994,l_health2,abort6,c(2:1),"c(8, 9)"
+bsa1994,l_rape2,abort7,c(2:1),"c(8, 9)"
+bsa1995,l_any2,abort1,c(2:1),"c(8, 9)"
+bsa1995,l_couple2,abort2,c(2:1),"c(8, 9)"
+bsa1995,l_single2,abort3,c(2:1),"c(8, 9)"
+bsa1995,l_poor2,abort4,c(2:1),"c(8, 9)"
+bsa1995,l_defect2,abort5,c(2:1),"c(8, 9)"
+bsa1995,l_health2,abort6,c(2:1),"c(8, 9)"
+bsa1995,l_rape2,abort7,c(2:1),"c(8, 9)"
+bsa1998,,,,
+bsa2000,,,,
+bsa2004,,,,
+bsa2005,,,,
+bsa2007,,,,
+bsa2008,,,,
+bsa2010,,,,
+bsa2012,,,,

@@ -66,11 +66,59 @@ bsa1995,l_poor2,abort4,c(2:1),"c(8, 9)"
 bsa1995,l_defect2,abort5,c(2:1),"c(8, 9)"
 bsa1995,l_health2,abort6,c(2:1),"c(8, 9)"
 bsa1995,l_rape2,abort7,c(2:1),"c(8, 9)"
-bsa1998,,,,
-bsa2000,,,,
-bsa2004,,,,
-bsa2005,,,,
-bsa2007,,,,
-bsa2008,,,,
-bsa2010,,,,
-bsa2012,,,,
+bsa1998,l_any2,ABORT1,c(2:1),"c(-2, -1, 8, 9)"
+bsa1998,l_couple2,ABORT2,c(2:1),"c(-2, -1, 8, 9)"
+bsa1998,l_single2,ABORT3,c(2:1),"c(-2, -1, 8, 9)"
+bsa1998,l_poor2,ABORT4,c(2:1),"c(-2, -1, 8, 9)"
+bsa1998,l_defect2,ABORT5,c(2:1),"c(-2, -1, 8, 9)"
+bsa1998,l_health2,ABORT6,c(2:1),"c(-2, -1, 8, 9)"
+bsa1998,l_rape2,ABORT7,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,l_any2,ABORT1,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,l_couple2,ABORT2,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,l_single2,ABORT3,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,l_poor2,ABORT4,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,l_defect2,ABORT5,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,l_health2,ABORT6,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,l_rape2,ABORT7,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,a_defect4,ABORWRGA,c(1:4),"c(-2, -1, 8, 9)"
+bsa2000,a_poor4,ABORWRGB,c(1:4),"c(-2, -1, 8, 9)"
+bsa2004,l_any2,Abort1,c(2:1),"c(-2, -1, 8, 9)"
+bsa2004,l_couple2,Abort2,c(2:1),"c(-2, -1, 8, 9)"
+bsa2004,l_single2,Abort3,c(2:1),"c(-2, -1, 8, 9)"
+bsa2004,l_poor2,Abort4,c(2:1),"c(-2, -1, 8, 9)"
+bsa2004,l_defect2,Abort5,c(2:1),"c(-2, -1, 8, 9)"
+bsa2004,l_health2,ABort6,c(2:1),"c(-2, -1, 8, 9)"
+bsa2004,l_rape2,ABort7,c(2:1),"c(-2, -1, 8, 9)"
+bsa2005,l_any2,Abort1,c(2:1),"c(-2, -1, 8, 9)"
+bsa2005,l_poor2,Abort4,c(2:1),"c(-2, -1, 8, 9)"
+bsa2005,l_health2,Abort6,c(2:1),"c(-2, -1, 8, 9)"
+bsa2007,l_any2,Abort1,c(2:1),"c(-2, -1, 8, 9)"
+bsa2007,l_poor2,Abort4,c(2:1),"c(-2, -1, 8, 9)"
+bsa2007,l_health2,Abort6,c(2:1),"c(-2, -1, 8, 9)"
+bsa2008,l_any2,Abort1,c(2:1),"c(-2, -1, 8, 9)"
+bsa2008,l_poor2,Abort4,c(2:1),"c(-2, -1, 8, 9)"
+bsa2008,l_health2,Abort6,c(2:1),"c(-2, -1, 8, 9)"
+bsa2000,a_defect4,AborWrgA,c(1:4),"c(-2, -1, 8, 9)"
+bsa2000,a_poor4,AborWrgB,c(1:4),"c(-2, -1, 8, 9)"
+bsa2012,l_any2,abort1,c(2:1),"c(-2, -1, 8, 9)"
+bsa2012,l_couple2,abort2,c(2:1),"c(-2, -1, 8, 9)"
+bsa2012,l_single2,abort3,c(2:1),"c(-2, -1, 8, 9)"
+bsa2012,l_poor2,abort4,c(2:1),"c(-2, -1, 8, 9)"
+bsa2012,l_defect2,abort5,c(2:1),"c(-2, -1, 8, 9)"
+bsa2012,l_health2,abort6,c(2:1),"c(-2, -1, 8, 9)"
+bsa2012,l_rape2,abort7,c(2:1),"c(-2, -1, 8, 9)"
+npes_combo,free7,V44_5,c(1:7),"c(95, 96, 99)"
+pgss,l_defect2,ABDEFECT,c(2:1),8
+pgss,l_nomore2,ABNOMORE,c(2:1),8
+pgss,l_health2,ABHLTH,c(2:1),8
+pgss,l_poor2,ABPOOR,c(2:1),8
+pgss,l_rape2,ABRAPE,c(2:1),8
+pgss,l_single2,ABSINGLE,c(2:1),8
+pgss,l_any2,ABANY,c(2:1),8
+pewrel2014_latam,moral3,Q69e,"c(2,3,1)","c(98, 99)"
+pewrel2014_latam,l_ncca4,Q16,c(4:1),"c(98, 99)"
+pewrel2009_afr,moral3,Q85H,"c(2,3,1)","c(4, 8, 9)"
+amb,a_health2,domw14a,c(2:1),
+amb,a_rape2,domw14b,c(2:1),
+anes_combo,l_ncca4,VCF0837 ,c(1:4),"c(0, 9)"
+anes_combo,l_ncca4,VCF0838 ,c(1:4),"c(0, 9)"

@@ -50,7 +50,7 @@ dcpo_setup <- function(vars,
 
           # Get country-years
           cc <- eval(parse(text = ds$cy_data))
-          t_data <- left_join(t_data, cc)
+          t_data <- left_join(t_data, cc, by = names(cc)[[1]])
 
           # Get weights
           if (!is.na(ds$wt)) {

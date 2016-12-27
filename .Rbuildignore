@@ -2,8 +2,9 @@
 ^\.Rproj\.user$
 ^cran-comments\.md$
 ^data-raw$
+^data/surveys_data\.R$
 ^R/.*_plot.*$
-^R/.*process*\.R$
+^R/.*process.*\.R$
 ^R/sysdata\.rda$
 ^paper/.*$
 ^slides/.*$

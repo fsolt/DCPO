@@ -254,6 +254,18 @@ surv <- "evs.combo"
 cy <- get.cy(evs.combo)
 write(cy, file = paste0("cy_data/", surv, ".txt"))
 
+# WVS
+wvs_combo <- load(paste0(datapath,"WVS/Waves 1-6/WVS.rdata")); wvs_combo <-`WVS_Longitudinal_1981_2014_R_v2015_04_18`; rm(`WVS_Longitudinal_1981_2014_R_v2015_04_18`)
+wvs_combo$country <- countrycode(wvs_combo$S003, "iso3n", "country.name", warn=T)
+wvs_combo$country[wvs_combo$s003==891] <- "Serbia and Montenegro"
+wvs_combo$country[wvs_combo$s003==914] <- ""
+wvs_combo$year <- with(wvs_combo, s025 - 10000*s003)
+
+id <- "S025"
+surv <- "wvs_combo"
+cy <- get.cy(wvs_combo)
+write(cy, file = paste0("cy_data/", surv, ".txt"))
+
 # PGSS
 pgss <- read.dta(paste0(datapath, "/GSS/Poland/p0091sav.dta"), convert.factors=F)
 pgss$country <- "POLAND"

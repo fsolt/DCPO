@@ -102,10 +102,11 @@ dcpo_setup <- function(vars,
   rm(add)
   all_data$y_r = with(all_data, as.integer(round(n * value))) # number of 'yes' response equivalents, given data weights
 
-  all_data2 <- all_data %>% select(-value, -L1, -survey) %>%
+  all_data2 <- all_data %>% select(-value, -L1) %>%
     group_by(country, year, variable, cutpoint) %>%
     summarize(y_r = sum(y_r),     # When two surveys ask the same question in
-              n = sum(n)) %>%         # the same country-year, add samples together
+              n = sum(n),         # the same country-year, add samples together
+              survey = str_c(first(survey))) %>%
     ungroup() %>%
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)

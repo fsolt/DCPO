@@ -106,7 +106,7 @@ dcpo_setup <- function(vars,
     group_by(country, year, variable, cutpoint) %>%
     summarize(y_r = sum(y_r),     # When two surveys ask the same question in
               n = sum(n),         # the same country-year, add samples together
-              survey = str_c(first(survey))) %>%
+              survey = first(survey)) %>%
     ungroup() %>%
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)

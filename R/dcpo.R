@@ -9,6 +9,8 @@
 #'
 #' @return a stanfit object
 #'
+#' @useDynLib DCPO, .registration = TRUE
+#'
 #' @import rstan
 #' @import beepr
 #' @importFrom dplyr "%>%" group_by summarize first

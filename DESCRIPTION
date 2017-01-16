@@ -4,9 +4,11 @@ Version: 0.1.0.9000
 Author: Frederick Solt <frederick-solt@uiowa.edu>
 Maintainer: Frederick Solt <frederick-solt@uiowa.edu>
 Description: Estimates latent variables from public opinion data in cross-national surveys.
-Depends: R (>= 3.1.0)
 LazyData: true
 License: GPL (>=3)
+Depends: R (>= 3.0.2), Rcpp (>= 0.12.8), methods (>= 3.3.2)
+Imports: rstan (>= 2.14.1), rstantools (>= 1.1.0)
+LinkingTo: StanHeaders (>= 2.14.0.1), rstan (>= 2.14.1), BH (>= 1.62.0.1), Rcpp (>= 0.12.8), RcppEigen (>= 0.3.2.9.0)
 Suggests: knitr
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

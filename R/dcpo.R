@@ -9,8 +9,6 @@
 #'
 #' @return a stanfit object
 #'
-#' @useDynLib DCPO, .registration = TRUE
-#'
 #' @import rstan
 #' @import beepr
 #' @importFrom dplyr "%>%" group_by summarize first
@@ -50,16 +48,14 @@ dcpo <- function(x,
                       c_a  = as.numeric(constant_alpha)
   )
 
-  start <- proc.time()
-  out1 <- stan(file = "exec/dcpo.stan",
-               data = dcpo_data,
-               seed = seed,
-               iter = iter,
-               cores = cores,
-               chains = chains,
-               control = list(max_treedepth = 20, adapt_delta=adapt_delta))
-  runtime <- proc.time() - start
-  cat("Runtime:", runtime%/%3600, "hours,", (runtime%%3600)%/%60, "minutes, and", (runtime%%3600)%%60, "seconds")
+  dcpo_model <- stanmodels$dcpo
+  out1 <- sampling(dcpo_model,
+                   data = dcpo_data,
+                   seed = seed,
+                   iter = iter,
+                   cores = cores,
+                   chains = chains,
+                   control = list(max_treedepth = 20, adapt_delta=adapt_delta))
 
   # Chime
   if(chime) {

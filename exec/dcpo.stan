@@ -78,14 +78,12 @@ model {
 
 generated quantities {
   corr_matrix[2] Omega;
-  vector[N] y_pred;
+  vector[N] pred_prob;
 
   Omega = multiply_lower_tri_self_transpose(L_Omega);
 
   // Simulations from the posterior predictive distribution
   for (n in 1:N) {
-    real t;
-    t = inv_logit(alpha[rr[n]] .* (theta[kktt[n]] - beta[rr[n]]));
-    y_pred[n] = binomial_rng(n_r[n], t);
+    pred_prob[n] = inv_logit(alpha[rr[n]] .* (theta[kktt[n]] - beta[rr[n]]));
   }
 }

@@ -53,7 +53,8 @@ dcpo_setup <- function(vars,
           names(t_data) <- valid_column_names
 
           # Get countries
-          t_data$c_dcpo <- t_data[[ds$country_var]] %>%
+          t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
+            t_data[[ds$country_var]] %>%
             labelled(., attr(., "labels")) %>%
             to_factor(levels = "labels") %>%
             as.character() %>%
@@ -69,6 +70,7 @@ dcpo_setup <- function(vars,
             str_replace(" of.*|,.*| \\(.*\\)", "") %>%
             str_replace("Russian Federation", "Russia") %>%
             str_replace("United Tanzania", "Tanzania")
+          } else ds$country_var
 
           # Get years
           t_data$y_dcpo <- if (!is.na(ds$cc_year)) {

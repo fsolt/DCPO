@@ -58,16 +58,13 @@ dcpo_setup <- function(vars,
             to_factor(levels = "labels") %>%
             as.character() %>%
             {if (!is.na(ds$cc_dict))
-              countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict))) %>%
-                countrycode("country.name", "country.name")
-              else .} %>%
-            {if (!is.na(ds$cc_origin))
+              countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
+              else if (!is.na(ds$cc_origin))
               countrycode(., ds$cc_origin, "country.name")
-              else .} %>%
-            {if (!is.na(ds$cc_match))
+              else if (!is.na(ds$cc_match))
               suppressWarnings(countrycode(., "country.name", "country.name",
                                            custom_match = eval(parse(text = ds$cc_match))))
-              else .} %>%
+              else countrycode(., "country.name", "country.name")} %>%
             str_replace("Republic of (.*)", "\\1") %>%
             str_replace(" of.*|,.*| \\(.*\\)", "")
 

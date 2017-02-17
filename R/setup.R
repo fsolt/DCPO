@@ -11,18 +11,16 @@
 #'
 #' @return a data frame
 #'
-#' @import foreign
 #' @import readr
 #' @import reshape2
 #' @import dplyr
 #' @import beepr
-#' @importFrom haven read_sav read_dta
-#' @importFrom Hmisc spss.get
+#' @importFrom rio import
 #'
 #' @export
 
 dcpo_setup <- function(vars,
-                       datapath = "~/Documents/Projects/Data/",
+                       datapath = "../Data",
                        file = "",
                        chime = TRUE) {
   if ("data.frame" %in% class(vars)) {
@@ -39,10 +37,12 @@ dcpo_setup <- function(vars,
 
       # Get dataset (if necessary)
       if (vars_table[["survey"]][i] != c(0, head(vars_table[["survey"]], -1))[i]) {
-          current <- ls()
-          eval(parse(text = ds$load_cmd))
-          t_data <- get(v$survey)
-          if (!v$survey %in% current) rm(list = v$survey)
+          dataset_path <- file.path(datapath,
+                                    paste0(ds$archive, "_files"),
+                                    paste0(ds$surv_program, "_files"),
+                                    ds$doi)
+          dataset_file <- list.files(path = dataset_path) %>% str_subset(".RData")
+          t_data <- import(file.path(dataset_path, dataset_file))
 
           # Fix column names (sometimes necessary)
           valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE)
@@ -51,6 +51,8 @@ dcpo_setup <- function(vars,
           # Get country-years
           cc <- eval(parse(text = ds$cy_data))
           t_data <- left_join(t_data, cc, by = names(cc)[[1]])
+
+          t_data$c_dcpo <- as.character(to_factor(t_data$COUNTRY, levels = "labels"))
 
           # Get weights
           if (!is.na(ds$wt)) {

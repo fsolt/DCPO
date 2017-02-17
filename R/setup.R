@@ -50,17 +50,37 @@ dcpo_setup <- function(vars,
           names(t_data) <- valid_column_names
 
           # Get countries
-          cc <- eval(parse(text = ds$cy_data))
-          t_data <- left_join(t_data, cc, by = names(cc)[[1]])
-
           t_data$c_dcpo <- t_data[[ds$country_var]] %>%
             labelled(., attr(., "labels")) %>%
             to_factor(levels = "labels") %>%
-            as.character()
-
-
+            as.character() %>%
+            {if (!is.na(ds$cc_custom))
+              countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_custom)))
+              else .} %>%
+            {if (!is.na(ds$cc_origin))
+              countrycode(., ds$cc_origin, "country.name")
+              else .} %>%
+            countrycode("country.name", "country.name")
 
           # Get years
+          t_data$y_dcpo <- {if (!is.na(ds$year_var)) {
+            if (str_detect(ds$year_var, "^\\d{4}$")) {
+              ds$year_var
+            } else {
+              t_data %>%
+                group_by(c_dcpo) %>%
+                mutate(y_dcpo = round(mean(t_data[[ds$year_var]]))) %>%
+                ungroup() %>%
+                select(y_dcpo) %>%
+                as.vector()
+            }} else {
+              t_data[[ds$country_var]] %>%
+                labelled(., attr(., "labels")) %>%
+                to_factor(levels = "labels") %>%
+                as.character() %>%
+                countrycode("orig", "year", custom_dict = )
+            }
+
 
           # Get weights
           if (!is.na(ds$wt)) {

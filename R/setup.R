@@ -16,6 +16,7 @@
 #' @import dplyr
 #' @import beepr
 #' @importFrom rio import
+#' @importFrom labelled labelled to_factor
 #'
 #' @export
 
@@ -48,11 +49,18 @@ dcpo_setup <- function(vars,
           valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE)
           names(t_data) <- valid_column_names
 
-          # Get country-years
+          # Get countries
           cc <- eval(parse(text = ds$cy_data))
           t_data <- left_join(t_data, cc, by = names(cc)[[1]])
 
-          t_data$c_dcpo <- as.character(to_factor(t_data$COUNTRY, levels = "labels"))
+          t_data$c_dcpo <- t_data[[ds$country_var]] %>%
+            labelled(., attr(., "labels")) %>%
+            to_factor(levels = "labels") %>%
+            as.character()
+
+
+
+          # Get years
 
           # Get weights
           if (!is.na(ds$wt)) {

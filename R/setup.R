@@ -66,7 +66,9 @@ dcpo_setup <- function(vars,
                                            custom_match = eval(parse(text = ds$cc_match))))
               else countrycode(., "country.name", "country.name")} %>%
             str_replace("Republic of (.*)", "\\1") %>%
-            str_replace(" of.*|,.*| \\(.*\\)", "")
+            str_replace(" of.*|,.*| \\(.*\\)", "") %>%
+            str_replace("Russian Federation", "Russia") %>%
+            str_replace("United Tanzania", "Tanzania")
 
           # Get years
           t_data$y_dcpo <- if (!is.na(ds$cc_year)) {

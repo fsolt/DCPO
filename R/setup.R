@@ -15,8 +15,11 @@
 #' @import reshape2
 #' @import dplyr
 #' @import beepr
+#' @import countrycode
 #' @importFrom rio import
 #' @importFrom labelled labelled to_factor
+#' @importFrom stringr str_detect str_subset str_extract
+#' @importFrom plyr mapvalues
 #'
 #' @export
 
@@ -54,33 +57,36 @@ dcpo_setup <- function(vars,
             labelled(., attr(., "labels")) %>%
             to_factor(levels = "labels") %>%
             as.character() %>%
-            {if (!is.na(ds$cc_custom))
-              countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_custom)))
+            {if (!is.na(ds$cc_dict))
+              countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
               else .} %>%
             {if (!is.na(ds$cc_origin))
               countrycode(., ds$cc_origin, "country.name")
               else .} %>%
-            countrycode("country.name", "country.name")
+            countrycode("country.name", "country.name") %>%
+            str_replace("Republic of (.*)", "\\1") %>%
+            str_replace(" of.*|,.*| \\(.*\\)", "")
 
           # Get years
-          t_data$y_dcpo <- {if (!is.na(ds$year_var)) {
-            if (str_detect(ds$year_var, "^\\d{4}$")) {
-              ds$year_var
-            } else {
+          t_data$y_dcpo <- if (!is.na(ds$cc_year)) {
+            t_data[[ds$country_var]] %>%
+              labelled(., attr(., "labels")) %>%
+              to_factor(levels = "labels") %>%
+              as.character() %>%
+              countrycode("orig", "year", custom_dict = eval(parse(text = ds$cc_year)))
+          } else {
+            if (!is.na(ds$year_var)) {
               t_data %>%
+                mutate(year = ifelse(between(t_data[[ds$year_var]],
+                                             1950, as.numeric(str_extract(Sys.Date(), "\\d{4}"))),
+                                     t_data[[ds$year_var]],
+                                     str_extract(ds$survey, "\\d{4}") %>% as.numeric())) %>%
                 group_by(c_dcpo) %>%
-                mutate(y_dcpo = round(mean(t_data[[ds$year_var]]))) %>%
+                mutate(y_dcpo = round(mean(year))) %>%
                 ungroup() %>%
-                select(y_dcpo) %>%
-                as.vector()
-            }} else {
-              t_data[[ds$country_var]] %>%
-                labelled(., attr(., "labels")) %>%
-                to_factor(levels = "labels") %>%
-                as.character() %>%
-                countrycode("orig", "year", custom_dict = )
-            }
-
+                .[["y_dcpo"]]
+            } else as.numeric(str_extract(ds$survey, "\\d{4}"))
+          }
 
           # Get weights
           if (!is.na(ds$wt)) {

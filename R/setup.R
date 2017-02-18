@@ -52,45 +52,53 @@ dcpo_setup <- function(vars,
           valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE)
           names(t_data) <- valid_column_names
 
+          if (is.na(ds$cy_var)) {
           # Get countries
-          t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
-            t_data[[ds$country_var]] %>%
-            labelled(., attr(., "labels")) %>%
-            to_factor(levels = "labels") %>%
-            as.character() %>%
-            {if (!is.na(ds$cc_dict))
-              countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
-              else if (!is.na(ds$cc_origin))
-              countrycode(., ds$cc_origin, "country.name")
-              else if (!is.na(ds$cc_match))
-              suppressWarnings(countrycode(., "country.name", "country.name",
-                                           custom_match = eval(parse(text = ds$cc_match))))
-              else countrycode(., "country.name", "country.name")} %>%
-            str_replace("Republic of (.*)", "\\1") %>%
-            str_replace(" of.*|,.*| \\(.*\\)", "") %>%
-            str_replace("Russian Federation", "Russia") %>%
-            str_replace("United Tanzania", "Tanzania")
-          } else ds$country_var
+            t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
+              t_data[[ds$country_var]] %>%
+                labelled(., attr(., "labels")) %>%
+                to_factor(levels = "labels") %>%
+                as.character() %>%
+                {if (!is.na(ds$cc_dict))
+                  countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
+                  else if (!is.na(ds$cc_origin))
+                    countrycode(., ds$cc_origin, "country.name")
+                  else if (!is.na(ds$cc_match))
+                    suppressWarnings(countrycode(., "country.name", "country.name",
+                                                 custom_match = eval(parse(text = ds$cc_match))))
+                  else countrycode(., "country.name", "country.name")} %>%
+                str_replace("Republic of (.*)", "\\1") %>%
+                str_replace(" of.*|,.*| \\(.*\\)", "") %>%
+                str_replace("Russian Federation", "Russia") %>%
+                str_replace("United Tanzania", "Tanzania")
+            } else ds$country_var
 
-          # Get years
-          t_data$y_dcpo <- if (!is.na(ds$cc_year)) {
-            t_data[[ds$country_var]] %>%
-              labelled(., attr(., "labels")) %>%
-              to_factor(levels = "labels") %>%
-              as.character() %>%
-              countrycode("orig", "year", custom_dict = eval(parse(text = ds$cc_year)))
+            # Get years
+            t_data$y_dcpo <- if (!is.na(ds$year_dict)) { # if there's a year dictionary...
+              t_data[[ds$country_var]] %>%
+                labelled(., attr(., "labels")) %>%
+                to_factor(levels = "labels") %>%
+                as.character() %>%
+                countrycode("orig", "year", custom_dict = eval(parse(text = ds$year_dict)))
+            } else {
+              if (!is.na(ds$year_var)) { # if there's a year variable...
+                if (length(unique(t_data$c_dcpo))>1) { # multi-country survey
+                  t_data %>%
+                    mutate(year = ifelse(between(t_data[[ds$year_var]],
+                                                 1950, as.numeric(str_extract(Sys.Date(), "\\d{4}"))),
+                                         t_data[[ds$year_var]],
+                                         str_extract(ds$survey, "\\d{4}") %>% as.numeric())) %>%
+                    group_by(c_dcpo) %>%
+                    mutate(y_dcpo = round(mean(year))) %>%
+                    ungroup() %>%
+                    .[["y_dcpo"]]
+                } else { # single-country survey
+                  t_data[[ds$year_var]]
+                }
+              } else as.numeric(str_extract(ds$survey, "\\d{4}"))
+            }
           } else {
-            if (!is.na(ds$year_var)) {
-              t_data %>%
-                mutate(year = ifelse(between(t_data[[ds$year_var]],
-                                             1950, as.numeric(str_extract(Sys.Date(), "\\d{4}"))),
-                                     t_data[[ds$year_var]],
-                                     str_extract(ds$survey, "\\d{4}") %>% as.numeric())) %>%
-                group_by(c_dcpo) %>%
-                mutate(y_dcpo = round(mean(year))) %>%
-                ungroup() %>%
-                .[["y_dcpo"]]
-            } else as.numeric(str_extract(ds$survey, "\\d{4}"))
+            #cy_var code
           }
 
           # Get weights

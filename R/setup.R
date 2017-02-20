@@ -44,7 +44,7 @@ dcpo_setup <- function(vars,
       dataset_path <- file.path(datapath,
                                 paste0(ds$archive, "_files"),
                                 paste0(ds$surv_program, "_files"),
-                                ds$doi)
+                                ds$file_id)
       dataset_file <- list.files(path = dataset_path) %>% str_subset(".RData")
       t_data <- import(file.path(dataset_path, dataset_file))
 

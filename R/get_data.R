@@ -80,3 +80,14 @@ pwalk(list(ds$archive, ds$surv_program, ds$file_id), function(archive, surv_prog
   } #end pew
 })
 
+# AmericasBarometer
+amb_dir <- "../data/dcpo_surveys/misc_files/amb_files/amb_combo"
+dir.create(amb_dir, recursive = TRUE, showWarnings = FALSE)
+amb_data_link <- "http://datasets.americasbarometer.org/datasets/746278534AmericasBarometer%20Grand%20Merge%202004-2014%20v3.0_FREE_dta.zip"
+download.file(amb_data_link, file.path(amb_dir, "amb_combo.dta.zip"))
+unzip(file.path(amb_dir, "amb_combo.dta.zip"), exdir = amb_dir)
+unlink(file.path(amb_dir, list.files(amb_dir, ".zip")))
+convert(file.path(amb_dir, "AmericasBarometer Grand Merge 2004-2014 v3.0_FREE.dta"),
+        file.path(amb_dir, "amb_combo.RData"))
+amb_cb_link <- "http://datasets.americasbarometer.org/datasets/12364388022004-2014%20Grand%20Merge%20Codebook_V3.0_Free_W.pdf"
+download.file(amb_cb_link, file.path(amb_dir, "amb_combo.pdf"))

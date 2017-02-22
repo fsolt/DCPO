@@ -53,7 +53,8 @@ dcpo_setup <- function(vars,
       names(t_data) <- valid_column_names
 
       # Get countries
-      t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
+      suppressWarnings(
+        t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
         t_data[[ds$country_var]] %>%
           labelled(., attr(., "labels")) %>%
           to_factor(levels = "labels") %>%
@@ -63,14 +64,15 @@ dcpo_setup <- function(vars,
             else if (!is.na(ds$cc_origin))
               countrycode(., ds$cc_origin, "country.name")
             else if (!is.na(ds$cc_match))
-              suppressWarnings(countrycode(., "country.name", "country.name",
-                                           custom_match = eval(parse(text = ds$cc_match))))
+              countrycode(., "country.name", "country.name",
+                          custom_match = eval(parse(text = ds$cc_match)))
             else countrycode(., "country.name", "country.name")} %>%
           str_replace("Republic of (.*)", "\\1") %>%
           str_replace(" of.*|,.*| \\(.*\\)|The former Yugoslav ", "") %>%
           str_replace("Russian Federation", "Russia") %>%
           str_replace("United Tanzania", "Tanzania")
       } else ds$country_var
+      )
 
       # Get years
       t_data$y_dcpo <- if (!is.na(ds$year_dict)) { # if there's a year dictionary...
@@ -119,7 +121,6 @@ dcpo_setup <- function(vars,
     }
     vals <- eval(parse(text = v$values))
     t_data$target <- plyr::mapvalues(t_data$target, vals, 1:length(vals))
-    t_data$target_01 <- (t_data$target - 1)/(max(t_data$target, na.rm = TRUE) - 1)
 
     # Summarize by country and year at each cutpoint
     for (j in 1:(length(vals) - 1)) {

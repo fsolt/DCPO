@@ -55,24 +55,32 @@ dcpo_setup <- function(vars,
       # Get countries
       suppressWarnings(
         t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
-        t_data[[ds$country_var]] %>%
-          labelled(., attr(., "labels")) %>%
-          to_factor(levels = "labels") %>%
-          as.character() %>%
-          {if (!is.na(ds$cc_dict))
-            countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
-            else if (!is.na(ds$cc_origin))
-              countrycode(., ds$cc_origin, "country.name")
-            else if (!is.na(ds$cc_match))
-              countrycode(., "country.name", "country.name",
-                          custom_match = eval(parse(text = ds$cc_match)))
-            else countrycode(., "country.name", "country.name")} %>%
-          str_replace("Republic of (.*)", "\\1") %>%
-          str_replace(" of.*|,.*| \\(.*\\)|The former Yugoslav ", "") %>%
-          str_replace("Russian Federation", "Russia") %>%
-          str_replace("United Tanzania", "Tanzania")
-      } else ds$country_var
+          if (is.null(attr(t_data[[ds$country_var]], "labels"))) {
+            attr(t_data[[ds$country_var]], "labels") <- attr(t_data[[ds$country_var]],
+                                                             "value.labels") %>% as.numeric()
+            attr(attr(t_data[[ds$country_var]], "labels"), "names") <- attr(attr(t_data[[ds$country_var]],
+                                                             "value.labels"), "names")
+          }
+          t_data[[ds$country_var]] %>%
+            labelled(., attr(., "labels")) %>%
+            to_factor(levels = "labels") %>%
+            as.character() %>%
+            {if (!is.na(ds$cc_dict))
+              countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
+              else if (!is.na(ds$cc_origin))
+                countrycode(., ds$cc_origin, "country.name")
+              else if (!is.na(ds$cc_match))
+                countrycode(., "country.name", "country.name",
+                            custom_match = eval(parse(text = ds$cc_match)))
+              else countrycode(., "country.name", "country.name")} %>%
+            str_replace("Republic of (.*)", "\\1") %>%
+            str_replace(" of.*|,.*| \\(.*\\)|The former Yugoslav ", "") %>%
+            str_replace("Russian Federation", "Russia") %>%
+            str_replace("United Tanzania", "Tanzania")
+        } else ds$country_var
       )
+      t_data <- t_data %>%
+        filter(!is.na(c_dcpo))
 
       # Get years
       t_data$y_dcpo <- if (!is.na(ds$year_dict)) { # if there's a year dictionary...
@@ -84,6 +92,13 @@ dcpo_setup <- function(vars,
       } else if (!is.na(ds$year_var)) { # if there's a year variable...
         if (length(unique(t_data$c_dcpo))==1) { # single-country study
           t_data[[ds$year_var]]
+        } else if (ds$survey == "cdcee") {
+          suppressWarnings(
+            t_data[[ds$year_var]] %>%
+              labelled(., attr(., "labels")) %>%
+              to_factor(levels = "labels") %>%
+              str_extract("\\d{4}")
+          )
         } else {
           t_data %>%
             mutate(year = ifelse(between(t_data[[ds$year_var]],
@@ -101,6 +116,8 @@ dcpo_setup <- function(vars,
         }
       } else as.numeric(ds$year)
       t_data$y_dcpo <- as.numeric(t_data$y_dcpo)
+      t_data <- t_data %>%
+        filter(!is.na(y_dcpo))
 
       # Get weights
       if (!is.na(ds$wt)) {

@@ -24,7 +24,7 @@
 #' @export
 
 dcpo_setup <- function(vars,
-                       datapath = "../Data",
+                       datapath = "../Data/dcpo_surveys",
                        file = "",
                        chime = TRUE) {
   if ("data.frame" %in% class(vars)) {

@@ -91,3 +91,58 @@ convert(file.path(amb_dir, "AmericasBarometer Grand Merge 2004-2014 v3.0_FREE.dt
         file.path(amb_dir, "amb_combo.RData"))
 amb_cb_link <- "http://datasets.americasbarometer.org/datasets/12364388022004-2014%20Grand%20Merge%20Codebook_V3.0_Free_W.pdf"
 download.file(amb_cb_link, file.path(amb_dir, "amb_combo.pdf"))
+
+# Asia Barometer
+
+# LatinoBarometro
+# Poland GSS
+pgss_dir <- "../data/dcpo_surveys/misc_files/pgss_files/pgss"
+dir.create(pgss_dir, recursive = TRUE, showWarnings = FALSE)
+pgss_data_link <- "http://www.ads.org.pl/dnldal.php?id=91&nazwa=P0091SAV.zip"
+download.file(pgss_data_link, file.path(pgss_dir, "pgss.sav.zip"))
+  # need to login first
+# Roper Center
+# UK Data Service
+# WVS
+
+### ESS (email login, slooooow site, probably should be last)
+# combo
+# SA
+
+get_misc_no_id <- function(data_link, cb_link) {
+  new_dir <- file.path(dl_dir, file_id)
+  dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+  dl_file <- str_extract(data_link, "[^//]*$")
+  download.file(data_link, file.path(new_dir, dl_file))
+  unzip(file.path(new_dir, dl_file), exdir = new_dir)
+  unlink(file.path(new_dir, list.files(new_dir, ".zip")))
+  data_file <- list.files(path = new_dir) %>%
+    str_subset("\\.dta") %>%
+    last()
+  if (is.na(data_file)) {
+    data_file <- list.files(path = new_dir) %>%
+      str_subset("\\.sav") %>%
+      last()
+  }
+  convert(file.path(new_dir, data_file),
+          paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+  download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
+}
+
+sasas2014_dir <- "../data/dcpo_surveys/misc_files/ess_files/sasas2014"
+dir.create(sasas2014_dir, recursive = TRUE, showWarnings = FALSE)
+sasas2014_data_link <- "http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/SASAS14_e01.stata.zip"
+download.file(sasas2014_data_link, file.path(sasas2014_dir, "sasas2014.zip"))
+unzip(file.path(sasas2014_dir, "sasas2014.zip"), exdir = sasas2014_dir)
+unlink(file.path(sasas2014_dir, list.files(sasas2014_dir, ".zip")))
+data_file <- list.files(path = sasas2014_dir) %>%
+  str_subset(".dta") %>%
+  last()
+convert(file.path(sasas2014_dir, data_file),
+        str_replace(file.path(sasas2014_dir, data_file), ".dta", ".RData"))
+sasas2014_cb_link <- "http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/sasas2014_questionnaire_q2.pdf"
+download.file(sasas2014_cb_link, file.path(sasas2014_dir, "sasas2014.pdf"))
+
+
+# Russia
+

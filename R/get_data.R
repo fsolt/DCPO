@@ -16,7 +16,13 @@ library(pewdata)
 s <- login()
 ds <- read_csv("data/new_surveys_data.csv")
 
-pwalk(list(ds$archive, ds$surv_program, ds$file_id), function(archive, surv_program, file_id) {
+walk(44:45, function(i) {
+  archive <- ds$archive[i]
+  surv_program <- ds$surv_program[i]
+  file_id <- ds$file_id[i]
+  data_link <- ds$data_link[i]
+  cb_link <- ds$cb_link[i]
+
   dl_dir <- file.path("../data/dcpo_surveys",
                       paste0(archive, "_files"),
                       paste0(surv_program, "_files"))
@@ -78,19 +84,26 @@ pwalk(list(ds$archive, ds$surv_program, ds$file_id), function(archive, surv_prog
              )
     )
   } #end pew
+  if (archive=="misc" & file_id!="ess_combo") {
+    new_dir <- file.path(dl_dir, file_id)
+    dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+    dl_file <- str_extract(data_link, "[^//]*$")
+    download.file(data_link, file.path(new_dir, dl_file))
+    unzip(file.path(new_dir, dl_file), exdir = new_dir)
+    unlink(file.path(new_dir, list.files(new_dir, ".zip")))
+    data_file <- list.files(path = new_dir) %>%
+      str_subset("\\.dta") %>%
+      last()
+    if (is.na(data_file)) {
+      data_file <- list.files(path = new_dir) %>%
+        str_subset("\\.sav") %>%
+        last()
+    }
+    convert(file.path(new_dir, data_file),
+            paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+    download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
+  }
 })
-
-# AmericasBarometer
-amb_dir <- "../data/dcpo_surveys/misc_files/amb_files/amb_combo"
-dir.create(amb_dir, recursive = TRUE, showWarnings = FALSE)
-amb_data_link <- "http://datasets.americasbarometer.org/datasets/746278534AmericasBarometer%20Grand%20Merge%202004-2014%20v3.0_FREE_dta.zip"
-download.file(amb_data_link, file.path(amb_dir, "amb_combo.dta.zip"))
-unzip(file.path(amb_dir, "amb_combo.dta.zip"), exdir = amb_dir)
-unlink(file.path(amb_dir, list.files(amb_dir, ".zip")))
-convert(file.path(amb_dir, "AmericasBarometer Grand Merge 2004-2014 v3.0_FREE.dta"),
-        file.path(amb_dir, "amb_combo.RData"))
-amb_cb_link <- "http://datasets.americasbarometer.org/datasets/12364388022004-2014%20Grand%20Merge%20Codebook_V3.0_Free_W.pdf"
-download.file(amb_cb_link, file.path(amb_dir, "amb_combo.pdf"))
 
 # Asia Barometer
 
@@ -105,44 +118,52 @@ download.file(pgss_data_link, file.path(pgss_dir, "pgss.sav.zip"))
 # UK Data Service
 # WVS
 
-### ESS (email login, slooooow site, probably should be last)
-# combo
-# SA
+# ess_combo (last because slooooow site)
+new_dir <- file.path(dl_dir, file_id)
+dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+nd_old <- list.files(new_dir)
 
-get_misc_no_id <- function(data_link, cb_link) {
-  new_dir <- file.path(dl_dir, file_id)
-  dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-  dl_file <- str_extract(data_link, "[^//]*$")
-  download.file(data_link, file.path(new_dir, dl_file))
-  unzip(file.path(new_dir, dl_file), exdir = new_dir)
-  unlink(file.path(new_dir, list.files(new_dir, ".zip")))
-  data_file <- list.files(path = new_dir) %>%
-    str_subset("\\.dta") %>%
-    last()
-  if (is.na(data_file)) {
-    data_file <- list.files(path = new_dir) %>%
-      str_subset("\\.sav") %>%
-      last()
-  }
-  convert(file.path(new_dir, data_file),
-          paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
-  download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
+fprof <- RSelenium::makeFirefoxProfile(list(
+  browser.download.dir = file.path(getwd(), new_dir),
+  browser.download.folderList = 2L,
+  browser.download.manager.showWhenStarting = FALSE,
+  browser.helperApps.neverAsk.saveToDisk = "application/octet-stream"))
+
+rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
+remDr <- rD[["client"]]
+remDr$navigate(ess_signin)
+remDr$findElement(using = "name", "u")$sendKeysToElement(list(getOption("ess_email")))
+remDr$findElement(using = "name", "submit")$clickElement()
+Sys.sleep(5)
+
+checkboxes <- c(3, 4, 10, 15, 16, 24:27, 30)
+walk(checkboxes, function(checkbox) {
+  remDr$findElement(using = "id", paste0("VG", checkbox))$clickElement()
+})
+remDr$findElement(using = "css selector", ".table__stub-center:nth-child(9)")$clickElement()
+remDr$findElement(using = "css selector", ".dataset-download:nth-child(2) .button")$clickElement()
+
+# check that download has completed
+nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+wait <- TRUE
+tryCatch(
+  while(all.equal(str_detect(nd_new, "\\.part$"), logical(0))) {
+    Sys.sleep(1)
+    nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+  }, error = function(e) 1 )
+while(any(str_detect(nd_new, "\\.part$"))) {
+  Sys.sleep(1)
+  nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
 }
 
-sasas2014_dir <- "../data/dcpo_surveys/misc_files/ess_files/sasas2014"
-dir.create(sasas2014_dir, recursive = TRUE, showWarnings = FALSE)
-sasas2014_data_link <- "http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/SASAS14_e01.stata.zip"
-download.file(sasas2014_data_link, file.path(sasas2014_dir, "sasas2014.zip"))
-unzip(file.path(sasas2014_dir, "sasas2014.zip"), exdir = sasas2014_dir)
-unlink(file.path(sasas2014_dir, list.files(sasas2014_dir, ".zip")))
-data_file <- list.files(path = sasas2014_dir) %>%
-  str_subset(".dta") %>%
+remDr$close()
+rD[["server"]]$stop()
+
+dl_file <- list.files(new_dir, ".zip")
+unzip(file.path(new_dir, dl_file), exdir = new_dir)
+unlink(file.path(new_dir, dl_file))
+data_file <- list.files(path = new_dir) %>%
+  str_subset("\\.dta") %>%
   last()
-convert(file.path(sasas2014_dir, data_file),
-        str_replace(file.path(sasas2014_dir, data_file), ".dta", ".RData"))
-sasas2014_cb_link <- "http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/sasas2014_questionnaire_q2.pdf"
-download.file(sasas2014_cb_link, file.path(sasas2014_dir, "sasas2014.pdf"))
-
-
-# Russia
-
+convert(file.path(new_dir, data_file),
+        paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))

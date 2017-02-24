@@ -56,14 +56,18 @@ dcpo_setup <- function(vars,
       suppressWarnings(
         t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
           if (is.null(attr(t_data[[ds$country_var]], "labels"))) {
-            attr(t_data[[ds$country_var]], "labels") <- attr(t_data[[ds$country_var]],
-                                                             "value.labels") %>% as.numeric()
-            attr(attr(t_data[[ds$country_var]], "labels"), "names") <- attr(attr(t_data[[ds$country_var]],
-                                                             "value.labels"), "names")
+            if(!is.null(attr(t_data[[ds$country_var]], "value.labels"))) {
+              attr(t_data[[ds$country_var]], "labels") <- attr(t_data[[ds$country_var]],
+                                                               "value.labels") %>% as.numeric()
+              attr(attr(t_data[[ds$country_var]], "labels"), "names") <- attr(attr(t_data[[ds$country_var]],
+                                                                                   "value.labels"), "names")
+            }
           }
           t_data[[ds$country_var]] %>%
+          {if (!is.null(attr(t_data[[ds$country_var]], "labels")))
             labelled(., attr(., "labels")) %>%
-            to_factor(levels = "labels") %>%
+              to_factor(levels = "labels")
+            else .} %>%
             as.character() %>%
             {if (!is.na(ds$cc_dict))
               countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
@@ -92,6 +96,14 @@ dcpo_setup <- function(vars,
       } else if (!is.na(ds$year_var)) { # if there's a year variable...
         if (length(unique(t_data$c_dcpo))==1) { # single-country study
           t_data[[ds$year_var]]
+        } else if (ds$survey == "ess_combo") {
+          t_data %>%
+            group_by(essround, c_dcpo) %>%
+            mutate(year = ifelse(!is.na(inwyr), inwyr, ifelse(!is.na(inwyys), inwyys, essround)),
+                   year = recode(year, `1` = 2002, `2` = 2004, `3` = 2006, `4` = 2008, `5` = 2010),
+                   y_dcpo = round(mean(year, na.rm = TRUE))) %>%
+            ungroup() %>%
+            .[["y_dcpo"]]
         } else if (ds$survey == "cdcee") {
           suppressWarnings(
             t_data[[ds$year_var]] %>%

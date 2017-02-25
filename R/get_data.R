@@ -5,18 +5,22 @@ library(rio)    #
 library(purrr)  #
 library(icpsrdata)
 library(pewdata)
+library(rvest)
+library(RSelenium)
 
 #' @import rio
 #' @import icpsrdata
+#' @import rvest
+#' @import RSelenium
 #' @importFrom gesis login download_dataset download_codebook
 #' @importFrom stringr str_replace str_subset str_detect
-#' @importFrom purrr pwalk
+#' @importFrom purrr walk
 #' @importFrom haven read_por
 
 s <- login()
-ds <- read_csv("data/new_surveys_data.csv")
+ds <- read_csv("data/new_surveys_data.csv")[23,]
 
-walk(44:45, function(i) {
+walk(seq_len(nrow(ds)), function(i) {
   archive <- ds$archive[i]
   surv_program <- ds$surv_program[i]
   file_id <- ds$file_id[i]
@@ -105,15 +109,28 @@ walk(44:45, function(i) {
   }
 })
 
-# Asia Barometer
+# Asia Barometer (2005, 2006, 2007) can't automate--permission to download lasts only 72 hrs
 
 # LatinoBarometro
+
 # Poland GSS
 pgss_dir <- "../data/dcpo_surveys/misc_files/pgss_files/pgss"
 dir.create(pgss_dir, recursive = TRUE, showWarnings = FALSE)
-pgss_data_link <- "http://www.ads.org.pl/dnldal.php?id=91&nazwa=P0091SAV.zip"
-download.file(pgss_data_link, file.path(pgss_dir, "pgss.sav.zip"))
-  # need to login first
+
+login_link <- "http://www.ads.org.pl/log.php?id=91"
+s <- html_session(login_link)
+s1 <- html_form(s)[[1]] %>%
+  set_values(log = getOption("ads_login"),
+             pas = getOption("ads_password"))
+s2 <- submit_form(s, s1) %>%
+  jump_to("http://www.ads.org.pl/dnldal.php?id=91&nazwa=P0091SAV.zip")
+
+file_dir <- file.path(pgss_dir, "P0091SAV.zip")
+writeBin(httr::content(s2$response, "raw"), file_dir)
+
+unzip(file_dir, exdir = pgss_dir)
+unlink(file_dir)
+
 # Roper Center
 # UK Data Service
 # WVS

@@ -16,6 +16,7 @@ library(RSelenium)
 #' @importFrom stringr str_replace str_subset str_detect
 #' @importFrom purrr walk
 #' @importFrom haven read_por
+#' @importFrom foreign read.spss
 
 s <- login()
 ds <- read_csv("data/new_surveys_data.csv")[23,]
@@ -130,6 +131,16 @@ writeBin(httr::content(s2$response, "raw"), file_dir)
 
 unzip(file_dir, exdir = pgss_dir)
 unlink(file_dir)
+data_file <- list.files(path = pgss_dir) %>%
+  str_subset("\\.sav") %>%
+  last()
+suppressWarnings(
+  foreign::read.spss(file.path(pgss_dir, data_file),
+                     to.data.frame = TRUE,
+                     use.value.labels = FALSE) %>%
+    export(paste0(tools::file_path_sans_ext(file.path(pgss_dir, data_file)), ".RData"))
+)
+
 
 # Roper Center
 # UK Data Service

@@ -154,23 +154,62 @@ fprof <- RSelenium::makeFirefoxProfile(list(
   browser.download.dir = file.path(getwd(), new_dir),
   browser.download.folderList = 2L,
   browser.download.manager.showWhenStarting = FALSE,
-  browser.helperApps.neverAsk.saveToDisk = "application/octet-stream"))
+  browser.helperApps.neverAsk.saveToDisk = "application/x-zip-compressed"))
 
 wvs_page <- "http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp"
 rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
 remDr <- rD[["client"]]
 remDr$navigate(wvs_page)
+webElem <- remDr$findElement(using = "tag name", "body")
+webElem$clickElement()
+webElem$sendKeysToElement(list(key = "end"))
+elem <- remDr$findElements(using = "tag name", "iframe")
+remDr$switchToFrame(elem[[3]])
+elem1 <- remDr$findElements(using = "tag name", "iframe")
+remDr$switchToFrame(elem1[[1]])
+remDr$findElement(using = "link text",
+                  "WVS_Longitudinal_1981-2014_stata_dta_v_2015_04_18")$clickElement()
+Sys.sleep(3)
+remDr$findElement(using = "name", "LINOMBRE")$sendKeysToElement(list(getOption("pew_name")))
+remDr$findElement(using = "name", "LIEMPRESA")$sendKeysToElement(list(getOption("pew_org")))
+remDr$findElement(using = "name", "LIEMAIL")$sendKeysToElement(list(getOption("pew_email")))
+acad_proj <- "a"
+remDr$findElement(using = 'xpath', "//select")$sendKeysToElement(list(acad_proj))
+webElem <- remDr$findElement(using = "tag name", "body")
+webElem$clickElement()
+webElem$sendKeysToElement(list(key = "end"))
+remDr$findElement(using = "name", "LIAGREE")$clickElement()
+remDr$findElement(using = "class", "AJDocumentDownloadBtn")$clickElement()
+remDr$acceptAlert()
 
-remDr$findElement(using = "name", "WVS_Longitudinal_1981-2014_stata_dta_v_2015_04_18")$clickElement()
-Sys.sleep(5)
+# check that download has completed
+nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+wait <- TRUE
+tryCatch(
+  while(all.equal(str_detect(nd_new, "\\.part$"), logical(0))) {
+    Sys.sleep(1)
+    nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+  }, error = function(e) 1 )
+while(any(str_detect(nd_new, "\\.part$"))) {
+  Sys.sleep(1)
+  nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+}
 
-###frameElems <- remDr$findElements(using = "tag name", "frame")
-# sapply(frameElems, function(x){x$getElementAttribute("src")})
-# remDr$switchToFrame(frameElems[[1]])
+# unzip and convert to .RData
+dl_file <- list.files(new_dir, ".zip$")
+unzip(file.path(new_dir, dl_file), exdir = new_dir)
+unlink(file.path(new_dir, dl_file))
+data_file <- list.files(path = new_dir) %>%
+  str_subset("\\.dta") %>%
+  last()
+convert(file.path(new_dir, data_file),
+        paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+
+remDr$close()
+rD[["server"]]$stop()
 
 
 # LatinoBarometro
-#walk2(c(2015, 2013, 1996:1995), c(2:3, 18:19), function(file_year, li_no) {
 walk2(c(2015, 2013, 2011:2000, 1998:1995), 2:19, function(file_year, li_no) {
     dl_dir <- file.path("../data/dcpo_surveys",
                       "misc_files",

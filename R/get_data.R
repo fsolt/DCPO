@@ -110,9 +110,9 @@ walk(seq_len(nrow(ds)), function(i) {
   }
 })
 
-# Asia Barometer (2005, 2006, 2007) can't automate--permission to download lasts only 72 hrs
+# Roper Center
+# UK Data Service
 
-# LatinoBarometro
 
 # Poland GSS
 pgss_dir <- "../data/dcpo_surveys/misc_files/pgss_files/pgss"
@@ -142,12 +142,11 @@ suppressWarnings(
 )
 
 
-# Roper Center
-# UK Data Service
 # WVS
-
-# ess_combo (last because slooooow site)
-new_dir <- file.path(dl_dir, file_id)
+dl_dir <- file.path("../data/dcpo_surveys",
+                    "misc_files",
+                    "wvs_files")
+new_dir <- file.path(dl_dir, "wvs_combo")
 dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
 nd_old <- list.files(new_dir)
 
@@ -157,6 +156,102 @@ fprof <- RSelenium::makeFirefoxProfile(list(
   browser.download.manager.showWhenStarting = FALSE,
   browser.helperApps.neverAsk.saveToDisk = "application/octet-stream"))
 
+wvs_page <- "http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp"
+rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
+remDr <- rD[["client"]]
+remDr$navigate(wvs_page)
+
+remDr$findElement(using = "name", "WVS_Longitudinal_1981-2014_stata_dta_v_2015_04_18")$clickElement()
+Sys.sleep(5)
+
+###frameElems <- remDr$findElements(using = "tag name", "frame")
+# sapply(frameElems, function(x){x$getElementAttribute("src")})
+# remDr$switchToFrame(frameElems[[1]])
+
+
+# LatinoBarometro
+#walk2(c(2015, 2013, 1996:1995), c(2:3, 18:19), function(file_year, li_no) {
+walk2(c(2015, 2013, 2011:2000, 1998:1995), 2:19, function(file_year, li_no) {
+    dl_dir <- file.path("../data/dcpo_surveys",
+                      "misc_files",
+                      "lb_files")
+  new_dir <- file.path(dl_dir, paste0("lb", file_year))
+  dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+  nd_old <- list.files(new_dir)
+
+  fprof <- RSelenium::makeFirefoxProfile(list(
+    browser.download.dir = file.path(getwd(), new_dir),
+    browser.download.folderList = 2L,
+    browser.download.manager.showWhenStarting = FALSE,
+    browser.helperApps.neverAsk.saveToDisk = "application/x-zip-compressed"))
+
+  lb_link <- "http://www.latinobarometro.org/latContents.jsp"
+  rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
+  remDr <- rD[["client"]]
+
+  # download file
+  remDr$navigate(lb_link)
+  remDr$findElement(using = "css selector", "#left_column_content li:nth-child(2) a")$clickElement()
+  Sys.sleep(3)
+  css_selector <- paste0("li:nth-child(",li_no,") a:nth-child(", 3+(between(li_no, 12, 18)), ")")
+  remDr$findElement(using = "css selector", css_selector)$clickElement()
+  Sys.sleep(3)
+  if (file_year!=2015) {
+    remDr$findElement(using = "name", "FANOMBRE")$sendKeysToElement(list(getOption("pew_name")))
+    remDr$findElement(using = "name", "FAEMPRESA")$sendKeysToElement(list(getOption("pew_org")))
+    remDr$findElement(using = "name", "FAEMAIL")$sendKeysToElement(list(getOption("pew_email")))
+    proj_acad <- "p"
+    remDr$findElement(using = 'xpath', "//select")$sendKeysToElement(list(proj_acad))
+    remDr$findElement(using = "name", "FAAGREE")$clickElement()
+    remDr$findElement(using = "class", "LATBoton")$clickElement()
+    Sys.sleep(3)
+    remDr$findElement(using = "class", "LATBoton")$clickElement()
+  }
+
+  # check that download has completed
+  nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+  wait <- TRUE
+  tryCatch(
+    while(all.equal(str_detect(nd_new, "\\.part$"), logical(0))) {
+      Sys.sleep(1)
+      nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+    }, error = function(e) 1 )
+  while(any(str_detect(nd_new, "\\.part$"))) {
+    Sys.sleep(1)
+    nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+  }
+
+  # unzip and convert to .RData
+  dl_file <- list.files(new_dir, ".zip$")
+  unzip(file.path(new_dir, dl_file), exdir = new_dir)
+  unlink(file.path(new_dir, dl_file))
+  data_file <- list.files(path = new_dir) %>%
+    str_subset(".*[Ee]ng.*\\.dta") %>%
+    last()
+  convert(file.path(new_dir, data_file),
+          paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+
+  # close session
+  remDr$close()
+  rD[["server"]]$stop()
+})
+
+
+# ess_combo (last because slooooow site)
+dl_dir <- file.path("../data/dcpo_surveys",
+                    "misc_files",
+                    "ess_files")
+new_dir <- file.path(dl_dir, "ess_combo")
+dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+nd_old <- list.files(new_dir)
+
+fprof <- RSelenium::makeFirefoxProfile(list(
+  browser.download.dir = file.path(getwd(), new_dir),
+  browser.download.folderList = 2L,
+  browser.download.manager.showWhenStarting = FALSE,
+  browser.helperApps.neverAsk.saveToDisk = "application/octet-stream"))
+
+ess_signin <- "http://www.europeansocialsurvey.org/user/login?from=/downloadwizard/"
 rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
 remDr <- rD[["client"]]
 remDr$navigate(ess_signin)
@@ -195,3 +290,5 @@ data_file <- list.files(path = new_dir) %>%
   last()
 convert(file.path(new_dir, data_file),
         paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+
+# Asia Barometer (2005, 2006, 2007) can't automate--permission to download lasts only 72 hrs

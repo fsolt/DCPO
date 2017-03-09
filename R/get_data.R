@@ -62,14 +62,8 @@ walk(seq_len(nrow(ds)), function(i) {
     }
     if (str_detect(data_file, ".por")) {
       # workaround for rio bug importing .por
-      tryCatch(haven::read_por(file.path(new_dir2, data_file)) %>%
-                 export(str_replace(file.path(new_dir, data_file), ".por", ".RData")),
-               error = function(c) suppressWarnings(
-                 # alternate for bsa1998 (and others?)--"Bad character in date" error
-                 as_data_frame(memisc::as.data.set(memisc::spss.portable.file(file.path(new_dir2, data_file)))) %>%
-                   export(str_replace(file.path(new_dir, data_file), ".por", ".RData"))
-               )
-      )
+      haven::read_por(file.path(new_dir2, data_file)) %>%
+        export(str_replace(file.path(new_dir, data_file), ".por", ".RData"))
     } else {
       convert(file.path(new_dir2, data_file),
               str_replace(file.path(new_dir, data_file), ".dta", ".RData"))

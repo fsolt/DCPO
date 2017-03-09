@@ -5,6 +5,7 @@ library(rio)    #
 library(purrr)  #
 library(icpsrdata)
 library(pewdata)
+library(ropercenter)
 library(rvest)
 library(RSelenium)
 
@@ -18,8 +19,8 @@ library(RSelenium)
 #' @importFrom haven read_por
 #' @importFrom foreign read.spss
 
-s <- login()
-ds <- read_csv("data/new_surveys_data.csv")[23,]
+s <- gesis::login()
+ds <- read_csv("data/surveys_data.csv")
 
 walk(seq_len(nrow(ds)), function(i) {
   archive <- ds$archive[i]
@@ -35,8 +36,8 @@ walk(seq_len(nrow(ds)), function(i) {
     new_dir <- file.path(dl_dir, file_id)
     dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
     doi <- str_replace(file_id, "ZA", "")
-    download_dataset(s, doi = doi, path = new_dir)
-    try(download_codebook(doi = doi, path = new_dir))
+    gesis::download_dataset(s, doi = doi, path = new_dir)
+    try(gesis::download_codebook(doi = doi, path = new_dir))
     data_file <- list.files(path = new_dir) %>% str_subset(".dta") %>% last()
     if(data_file %>% str_detect(".zip$")) {
       unzip(file.path(new_dir, data_file), exdir = new_dir)
@@ -50,7 +51,7 @@ walk(seq_len(nrow(ds)), function(i) {
   } # end gesis
   if (archive=="icpsr") {
     file_id <- file_id %>% str_replace("ICPSR_", "") %>% as.numeric(file_id)
-    icpsr_download(file_id, download_dir = dl_dir)
+    icpsrdata::icpsr_download(file_id, download_dir = dl_dir)
     new_dir <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)))
     new_dir2 <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)), "DS0001")
     data_file <- list.files(path = new_dir2) %>% str_subset(".dta") %>% last()
@@ -61,8 +62,14 @@ walk(seq_len(nrow(ds)), function(i) {
     }
     if (str_detect(data_file, ".por")) {
       # workaround for rio bug importing .por
-      haven::read_por(file.path(new_dir2, data_file)) %>%
-        export(str_replace(file.path(new_dir, data_file), ".por", ".RData"))
+      tryCatch(haven::read_por(file.path(new_dir2, data_file)) %>%
+                 export(str_replace(file.path(new_dir, data_file), ".por", ".RData")),
+               error = function(c) suppressWarnings(
+                 # alternate for bsa1998 (and others?)--"Bad character in date" error
+                 as_data_frame(memisc::as.data.set(memisc::spss.portable.file(file.path(new_dir2, data_file)))) %>%
+                   export(str_replace(file.path(new_dir, data_file), ".por", ".RData"))
+               )
+      )
     } else {
       convert(file.path(new_dir2, data_file),
               str_replace(file.path(new_dir, data_file), ".dta", ".RData"))
@@ -71,7 +78,7 @@ walk(seq_len(nrow(ds)), function(i) {
   if (archive=="pew") {
     dir.create(dl_dir, recursive = TRUE, showWarnings = FALSE)
     old_files <- list.files(dl_dir)
-    pew_download(surv_program, file_id, download_dir = dl_dir, delete_zip = FALSE)
+    pewdata::pew_download(surv_program, file_id, download_dir = dl_dir, delete_zip = FALSE)
     new_dir <- list.files(dl_dir, ".zip")[!list.files(dl_dir, ".zip") %in% old_files] %>%
       str_replace(".zip", "")
     unlink(file.path(dl_dir, list.files(dl_dir, ".zip")[!list.files(dl_dir, ".zip") %in% old_files]))
@@ -104,6 +111,7 @@ walk(seq_len(nrow(ds)), function(i) {
         str_subset("\\.sav") %>%
         last()
     }
+    if (tools::file_ext(data_file)!="")
     convert(file.path(new_dir, data_file),
             paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
     download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
@@ -111,6 +119,22 @@ walk(seq_len(nrow(ds)), function(i) {
 })
 
 # Roper Center
+roper_ds <- ds %>%
+  filter(archive == "roper")
+roper_sp <- roper_ds %>%
+  select(surv_program) %>%
+  unique() %>%
+  unlist()
+walk(roper_sp, function(sp) {
+  roper_sp_files <- roper_ds %>%
+    filter(surv_program == sp) %>%
+    select(file_id) %>%
+    unlist()
+  ropercenter::roper_download(file_id = roper_sp_files,
+                              download_dir = file.path("../data/dcpo_surveys/roper_files",
+                                                       paste0(sp, "_files")))
+})
+
 # UK Data Service
 
 

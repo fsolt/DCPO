@@ -5,3 +5,4 @@
 ^dev/.*$
 cleanup*
 ^\.travis\.yml$
+R/get_data.R

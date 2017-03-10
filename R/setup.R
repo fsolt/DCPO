@@ -18,7 +18,7 @@
 #' @import countrycode
 #' @importFrom rio import
 #' @importFrom labelled labelled to_factor
-#' @importFrom stringr str_detect str_subset str_extract
+#' @importFrom stringr str_detect str_subset str_extract str_replace
 #' @importFrom plyr mapvalues
 #'
 #' @export
@@ -69,6 +69,7 @@ dcpo_setup <- function(vars,
               to_factor(levels = "labels")
             else .} %>%
             as.character() %>%
+            str_replace("Hait\xed", "Haiti") %>%
             {if (!is.na(ds$cc_dict))
               countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
               else if (!is.na(ds$cc_origin))
@@ -111,7 +112,9 @@ dcpo_setup <- function(vars,
               to_factor(levels = "labels") %>%
               str_extract("\\d{4}")
           )
-        } else {
+        } else if (ds$survey == "amb_combo") {
+          t_data[[ds$year_var]]
+        } else { # single-wave cross-national surveys with interviews bleeding over years
           t_data %>%
             mutate(year = ifelse(between(t_data[[ds$year_var]],
                                          1950, as.numeric(str_extract(Sys.Date(), "\\d{4}"))),
@@ -154,7 +157,7 @@ dcpo_setup <- function(vars,
     # Summarize by country and year at each cutpoint
     for (j in 1:(length(vals) - 1)) {
       vars0 <- t_data %>%
-        select(c_dcpo, y_dcpo, wt_dcpo, target) %>%
+        dplyr::select(c_dcpo, y_dcpo, wt_dcpo, target) %>%
         group_by(c_dcpo, y_dcpo) %>%
         filter(!is.na(target)) %>%
         summarise(survey = ds$survey,

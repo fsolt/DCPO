@@ -348,4 +348,13 @@ data_file <- list.files(path = new_dir) %>%
 convert(file.path(new_dir, data_file),
         paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
 
-# Asia Barometer (2005, 2006, 2007) can't automate--permission to download lasts only 72 hrs
+# AsiaBarometer (2005, 2006, 2007) can't automate download--permission lasts only 72 hrs
+
+walk(c(2005, 2006, 2007), function(yr) {
+  yr_dir <- paste0("../data/dcpo_surveys/misc_files/asiab_files/asiabarometer", yr)
+  data_file <- list.files(path = yr_dir) %>%
+    str_subset("\\.sav") %>%
+    last()
+  rio::convert(file.path(yr_dir, data_file),
+          paste0(tools::file_path_sans_ext(file.path(yr_dir, data_file)), ".RData"))
+})

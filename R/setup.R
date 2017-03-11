@@ -81,7 +81,8 @@ dcpo_setup <- function(vars,
             str_replace("Republic of (.*)", "\\1") %>%
             str_replace(" of.*|,.*| \\(.*\\)|The former Yugoslav ", "") %>%
             str_replace("Russian Federation", "Russia") %>%
-            str_replace("United Tanzania", "Tanzania")
+            str_replace("United Tanzania", "Tanzania") %>%
+            str_replace("Lao People's Democratic Republic", "Laos")
         } else ds$country_var
       )
       t_data <- t_data %>%

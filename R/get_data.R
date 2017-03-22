@@ -8,6 +8,7 @@ library(pewdata)
 library(ropercenter)
 library(rvest)
 library(RSelenium)
+library(ukds)
 
 #' @import rio
 #' @import icpsrdata
@@ -130,7 +131,21 @@ walk(roper_sp, function(sp) {
 })
 
 # UK Data Service
-
+ukds_ds <- ds %>%
+  filter(archive == "ukds")
+ukds_sp <- ukds_ds %>%
+  select(surv_program) %>%
+  unique() %>%
+  unlist()
+walk(ukds_sp, function(sp) {
+  ukds_sp_files <- ukds_ds %>%
+    filter(surv_program == sp) %>%
+    select(file_id) %>%
+    unlist()
+  ukds::ukds_download(file_id = ukds_sp_files,
+                              download_dir = file.path("../data/dcpo_surveys/ukds_files",
+                                                       paste0(sp, "_files")))
+})
 
 # Poland GSS
 pgss_dir <- "../data/dcpo_surveys/misc_files/pgss_files/pgss"

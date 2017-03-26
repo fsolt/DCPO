@@ -4,7 +4,7 @@
 \alias{dcpo_setup}
 \title{Prepare Data for DCPO}
 \usage{
-dcpo_setup(vars, datapath = "~/Documents/Projects/Data/", file = "",
+dcpo_setup(vars, datapath = "../Data/dcpo_surveys", file = "",
   chime = TRUE)
 }
 \arguments{
@@ -24,4 +24,3 @@ a data frame
 \code{dcpo_setup}, when passed a data frame of survey items, collects the
 responses and formats them for use with the \code{dcpo} function.
 }
-

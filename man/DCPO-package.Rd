@@ -2,10 +2,9 @@
 % Please edit documentation in R/DCPO-package.R
 \docType{package}
 \name{DCPO-package}
-\alias{DCPO}
 \alias{DCPO-package}
+\alias{DCPO}
 \title{Dynamic Comparative Public Opinion}
 \description{
 Dynamic Comparative Public Opinion
 }
-

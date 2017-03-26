@@ -20,9 +20,9 @@ library(ukds)
 #' @importFrom haven read_por
 #' @importFrom foreign read.spss
 
-s <- gesis::login()
 ds <- read_csv("data/surveys_data.csv")
 
+s <- gesis::login()
 walk(seq_len(nrow(ds)), function(i) {
   archive <- ds$archive[i]
   surv_program <- ds$surv_program[i]

@@ -18,7 +18,7 @@
 #' @import countrycode
 #' @importFrom rio import
 #' @importFrom labelled labelled to_factor
-#' @importFrom stringr str_detect str_subset str_extract str_replace
+#' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower
 #' @importFrom plyr mapvalues
 #'
 #' @export
@@ -51,7 +51,7 @@ dcpo_setup <- function(vars,
 
       # Fix column names and make lowercase
       valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE) %>%
-        str_to_lower()
+        stringr::str_to_lower()
       names(t_data) <- valid_column_names
 
       # Get countries

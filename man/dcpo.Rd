@@ -21,4 +21,3 @@ a stanfit object
 \code{dcpo_setup}, when passed a data frame of survey items, collects the
 responses and formats them for use with the \code{dcpo} function.
 }
-

@@ -1,11 +1,16 @@
 library(readr)
 
 detach("package:DCPO", unload=TRUE)
+
 surveys_data <- read_csv("data/surveys_data.csv")
 save(surveys_data, file = "data/surveys_data.rda")
 devtools::use_data(surveys_data, overwrite = TRUE)
 rm(surveys_data)
-f <- devtools::build(); system(paste0("R CMD INSTALL --build ", f))
+
+f <- devtools::build()
+system(paste0("R CMD INSTALL --build ", f))
+
+rm(f)
 library(DCPO)
 library(tidyverse)
 beepr::beep()

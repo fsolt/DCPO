@@ -49,8 +49,9 @@ dcpo_setup <- function(vars,
       if (!is.na(ds$subfile)) dataset_file <- paste0(ds$subfile, ".RData")
       t_data <- import(file.path(dataset_path, dataset_file))
 
-      # Fix column names (sometimes necessary)
-      valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE)
+      # Fix column names and make lowercase
+      valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE) %>%
+        str_to_lower()
       names(t_data) <- valid_column_names
 
       # Get countries

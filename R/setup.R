@@ -19,7 +19,6 @@
 #' @importFrom rio import
 #' @importFrom labelled labelled to_factor
 #' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower
-#' @importFrom plyr mapvalues
 #'
 #' @export
 
@@ -155,7 +154,8 @@ dcpo_setup <- function(vars,
       }
     }
     vals <- eval(parse(text = v$values))
-    t_data$target <- plyr::mapvalues(t_data$target, vals, 1:length(vals))
+    t_data$target <- dplyr::recode(t_data$target, structure(1:length(vals), names = vals))
+
 
     # Summarize by country and year at each cutpoint
     for (j in 1:(length(vals) - 1)) {

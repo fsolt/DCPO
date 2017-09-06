@@ -154,7 +154,7 @@ dcpo_setup <- function(vars,
       }
     }
     vals <- eval(parse(text = v$values))
-    t_data$target <- dplyr::recode(t_data$target, structure(1:length(vals), names = vals))
+    t_data$target <- do.call(dplyr::recode, c(list(t_data$target), setNames(1:length(vals), vals)))
 
 
     # Summarize by country and year at each cutpoint

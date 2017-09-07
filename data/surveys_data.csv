@@ -80,6 +80,7 @@ eb691,,v6,,,"c(""Northern Ireland""=""United Kingdom"", ""Germany East""=""Germa
 eb712,,v6,,,"c(""Northern Ireland""=""United Kingdom"", ""Germany East""=""Germany"", ""Germany West""=""Germany"")",2009,,,"wt <- t_data$v8; wt[grep(""DE\\-"", t_data$v7)] <- t_data$v10[grep(""DE\\-"", t_data$v7)]; wt[grep(""GB\\-"", t_data$v7)] <- t_data$v12[grep(""GB\\-"", t_data$v7)]",gesis,eb,ZA4972,,,
 eb774,,country,,,"c(""GB-NIR - Northern Ireland""=""United Kingdom"", ""DE-E - Germany East""=""Germany"", ""DE-W - Germany West""=""Germany"")",2012,,,"wt <- t_data$w1; wt[t_data$c_dcpo==""Germany""] <- t_data$w3[t_data$c_dcpo==""Germany""]; wt[t_data$c_dcpo==""United Kingdom""] <- t_data$w4[t_data$c_dcpo==""United Kingdom""]",gesis,eb,ZA5613,,,
 eb834,,country,,,"c(""GB-NIR Northern Ireland""=""United Kingdom"", ""DE-E Germany East""=""Germany"", ""DE-W - Germany - West""=""Germany"")",2015,,,"wt <- t_data$w1; wt[t_data$c_dcpo==""Germany""] <- t_data$w3[t_data$c_dcpo==""Germany""]; wt[t_data$c_dcpo==""United Kingdom""] <- t_data$w4[t_data$c_dcpo==""United Kingdom""]",gesis,eb,ZA6595,,,
+ees2009,,t102,,,,2009,,,v100,gesis,ees,ZA5055,,,
 ess_combo,,cntry,iso2c,,,,inwyr,,dweight,misc,ess,ess_combo,,,
 evs_combo,s025,s003,,,"c(""Northern Ireland""=""Northern Ireland"")",,s020,,s017,gesis,evs,ZA4804,,,
 gallup_canada1996,,Canada,,,,1996,,,weight,roper,gallup_canada,CNCIPO1996-96010,,,

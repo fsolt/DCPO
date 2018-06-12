@@ -9,6 +9,7 @@ library(ropercenter)
 library(rvest)
 library(RSelenium)
 library(ukds)
+library(essurvey)
 
 #' @import rio
 #' @import icpsrdata
@@ -309,59 +310,23 @@ walk2(c(2015, 2013, 2011:2000, 1998:1995), 2:19, function(file_year, li_no) {
 })
 
 
-# ess_combo (last because slooooow site)
+# European Social Survey
 dl_dir <- file.path("../data/dcpo_surveys",
                     "misc_files",
                     "ess_files")
-new_dir <- file.path(dl_dir, "ess_combo")
-dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-nd_old <- list.files(new_dir)
+dir.create(dl_dir, recursive = TRUE, showWarnings = FALSE)
+ess_rounds <- essurvey::show_rounds()
 
-fprof <- RSelenium::makeFirefoxProfile(list(
-  browser.download.dir = file.path(getwd(), new_dir),
-  browser.download.folderList = 2L,
-  browser.download.manager.showWhenStarting = FALSE,
-  browser.helperApps.neverAsk.saveToDisk = "application/octet-stream"))
-
-ess_signin <- "http://www.europeansocialsurvey.org/user/login?from=/downloadwizard/"
-rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
-remDr <- rD[["client"]]
-remDr$navigate(ess_signin)
-remDr$findElement(using = "name", "u")$sendKeysToElement(list(getOption("ess_email")))
-remDr$findElement(using = "name", "submit")$clickElement()
-Sys.sleep(5)
-
-checkboxes <- c(3, 4, 10, 15, 16, 24:27, 30)
-walk(checkboxes, function(checkbox) {
-  remDr$findElement(using = "id", paste0("VG", checkbox))$clickElement()
+walk(ess_rounds, function(round) {
+  new_dir <- file.path(dl_dir, paste0("ess", round))
+  dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+  suppressWarnings(essurvey::download_rounds(rounds = round, output_dir = dl_dir))
+  data_file <- list.files(path = new_dir) %>%
+    str_subset("\\.dta") %>%
+    last()
+  convert(file.path(new_dir,  data_file),
+          paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
 })
-remDr$findElement(using = "css selector", ".table__stub-center:nth-child(9)")$clickElement()
-remDr$findElement(using = "css selector", ".dataset-download:nth-child(2) .button")$clickElement()
-
-# check that download has completed
-nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-wait <- TRUE
-tryCatch(
-  while(all.equal(str_detect(nd_new, "\\.part$"), logical(0))) {
-    Sys.sleep(1)
-    nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-  }, error = function(e) 1 )
-while(any(str_detect(nd_new, "\\.part$"))) {
-  Sys.sleep(1)
-  nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-}
-
-remDr$close()
-rD[["server"]]$stop()
-
-dl_file <- list.files(new_dir, ".zip")
-unzip(file.path(new_dir, dl_file), exdir = new_dir)
-unlink(file.path(new_dir, dl_file))
-data_file <- list.files(path = new_dir) %>%
-  str_subset("\\.dta") %>%
-  last()
-convert(file.path(new_dir, data_file),
-        paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
 
 # AsiaBarometer (2005, 2006, 2007) can't automate download--permission lasts only 72 hrs
 

@@ -135,6 +135,8 @@ pew2013,,country,,,,2013,,,weight,pew,global,31111,,,
 pew2014_india,,India,,,,2014,,,weight,pew,global,31910,,,
 pewrel2009_afr,,country,,,,2009,,,weight,pew,religion,tolerance-and-tension-islam-and-christianity-in-sub-saharan-africa,,,
 pewrel2014_latam,,country,,,,2014,,,weight,pew,religion,religion-in-latin-america,,,
+pewrel2014_us,,country,,,,2014,,,weight,pew,religion,u-s-religious-landscape-survey,,,
+pewrel2015_ee,,country,,,,2015,,,final_weight,pew,religion,eastern-european-survey-dataset,,,
 pgss,,Poland,,,,,pgssyear,,weight,misc,pgss,pgss,,,
 psra199808,,United States,,,,1998,,,weight,roper,psra,USPSRA1998-NW9813,,http://www.europeansocialsurvey.org/docs/related_studies/CESSI_ESS7/ESS7RU_main_data.zip,http://www.europeansocialsurvey.org/docs/related_studies/CESSI_ESS7/ESS7RU_questionnaire.pdf
 psra200003,,United States,,,,2000,,,weight,roper,psra,USPSRA2000-NW10,,http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/SASAS14_e01.stata.zip,http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/sasas2014_questionnaire_q2.pdf

@@ -92,7 +92,7 @@ walk(seq_len(nrow(ds)), function(i) {
              )
     )
   } #end pew
-  if (archive=="misc" & file_id!="ess_combo") {
+  if (archive=="misc" & !surv_program == "ess" & !surv_program == "pgss" & !surv_program == "wvs") {
     new_dir <- file.path(dl_dir, file_id)
     dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
     dl_file <- str_extract(data_link, "[^//]*$")

@@ -92,7 +92,8 @@ walk(seq_len(nrow(ds)), function(i) {
              )
     )
   } #end pew
-  if (archive=="misc" & !surv_program == "ess" & !surv_program == "pgss" & !surv_program == "wvs") {
+  misc_special <- c("ess", "pgss", "wvs", "roper_request")
+  if (archive=="misc" & !(surv_program %in% misc_special)) {
     new_dir <- file.path(dl_dir, file_id)
     dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
     dl_file <- str_extract(data_link, "[^//]*$")
@@ -338,3 +339,51 @@ walk(c(2005, 2006, 2007), function(yr) {
   rio::convert(file.path(yr_dir, data_file),
           paste0(tools::file_path_sans_ext(file.path(yr_dir, data_file)), ".RData"))
 })
+
+# Roper by Request
+roper_request_dir <- "../data/dcpo_surveys/misc_files/roper_request_files"
+roper_request_files <- c("GBSSLT1981-CQ792", "GBSSLT1985-CQ958A", "GBSSLT1986-CQ044A", "USAIPOGNS1999-9902009")
+
+walk(roper_request_files, function(file_id) {
+  data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("por|sav") %>% last()
+
+  tryCatch(convert(file.path(roper_request_dir, file_id, data_file),
+                   file.path(roper_request_dir, file_id, paste0(file_id, ".RData"))),
+           error = function(c) suppressWarnings(
+             foreign::read.spss(file.path(roper_request_dir, file_id, data_file),
+                                to.data.frame = TRUE,
+                                use.value.labels = FALSE) %>%
+               export(file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+           ))
+})
+
+# Roper DAT
+file_id <- "USAIPOCNUS1996-9603008"
+data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
+
+x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+  str_subset(".{10}6") %>%   # sixth card
+  as_tibble() %>%
+  mutate(q34 = as.numeric(str_replace(value, "^.{63}(.).*", "\\1"))) %>% # marry2
+  bind_cols(read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+              str_subset("^.{10}1") %>%   # third card
+              as_tibble() %>%
+              mutate(weight = as.numeric(str_replace(value, "^.{12}(.{3}).*", "\\1"))))
+
+export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+
+
+
+file_id <- "usharrisint2004-05"
+data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
+
+x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+  str_subset("2$") %>%   # second card
+  as_tibble() %>%
+  mutate(q34 = as.numeric(str_replace(value, "^.{17}(.).*", "\\1"))) %>% # marry2
+  bind_cols(read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+              str_subset("3$") %>%   # third card
+              as_tibble() %>%
+              mutate(weight = as.numeric(str_replace(value, "^.{59}(.{6}).*", "\\1"))/100))
+
+export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))

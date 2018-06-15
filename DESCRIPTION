@@ -21,7 +21,8 @@ Imports:
   rio, 
   labelled, 
   stringr,
-  bayesplot
+  bayesplot,
+  forcats
 LinkingTo: StanHeaders (>= 2.14.0.1), rstan (>= 2.14.1), BH (>= 1.62.0.1), Rcpp (>= 0.12.8), RcppEigen (>= 0.3.2.9.0)
 Suggests: knitr
 VignetteBuilder: knitr

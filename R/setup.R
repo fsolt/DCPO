@@ -17,7 +17,8 @@
 #' @import beepr
 #' @import countrycode
 #' @importFrom rio import
-#' @importFrom labelled labelled to_factor
+#' @importFrom forcats fct_relabel
+#' @importFrom labelled labelled to_character to_factor
 #' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower
 #'
 #' @export
@@ -67,7 +68,8 @@ dcpo_setup <- function(vars,
           t_data[[ds$country_var]] %>%
           {if (!is.null(attr(t_data[[ds$country_var]], "labels")))
             labelled(., attr(., "labels")) %>%
-              to_factor(levels = "labels")
+              to_factor(levels = "prefixed") %>%
+              forcats::fct_relabel(., function(x) str_replace(x, "\\[\\d+\\]\\s+", ""))
             else .} %>%
             as.character() %>%
             str_replace("Hait\xed", "Haiti") %>%
@@ -111,7 +113,7 @@ dcpo_setup <- function(vars,
           suppressWarnings(
             t_data[[ds$year_var]] %>%
               labelled(., attr(., "labels")) %>%
-              to_factor(levels = "labels") %>%
+              labelled::to_character(levels = "prefixed") %>%
               str_extract("\\d{4}")
           )
         } else if (ds$survey == "amb_combo") {

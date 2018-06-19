@@ -30,7 +30,7 @@ dcpo_setup <- function(vars,
   if ("data.frame" %in% class(vars)) {
     vars_table <- vars
   } else {
-    vars_table <- read_csv(vars)
+    vars_table <- read_csv(vars, col_types = "ccccc")
   }
 
   all_sets <- list()
@@ -47,10 +47,10 @@ dcpo_setup <- function(vars,
                                 ds$file_id)
       dataset_file <- list.files(path = dataset_path) %>% str_subset(".RData") %>% last()
       if (!is.na(ds$subfile)) dataset_file <- paste0(ds$subfile, ".RData")
-      t_data <- import(file.path(dataset_path, dataset_file))
+      t_data <- rio::import(file.path(dataset_path, dataset_file))
 
       # Fix column names and make lowercase
-      valid_column_names <- make.names(names=names(t_data), unique=TRUE, allow_ = TRUE) %>%
+      valid_column_names <- make.names(names = names(t_data), unique = TRUE, allow_ = TRUE) %>%
         stringr::str_to_lower()
       names(t_data) <- valid_column_names
 
@@ -101,14 +101,22 @@ dcpo_setup <- function(vars,
       } else if (!is.na(ds$year_var)) { # if there's a year variable...
         if (length(unique(t_data$c_dcpo))==1) { # single-country study
           t_data[[ds$year_var]]
-        } else if (ds$survey == "ess_combo") {
-          t_data %>%
-            group_by(essround, c_dcpo) %>%
-            mutate(year = ifelse(!is.na(inwyr), inwyr, ifelse(!is.na(inwyys), inwyys, essround)),
-                   year = recode(year, `1` = 2002, `2` = 2004, `3` = 2006, `4` = 2008, `5` = 2010),
-                   y_dcpo = round(mean(year, na.rm = TRUE))) %>%
-            ungroup() %>%
-            .[["y_dcpo"]]
+        } else if (str_detect(ds$survey, "ess")) {
+          if ("inwyr" %in% names(t_data)) {
+            t_data %>%
+              group_by(c_dcpo) %>%
+              mutate(year = ifelse(!is.na(inwyr) & !inwyr==9999, inwyr, 2000 + essround * 2),
+                     y_dcpo = round(mean(year, na.rm = TRUE))) %>%
+              ungroup() %>%
+              .[["y_dcpo"]]
+          } else if ("inwyys" %in% names(t_data)) {
+            t_data %>%
+              group_by(c_dcpo) %>%
+              mutate(year = ifelse(!is.na(inwyys) & !inwyys==9999, inwyys, 2000 + essround * 2),
+                     y_dcpo = round(mean(year, na.rm = TRUE))) %>%
+              ungroup() %>%
+              .[["y_dcpo"]]
+          }
         } else if (ds$survey == "cdcee") {
           suppressWarnings(
             t_data[[ds$year_var]] %>%
@@ -182,7 +190,7 @@ dcpo_setup <- function(vars,
   rm(list = c("t_data", "ds", "v"))
 
   for (i in seq(length(all_sets))) {
-    add <- melt(all_sets[i], id.vars = c("country", "year", "survey", "n",
+    add <- reshape2::melt(all_sets[i], id.vars = c("country", "year", "survey", "n",
                                          "cutpoint"), na.rm=T)
     if (i == 1) all_data <- add else all_data <- rbind(all_data, add)
   }

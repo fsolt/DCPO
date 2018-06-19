@@ -41,7 +41,7 @@ walk(seq_len(nrow(ds)), function(i) {
     gesis::download_dataset(s, doi = doi, path = new_dir)
     try(gesis::download_codebook(doi = doi, path = new_dir))
     data_file <- list.files(path = new_dir) %>% str_subset(".dta") %>% last()
-    if(data_file %>% str_detect(".zip$")) {
+    if (data_file %>% str_detect(".zip$")) {
       unzip(file.path(new_dir, data_file), exdir = new_dir)
       unlink(file.path(new_dir, data_file))
       data_file <- list.files(path = new_dir) %>%

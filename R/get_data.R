@@ -98,8 +98,10 @@ walk(seq_len(nrow(ds)), function(i) {
     dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
     dl_file <- str_extract(data_link, "[^//]*$")
     download.file(data_link, file.path(new_dir, dl_file))
-    unzip(file.path(new_dir, dl_file), exdir = new_dir)
-    unlink(file.path(new_dir, list.files(new_dir, ".zip")))
+    if (str_detect(dl_file, "zip$")) {
+      unzip(file.path(new_dir, dl_file), exdir = new_dir)
+      unlink(file.path(new_dir, list.files(new_dir, ".zip")))
+    }
     data_file <- list.files(path = new_dir) %>%
       str_subset("\\.dta") %>%
       last()
@@ -108,10 +110,13 @@ walk(seq_len(nrow(ds)), function(i) {
         str_subset("\\.sav") %>%
         last()
     }
-    if (tools::file_ext(data_file)!="")
-    convert(file.path(new_dir, data_file),
-            paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
-    download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
+    if (tools::file_ext(data_file)!="") {
+      convert(file.path(new_dir, data_file),
+              paste0(file.path(new_dir, file_id), ".RData"))
+    }
+    if (!is.na(cb_link)) {
+      download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
+    }
   }
 })
 
@@ -385,5 +390,18 @@ x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
               str_subset("3$") %>%   # third card
               as_tibble() %>%
               mutate(weight = as.numeric(str_replace(value, "^.{59}(.{6}).*", "\\1"))/100))
+
+export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+
+
+file_id <- "USPSRA1997-NW97009"
+data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
+
+x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+  as_tibble() %>%
+  mutate(q4c = as.numeric(str_replace(value, "^.{62}(.).*", "\\1")),      # marry2
+         q4d = as.numeric(str_replace(value, "^.{63}(.).*", "\\1")),      # adopt2
+         weight = as.numeric(str_replace(value, "^.{88}(.{4}).*", "\\1")),
+         weight = weight/mean(weight))
 
 export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))

@@ -499,3 +499,16 @@ x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
                      weight = weight0/mean(weight0)))
 
 export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+
+
+file_id <- "USAIPO1982-1197G"
+data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
+
+x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+  as_tibble() %>%
+  mutate(q09j = as.numeric(str_replace(value, "^.{37}(.).*", "\\1")),
+         weight0 = as.numeric(str_replace(value, "^(.{1}).*", "\\1")),
+         weight = weight0/mean(weight0))
+
+export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+

@@ -367,7 +367,7 @@ file_id <- "USAIPOCNUS1996-9603008"
 data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
 
 x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
-  str_subset(".{10}6") %>%   # sixth card
+  str_subset("^.{10}6") %>%   # sixth card
   as_tibble() %>%
   mutate(q34 = as.numeric(str_replace(value, "^.{63}(.).*", "\\1"))) %>% # marry2
   bind_cols(read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
@@ -456,6 +456,46 @@ x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
               str_subset("2$") %>%   # second card
               as_tibble() %>%
               mutate(weight0 = as.numeric(str_replace(value, "^(.{5}).*", "\\1")),
+                     weight = weight0/mean(weight0)))
+
+export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+
+
+file_id <- "USTM1993-NII0893"
+data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
+
+x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+  as_tibble() %>%
+  mutate(q17 = as.numeric(str_replace(value, "^.{68}(.).*", "\\1")),
+         weight0 = as.numeric(str_replace(value, "^.{205}(.{3}).*", "\\1")),
+         weight = weight0/mean(weight0))
+
+export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+
+
+file_id <- "USNBCWSJ1993-4039"
+data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
+
+x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+  as_tibble() %>%
+  mutate(q20g = as.numeric(str_replace(value, "^.{89}(.).*", "\\1")),
+         weight0 = as.numeric(str_replace(value, "^.{117}(.{6}).*", "\\1")),
+         weight = weight0/mean(weight0))
+
+export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
+
+
+file_id <- "USAIPOGNS1992-222054"
+data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("dat") %>% last()
+
+x <- read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+  str_subset("^\\s*\\d{4}\\s*04") %>%   # fourth card
+  as_tibble() %>%
+  mutate(q24 = as.numeric(str_replace(value, "^.{45}(.).*", "\\1"))) %>%  # accept2
+  bind_cols(read_lines(file.path(roper_request_dir, file_id, data_file)) %>%
+              str_subset("^\\s*\\d{4}\\s*01") %>%   # first card
+              as_tibble() %>%
+              mutate(weight0 = as.numeric(str_replace(value, "^.{12}(.{3}).*", "\\1")),
                      weight = weight0/mean(weight0)))
 
 export(x, file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))

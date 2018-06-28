@@ -46,7 +46,7 @@ dcpo_setup <- function(vars,
                                 paste0(ds$surv_program, "_files"),
                                 ds$file_id)
       dataset_file <- list.files(path = dataset_path) %>% str_subset(".RData") %>% last()
-      if (!is.na(ds$subfile)) dataset_file <- paste0(ds$subfile, ".RData")
+      if (!is.na(ds$subfile) & !str_detect(ds$subfile, "^list")) dataset_file <- paste0(ds$subfile, ".RData")
       t_data <- rio::import(file.path(dataset_path, dataset_file))
 
       # Fix column names and make lowercase

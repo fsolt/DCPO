@@ -140,7 +140,7 @@ walk(roper_sp, function(sp) {
 
 # Roper ASCII files
 roper_ascii_files <- ds %>%
-  filter(str_detect(subfile, "^list")) %>%
+  filter(!is.na(read_ascii_args)) %>%
   pull(file_id)
 
 walk(roper_ascii_files, function(file) {
@@ -150,7 +150,7 @@ walk(roper_ascii_files, function(file) {
                          paste0(ra_ds$surv_program, "_files"),
                          file,
                          paste0(file, ".dat"))
-  x <- do.call(read_ascii, eval(parse(text = ra_ds$subfile))) %>%
+  x <- do.call(read_ascii, eval(parse(text = ra_ds$read_ascii_args))) %>%
     mutate(weight0 = as.numeric(weight),
            weight = weight0/mean(weight0))
   export(x, str_replace(file_path, "dat$", "RData"))

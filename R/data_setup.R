@@ -197,7 +197,8 @@ dcpo_setup <- function(vars,
   rm(add)
   all_data$y_r = with(all_data, as.integer(round(n * value))) # number of 'yes' response equivalents, given data weights
 
-  all_data2 <- all_data %>% select(-value, -L1) %>%
+  all_data2 <- all_data %>%
+    select(-value, -L1) %>%
     group_by(country, year, variable, cutpoint) %>%
     summarize(y_r = sum(y_r),     # When two surveys ask the same question in
               n = sum(n),         # the same country-year, add samples together
@@ -205,17 +206,17 @@ dcpo_setup <- function(vars,
     ungroup() %>%
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)
-           firstyr = first(year, order_by = year),
-           lastyr = last(year, order_by = year)) %>%
+           firstyr = as.integer(first(year, order_by = year)),
+           lastyr = as.integer(last(year, order_by = year))) %>%
     ungroup() %>%
     arrange(desc(cc_rank), country, year) %>% # order by data-richness
     # Generate numeric codes for countries, years, questions, and question-cuts
     mutate(variable_cp = paste(variable, cutpoint, sep="_gt"),
-           ccode = as.numeric(factor(country, levels = unique(country))),
+           ccode = as.integer(factor(country, levels = unique(country))),
            tcode = as.integer(year - min(year) + 1),
-           qcode = as.numeric(factor(variable, levels = unique(variable))),
-           rcode = as.numeric(factor(variable_cp, levels = unique(variable_cp))),
-           ktcode = (ccode-1)*max(tcode)+tcode) %>%
+           qcode = as.integer(factor(variable, levels = unique(variable))),
+           rcode = as.integer(factor(variable_cp, levels = unique(variable_cp))),
+           ktcode = as.integer((ccode-1)*max(tcode)+tcode)) %>%
     arrange(ccode, tcode, qcode, rcode) %>%
     group_by(ccode) %>%
     mutate(tq = length(unique(paste(tcode, qcode))),

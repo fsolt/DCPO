@@ -19,22 +19,25 @@ data {
 
 parameters {
   vector[K*T] theta_raw; // non-centered public opinion ("ability")
+  vector<lower=0>[K*T] var_pop_raw; // non-centered population variance in public opinion (see McGann 2014, using sigma_y^2)
   vector[2] xi[R]; // alpha/beta (discrimination/difficulty) pair vectors
   vector[2] mu; // vector for alpha/beta means
   vector<lower=0>[2] tau; // vector for alpha/beta residual sds
   cholesky_factor_corr[2] L_Omega; // Cholesky decomposition of the correlation matrix for log(alpha) and beta
-  real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+  real<lower=0> sigma_theta[K]; 	// country dynamic public opinion variance parameter (see Linzer and Stanton 2012, 12)
+  real<lower=0> sigma_var_pop[K]; // country dynamic population variance variance parameter (see Linzer and Stanton 2012, 12)
 }
 
 transformed parameters {
   vector[R] alpha; // discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
   vector[R] beta; // difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
   vector[K*T] theta; // public opinion ("ability")
+  vector<lower=0>[K*T] var_pop; // population variance in public opinion
   for (r in 1:R) {
-    alpha[r] = exp(xi[r,1]);
+    alpha[r] = square(exp(xi[r,1]));
     beta[r] = xi[r,2];
     if (r > 1) {
-      if (rq[r]==rq[r-1]) {
+      if (rq[r] == rq[r-1]) {
         beta[r] = beta[r-1] + exp(beta[r]);
         if (c_a == 1) {
           alpha[r] = alpha[r-1];
@@ -45,8 +48,10 @@ transformed parameters {
 
   for (k in 1:K) {
     theta[(k-1)*T+1] = theta_raw[(k-1)*T+1];
+    var_pop[(k-1)*T+1] = var_pop_raw[(k-1)*T+1];
     for (t in 2:T) {
       theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + sigma_theta[k] * theta_raw[(k-1)*T+t];
+      var_pop[(k-1)*T+t] = var_pop[(k-1)*T+t-1] + sigma_var_pop[k] * var_pop_raw[(k-1)*T+t];
     }
   }
 }
@@ -67,13 +72,16 @@ model {
   // transition model
   if (rob == 1) {  // robust dynamic prior (see Reuning, Kenwick, and Fariss 2016)
     theta_raw ~ student_t(10, 0, 1);
+    var_pop_raw ~ student_t(10, 0, 1);
   } else { // standard dynamic prior
     theta_raw ~ normal(0, 1);
+    var_pop_raw ~ normal(0, 1);
   }
 
   // measurement model
-  y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr])); // likelihood
-
+  for (n in 1:N) {
+    y_r ~ binomial_logit(n_r, (theta[kktt[n]] - beta[rr[n]]) ./ hypot(1/alpha[rr[n]], var_pop[kktt[n]])); // likelihood
+  }
 }
 
 generated quantities {
@@ -84,6 +92,6 @@ generated quantities {
 
   // Simulations from the posterior predictive distribution
   for (n in 1:N) {
-    pred_prob[n] = inv_logit(alpha[rr[n]] .* (theta[kktt[n]] - beta[rr[n]]));
+    pred_prob[n] = inv_logit((theta[kktt[n]] - beta[rr[n]]) ./ hypot(1/alpha[rr[n]], var_pop[kktt[n]]));
   }
 }

@@ -207,7 +207,8 @@ dcpo_setup <- function(vars,
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)
            firstyr = as.integer(first(year, order_by = year)),
-           lastyr = as.integer(last(year, order_by = year))) %>%
+           lastyr = as.integer(last(year, order_by = year)),
+           year = as.integer(year)) %>%
     ungroup() %>%
     arrange(desc(cc_rank), country, year) %>% # order by data-richness
     # Generate numeric codes for countries, years, questions, and question-cuts

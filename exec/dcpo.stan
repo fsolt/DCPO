@@ -34,7 +34,7 @@ transformed parameters {
     alpha[r] = exp(xi[r,1]);
     beta[r] = xi[r,2];
     if (r > 1) {
-      if (rq[r]==rq[r-1]) {
+      if (rq[r] == rq[r-1]) {
         beta[r] = beta[r-1] + exp(beta[r]);
         if (c_a == 1) {
           alpha[r] = alpha[r-1];

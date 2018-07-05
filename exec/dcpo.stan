@@ -1,39 +1,44 @@
 data {
-  int<lower=1> K;     		// number of countries
+  int<lower=1> K;     			// number of countries
   int<lower=1> T; 				// number of years
   int<lower=1> Q; 				// number of questions
-  int<lower=1> R;         // number of question-cutpoints
+  int<lower=1> R;         		// number of question-cutpoints
   int<lower=1> N; 				// number of KTQR observations
   int<lower=1, upper=K> kk[N]; 	// country for observation n
   int<lower=1, upper=T> tt[N]; 	// year for observation n
   int<lower=1> kktt[N];         // country-year for observation n
   int<lower=1, upper=Q> qq[N];  // question for observation n
   int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
-  int<lower=1, upper=R> rq[R];  // question for question-cutpoint r
-  int<lower=1, upper=R> rcp[R]; // cutpoint for question-cutpoint r
-  int<lower=0> y_r[N];    // number of respondents giving selected answer for observation n
-  int<lower=0> n_r[N];    // total number of respondents for observation n
+  int<lower=1, upper=Q> rq[R];  // question for question-cutpoint r
+  int<lower=1> rcp[R]; 			// cutpoint for question-cutpoint r
+  int<lower=0> y_r[N];    		// number of respondents giving selected answer for observation n
+  int<lower=0> n_r[N];    		// total number of respondents for observation n
 }
 
 parameters {
-  vector[K*T] theta_raw; // non-centered public opinion ("ability")
-  vector<lower=0>[R] alpha; // discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
-  vector[Q] beta1; // difficulty of first cutpoint for question q (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-  vector<lower=0>[R-Q] beta2; // difficulty of any additional question-cutpoints for question q (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+  vector[K*T] theta_raw; 			// non-centered public opinion ("ability")
+  vector[2] xi[R]; 					// alpha/beta (discrimination/difficulty) pair vectors
+  vector[2] mu; 					// vector for alpha/beta means
+  vector<lower=0>[2] tau; 			// vector for alpha/beta residual sds
+  cholesky_factor_corr[2] L_Omega;	// Cholesky decomposition of the correlation matrix for log(alpha) and beta
   real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
 }
 
 transformed parameters {
-  vector[R] beta; // difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
-  vector[K*T] theta; // public opinion ("ability")
+  vector[R] alpha; 		// discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
+  vector[R] beta; 		// difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
+  vector[K*T] theta; 	// public opinion ("ability")
 
-  beta[1] = beta1[1];
+  alpha[1] = exp(xi[1,1]);
+  beta[1] = xi[1,2];
+
   for (r in 2:R) {
-    if (rq[r] != rq[r-1]) {
-      beta[r] = beta1[rq[r]];
-    } else {
-      beta[r] = beta[r-1] + beta2[r - rq[r]];
-    }
+    alpha[r] = exp(xi[r,1]);
+  	if (rq[r] == rq[r-1]) {
+  	  beta[r] = beta[r-1] + exp(xi[r,2]);
+  	} else {
+  	  beta[r] = xi[r,2];
+  	}
   }
 
   for (k in 1:K) {
@@ -45,9 +50,17 @@ transformed parameters {
 }
 
 model {
-  alpha ~ lognormal(1, 1);
-  beta1 ~ normal(0, 1);
-  beta2 ~ normal(0, 1);
+  matrix[2,2] L_Sigma;
+  L_Sigma = diag_pre_multiply(tau, L_Omega);
+  for (r in 1:R) {
+    xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
+  }
+  sigma_theta ~ normal(0, .05);
+  L_Omega ~ lkj_corr_cholesky(4);
+  mu[1] ~ normal(1, 1);
+  tau[1] ~ exponential(.2);
+  mu[2] ~ normal(-1, 1);
+  tau[2] ~ exponential(.2);
 
   // transition model
   theta_raw ~ normal(0, 1);
@@ -58,7 +71,10 @@ model {
 }
 
 generated quantities {
+  corr_matrix[2] Omega;
   vector[N] pred_prob;
+
+  Omega = multiply_lower_tri_self_transpose(L_Omega);
 
   // Simulations from the posterior predictive distribution (in my tests, vectorizing this was slower)
   for (n in 1:N) {

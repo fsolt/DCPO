@@ -24,7 +24,7 @@
 #' @export
 
 dcpo_setup <- function(vars,
-                       datapath = "../Data/dcpo_surveys",
+                       datapath = "../data/dcpo_surveys",
                        file = "",
                        chime = TRUE) {
   if ("data.frame" %in% class(vars)) {
@@ -197,6 +197,9 @@ dcpo_setup <- function(vars,
   rm(add)
   all_data$y_r = with(all_data, as.integer(round(n * value))) # number of 'yes' response equivalents, given data weights
 
+  max_cp_digits <- max(all_data$cutpoint) %>%
+    str_length()
+
   all_data2 <- all_data %>%
     select(-value, -L1) %>%
     group_by(country, year, variable, cutpoint) %>%
@@ -212,7 +215,7 @@ dcpo_setup <- function(vars,
     ungroup() %>%
     arrange(desc(cc_rank), country, year) %>% # order by data-richness
     # Generate numeric codes for countries, years, questions, and question-cuts
-    mutate(variable_cp = paste(variable, cutpoint, sep="_gt"),
+    mutate(variable_cp = paste(variable, formatC(cutpoint, width = max_cp_digits, format = "d", flag = "0"), sep="_gt"),
            ccode = as.integer(factor(country, levels = unique(country))),
            tcode = as.integer(year - min(year) + 1),
            qcode = as.integer(factor(variable, levels = unique(variable))),

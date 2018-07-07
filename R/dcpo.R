@@ -55,13 +55,13 @@ dcpo <- function(x,
     )
 
     dcpo_model <- stanmodels$dcpo
-    out1 <- sampling(dcpo_model,
+    out1 <- suppressWarnings(sampling(dcpo_model,
                      data = dcpo_data,
                      seed = seed,
                      iter = iter,
                      cores = cores,
                      chains = chains,
-                     control = list(max_treedepth = 20, adapt_delta=adapt_delta))
+                     control = list(max_treedepth = 20, adapt_delta=adapt_delta)))
   } else {
     dcpo_data <- list(  K    = max(x$ccode),
                         T    = max(x$tcode),
@@ -82,13 +82,13 @@ dcpo <- function(x,
     )
 
     dcpo_model <- stanmodels$dcpo_as_dv
-    out1 <- sampling(dcpo_model,
+    out1 <- suppressWarnings(sampling(dcpo_model,
                      data = dcpo_data,
                      seed = seed,
                      iter = iter,
                      cores = cores,
                      chains = chains,
-                     control = list(max_treedepth = 20, adapt_delta=adapt_delta))
+                     control = list(max_treedepth = 20, adapt_delta=adapt_delta)))
   }
 
   # Chime

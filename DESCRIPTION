@@ -1,18 +1,19 @@
 Package: DCPO
-Title: Dynamic Comparative Public Opinion
 Version: 0.1.0.9000
-Author: Frederick Solt <frederick-solt@uiowa.edu>
-Maintainer: Frederick Solt <frederick-solt@uiowa.edu>
+Title: Dynamic Comparative Public Opinion
 Description: Estimates latent variables from public opinion data in cross-national surveys.
-LazyData: true
+Authors@R: person("Frederick", "Solt", email = "frederick-solt@uiowa.edu", role = c("aut",  "cre"))
 License: GPL (>=3)
+Encoding: UTF-8
+LazyData: true
+ByteCompile: true
 Depends: 
-  R (>= 3.0.2),
-  Rcpp (>= 0.12.8), 
-  methods (>= 3.3.2)
+  R (>= 3.4.0),
+  Rcpp (>= 0.12.17), 
+  methods
 Imports: 
-  rstan (>= 2.14.1), 
-  rstantools (>= 1.1.0), 
+  rstan (>= 2.17.3), 
+  rstantools (>= 1.5.0), 
   readr, 
   reshape2, 
   dplyr, 
@@ -23,7 +24,13 @@ Imports:
   stringr,
   bayesplot,
   forcats
-LinkingTo: StanHeaders (>= 2.14.0.1), rstan (>= 2.14.1), BH (>= 1.62.0.1), Rcpp (>= 0.12.8), RcppEigen (>= 0.3.2.9.0)
+LinkingTo: StanHeaders (>= 2.17.2),
+  rstan (>= 2.17.3),
+  BH (>= 1.66.0-1),
+  Rcpp (>= 0.12.17),
+  RcppEigen (>= 0.3.3.4.0)
 Suggests: knitr
 VignetteBuilder: knitr
+SystemRequirements: GNU make
+NeedsCompilation: yes
 RoxygenNote: 6.0.1

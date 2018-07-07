@@ -2,8 +2,9 @@
 #'
 #' \code{dcpo_setup} prepares survey data for use with the \code{dcpo} function.
 #'
-#' @param vars a data frame (or, optionally, a csv file) of survey items
+#' @param vars a data frame (or, optionally, a .csv file) of survey items
 #' @param datapath path to the directory that houses raw survey datasets
+#' @param file a file path to save output to (in comma-separated format)
 #' @param chime play chime when complete?
 #
 #' @details \code{dcpo_setup}, when passed a data frame of survey items, collects the

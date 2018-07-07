@@ -4,13 +4,15 @@
 \alias{dcpo_setup}
 \title{Prepare Data for DCPO}
 \usage{
-dcpo_setup(vars, datapath = "../Data/dcpo_surveys", file = "",
+dcpo_setup(vars, datapath = "../data/dcpo_surveys", file = "",
   chime = TRUE)
 }
 \arguments{
-\item{vars}{a data frame (or, optionally, a csv file) of survey items}
+\item{vars}{a data frame (or, optionally, a .csv file) of survey items}
 
 \item{datapath}{path to the directory that houses raw survey datasets}
+
+\item{file}{a file path to save output to (in comma-separated format)}
 
 \item{chime}{play chime when complete?}
 }

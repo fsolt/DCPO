@@ -21,8 +21,6 @@ dcpo <- function(x,
                  cores = min(4, parallel::detectCores()/2),
                  chains = 4,
                  adapt_delta = .95,
-                 robust = FALSE,
-                 constant_alpha = FALSE,
                  chime = TRUE) {
 
   rq <- x %>%
@@ -43,9 +41,7 @@ dcpo <- function(x,
                       rq   = rq$rq,
                       rcp  = rq$rcp,
                       y_r  = x$y_r,
-                      n_r  = x$n,
-                      rob  = as.numeric(robust),
-                      c_a  = as.numeric(constant_alpha)
+                      n_r  = x$n
   )
 
   dcpo_model <- stanmodels$dcpo

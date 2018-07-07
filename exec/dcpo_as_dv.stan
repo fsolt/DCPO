@@ -51,8 +51,8 @@ transformed data {
   matrix[2, V] adj;              // values for centering and scaling independent variables
   matrix[K*T, V] W_adj;          // centered and scaled independent variables
   adj = obtain_adjustments(W);
-  for(kt in 1:(K*T)) for(v in 1:V)
-      W_adj[v, kt] = (W[v, kt] - adj[1, kt]) / adj[2, kt];
+  for(v in 1:V) for(kt in 1:(K*T))
+      W_adj[kt, v] = (W[kt, v] - adj[1, v]) / adj[2, v];
 }
 
 parameters {

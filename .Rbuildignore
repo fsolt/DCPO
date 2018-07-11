@@ -6,3 +6,4 @@
 cleanup*
 ^\.travis\.yml$
 R/get_data.R
+^data-raw$

@@ -3,7 +3,6 @@ library(countrycode)
 cc_dcpo <- countrycode::codelist %>%
   select(country.name.en, country.name.en.regex, iso2c, iso3c, wb_api3c) %>%
   mutate(dcpo.name = country.name.en %>%
-           str_replace(" & ", " and ") %>%
            str_replace(" - ", "-") %>%
            str_replace(" \\(.*", "") %>%
            str_replace(", [^U]*", "") %>%
@@ -23,9 +22,9 @@ cc_dcpo <- countrycode::codelist %>%
                                            dcpo.name == "Dominica" ~ "dominica\\b",
                                            dcpo.name == "Dominican Republic" ~ "dominican",
                                            TRUE ~ country.name.en.regex)) %>%
-  full_join(tibble(dcpo.name = "Soviet Union",
-                   country.name.en.regex = "soviet.?union|u\\.?s\\.?s\\.?r|socialist.?republics"),
-            by = c("country.name.en.regex", "dcpo.name")) %>%
-  left_join(read_csv("data/reg.csv", col_types = "cc"), by = "dcpo.name")
+  full_join(tribble(~country.name.en, ~dcpo.name, ~country.name.en.regex,
+                    "Soviet Union", "Soviet Union", "soviet.?union|u\\.?s\\.?s\\.?r|socialist.?republics",
+                    "Northern Ireland", "Northern Ireland", "north.*\\sireland"),
+            by = c("country.name.en", "country.name.en.regex", "dcpo.name"))
 
-devtools::use_data(cc_dcpo, internal = TRUE)
+devtools::use_data(cc_dcpo, overwrite = TRUE)

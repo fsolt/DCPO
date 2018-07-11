@@ -34,6 +34,25 @@ dcpo_setup <- function(vars,
     vars_table <- read_csv(vars, col_types = "ccccc")
   }
 
+  # Define custom country codes (created in data-raw/cc_dcpo.R)
+  body(countrycode)[[2]] <- substitute(
+    if (is.null(custom_dict) | as.list(match.call())[["custom_dict"]] == "cc_dcpo") {
+      if (origin == "country.name") {
+        origin <- "country.name.en"
+      }
+      if (destination == "country.name") {
+        destination <- "country.name.en"
+      }
+      if (origin %in% c("country.name.en", "country.name.de")) {
+        origin <- paste0(origin, ".regex")
+        origin_regex <- TRUE
+      }
+      else {
+        origin_regex <- FALSE
+      }
+    }
+  )
+
   all_sets <- list()
   for (i in seq(nrow(vars_table))) {
     cat(i, " ")
@@ -57,9 +76,9 @@ dcpo_setup <- function(vars,
 
       # Get countries
       suppressWarnings(
-        t_data$c_dcpo <- if(ds$country_var %in% names(t_data)) {
+        t_data$c_dcpo <- if (ds$country_var %in% names(t_data)) {
           if (is.null(attr(t_data[[ds$country_var]], "labels"))) {
-            if(!is.null(attr(t_data[[ds$country_var]], "value.labels"))) {
+            if (!is.null(attr(t_data[[ds$country_var]], "value.labels"))) {
               attr(t_data[[ds$country_var]], "labels") <- attr(t_data[[ds$country_var]],
                                                                "value.labels") %>% as.numeric()
               attr(attr(t_data[[ds$country_var]], "labels"), "names") <- attr(attr(t_data[[ds$country_var]],
@@ -68,8 +87,8 @@ dcpo_setup <- function(vars,
           }
           t_data[[ds$country_var]] %>%
           {if (!is.null(attr(t_data[[ds$country_var]], "labels")))
-            labelled(., attr(., "labels")) %>%
-              to_factor(levels = "prefixed") %>%
+            labelled::labelled(., attr(., "labels")) %>%
+              labelled::to_factor(levels = "prefixed") %>%
               forcats::fct_relabel(., function(x) str_replace(x, "\\[\\d+\\]\\s+", ""))
             else .} %>%
             as.character() %>%
@@ -77,16 +96,12 @@ dcpo_setup <- function(vars,
             {if (!is.na(ds$cc_dict))
               countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
               else if (!is.na(ds$cc_origin))
-                countrycode(., ds$cc_origin, "country.name")
+                countrycode(., ds$cc_origin, "dcpo.name", custom_dict = cc_dcpo)
               else if (!is.na(ds$cc_match))
-                countrycode(., "country.name", "country.name",
-                            custom_match = eval(parse(text = ds$cc_match)))
-              else countrycode(., "country.name", "country.name")} %>%
-            str_replace("Republic of (.*)", "\\1") %>%
-            str_replace(" of.*|,.*| \\(.*\\)|The former Yugoslav ", "") %>%
-            str_replace("Russian Federation", "Russia") %>%
-            str_replace("United Tanzania", "Tanzania") %>%
-            str_replace("Lao People's Democratic Republic", "Laos")
+                countrycode(., "country.name", "dcpo.name",
+                            custom_match = eval(parse(text = ds$cc_match)), custom_dict = cc_dcpo)
+              else countrycode(., "country.name", "dcpo.name", custom_dict = cc_dcpo)} %>%
+            countrycode("country.name", "dcpo.name", custom_dict = cc_dcpo)
         } else ds$country_var
       )
       t_data <- t_data %>%
@@ -134,9 +149,9 @@ dcpo_setup <- function(vars,
                                  t_data[[ds$year_var]],
                                  str_extract(ds$survey, "\\d{4}") %>% as.numeric()),
                    group_dcpo = c_dcpo) %>%
-            {if (!is.na(ds$cy_var))
-              mutate(., group_dcpo = t_data[[ds$cy_var]])
-              else .} %>%
+                   {if (!is.na(ds$cy_var))
+                     mutate(., group_dcpo = t_data[[ds$cy_var]])
+                     else .} %>%
             group_by(group_dcpo) %>%
             mutate(y_dcpo = round(mean(year))) %>%
             ungroup() %>%
@@ -192,7 +207,7 @@ dcpo_setup <- function(vars,
 
   for (i in seq(length(all_sets))) {
     add <- reshape2::melt(all_sets[i], id.vars = c("country", "year", "survey", "n",
-                                         "cutpoint"), na.rm=T)
+                                                   "cutpoint"), na.rm=T)
     if (i == 1) all_data <- add else all_data <- rbind(all_data, add)
   }
   rm(add)
@@ -216,7 +231,8 @@ dcpo_setup <- function(vars,
     ungroup() %>%
     arrange(desc(cc_rank), country, year) %>% # order by data-richness
     # Generate numeric codes for countries, years, questions, and question-cuts
-    mutate(variable_cp = paste(variable, formatC(cutpoint, width = max_cp_digits, format = "d", flag = "0"), sep="_gt"),
+    mutate(variable = as.character(variable),
+           variable_cp = paste(variable, formatC(cutpoint, width = max_cp_digits, format = "d", flag = "0"), sep="_gt"),
            ccode = as.integer(factor(country, levels = unique(country))),
            tcode = as.integer(year - min(year) + 1),
            qcode = as.integer(factor(variable, levels = unique(variable))),
@@ -239,3 +255,4 @@ dcpo_setup <- function(vars,
 
   return(all_data2)
 }
+

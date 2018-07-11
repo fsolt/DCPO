@@ -34,7 +34,7 @@ dcpo_setup <- function(vars,
     vars_table <- read_csv(vars, col_types = "ccccc")
   }
 
-  # Define custom country codes (created in data-raw/cc_dcpo.R)
+  # Revise countrycode::countrycode to work better with custom names in cc_dcpo
   body(countrycode)[[2]] <- substitute(
     if (is.null(custom_dict) | as.list(match.call())[["custom_dict"]] == "cc_dcpo") {
       if (origin == "country.name") {

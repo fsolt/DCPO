@@ -70,15 +70,15 @@ transformed parameters {
   vector[R] beta; 		// difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
   vector[K*T] theta; 	// public opinion ("ability")
 
-  alpha[1] = exp(xi[1,1]);
-  beta[1] = xi[1,2];
+  alpha[1] = exp(xi[1, 1]);
+  beta[1] = xi[1, 2];
 
   for (r in 2:R) {
-    alpha[r] = exp(xi[r,1]);
+    alpha[r] = exp(xi[r, 1]);
   	if (rq[r] == rq[r-1]) {
-  	  beta[r] = beta[r-1] + exp(xi[r,2]);
+  	  beta[r] = beta[r-1] + exp(xi[r, 2]);
   	} else {
-  	  beta[r] = xi[r,2];
+  	  beta[r] = xi[r, 2];
   	}
   }
 
@@ -91,7 +91,7 @@ transformed parameters {
 }
 
 model {
-  matrix[2,2] L_Sigma;
+  matrix[2, 2] L_Sigma;
   L_Sigma = diag_pre_multiply(tau, L_Omega);
   for (r in 1:R) {
     xi[r] ~ multi_normal_cholesky(mu, L_Sigma);

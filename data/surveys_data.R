@@ -8,10 +8,8 @@ save(surveys_data, file = "data/surveys_data.rda")
 devtools::use_data(surveys_data, overwrite = TRUE)
 rm(surveys_data)
 
-f <- devtools::build()
-system(paste0("R CMD INSTALL --build ", f))
+devtools::install('.', local=FALSE)
 
-rm(f)
 library(DCPO)
 library(tidyverse)
 beepr::beep()

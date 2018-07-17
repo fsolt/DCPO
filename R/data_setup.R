@@ -102,7 +102,8 @@ dcpo_setup <- function(vars,
                             custom_match = eval(parse(text = ds$cc_match)), custom_dict = cc_dcpo)
               else countrycode(., "country.name", "dcpo.name", custom_dict = cc_dcpo)} %>%
             countrycode("country.name", "dcpo.name", custom_dict = cc_dcpo)
-        } else ds$country_var
+        } else ds$country_var %>%
+          countrycode("country.name", "dcpo.name", custom_dict = cc_dcpo)
       )
       t_data <- t_data %>%
         filter(!is.na(c_dcpo))

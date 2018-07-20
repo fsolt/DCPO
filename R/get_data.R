@@ -389,8 +389,8 @@ pwalk(cces_files, function(file_id, data_link) {
     writeBin(as.vector(f), file.path(dl_dir, file_id, name2))
   })
   data_file <- list.files(path = file.path(cces_dir, file_id)) %>% str_subset("dta") %>% last()
-  convert(file.path(dl_dir, file_id, data_file),
-          file.path(dl_dir, file_id, paste0(file_id, ".RData")))
+  haven::read_dta(file.path(dl_dir, file_id, data_file), encoding = "latin1") %>%
+    export(file.path(dl_dir, file_id, paste0(file_id, ".RData")))
 })
 
 

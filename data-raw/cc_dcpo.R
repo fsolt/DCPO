@@ -21,6 +21,7 @@ cc_dcpo <- countrycode::codelist %>%
                                            dcpo.name == "Bolivia" ~ "bolivia\\b",
                                            dcpo.name == "Dominica" ~ "dominica\\b",
                                            dcpo.name == "Dominican Republic" ~ "dominican",
+                                           dcpo.name == "Cyprus" ~ "^(?!northern.)cyprus",
                                            TRUE ~ country.name.en.regex)) %>%
   full_join(tribble(~country.name.en, ~dcpo.name, ~country.name.en.regex,
                     "Soviet Union", "Soviet Union", "soviet.?union|u\\.?s\\.?s\\.?r|socialist.?republics",

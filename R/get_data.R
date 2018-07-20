@@ -120,6 +120,7 @@ walk(seq_len(nrow(ds)), function(i) {
   }
 })
 
+
 # Roper Center
 roper_ds <- ds %>%
   filter(archive == "roper")
@@ -137,6 +138,7 @@ walk(roper_sp, function(sp) {
                                                        paste0(sp, "_files")))
   Sys.sleep(5)
 })
+
 
 # Roper ASCII files
 roper_ascii_files <- ds %>%
@@ -354,8 +356,8 @@ walk(ess_rounds, function(round) {
           paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
 })
 
-# AsiaBarometer (2005, 2006, 2007) can't automate download--permission lasts only 72 hrs
 
+# AsiaBarometer (2005, 2006, 2007) can't automate download--permission lasts only 72 hrs
 walk(c(2005, 2006, 2007), function(yr) {
   yr_dir <- paste0("../data/dcpo_surveys/misc_files/asiab_files/asiabarometer", yr)
   data_file <- list.files(path = yr_dir) %>%
@@ -364,6 +366,33 @@ walk(c(2005, 2006, 2007), function(yr) {
   rio::convert(file.path(yr_dir, data_file),
           paste0(tools::file_path_sans_ext(file.path(yr_dir, data_file)), ".RData"))
 })
+
+
+# CCES
+dl_dir <- file.path("../data/dcpo_surveys",
+                    "misc_files",
+                    "cces_files")
+
+cces_files <- ds %>%
+  filter(surv_program == "cces") %>%
+  select(file_id, data_link)
+
+pwalk(cces_files, function(file_id, data_link) {
+  dir.create(file.path(dl_dir, file_id), recursive = TRUE, showWarnings = FALSE)
+  cces_info <- dataverse::get_dataset(data_link)
+  cces_ids <- cces_info$files %>%
+    janitor::clean_names() %>%
+    select(label, id)
+  walk2(cces_ids$label, cces_ids$id, function(name, id) {
+    name2 <- ifelse(tools::file_ext(name) == "tab", paste0(tools::file_path_sans_ext(name), ".dta"), name)
+    f <- dataverse::get_file(file = id, dataset = data_link)
+    writeBin(as.vector(f), file.path(dl_dir, file_id, name2))
+  })
+  data_file <- list.files(path = file.path(cces_dir, file_id)) %>% str_subset("dta") %>% last()
+  convert(file.path(dl_dir, file_id, data_file),
+          file.path(dl_dir, file_id, paste0(file_id, ".RData")))
+})
+
 
 # Roper by Request
 roper_request_dir <- "../data/dcpo_surveys/misc_files/roper_request_files"

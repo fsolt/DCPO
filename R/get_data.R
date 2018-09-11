@@ -1,8 +1,8 @@
-library(gesis)  #
+library(gesis)
 library(tidyverse)
-library(stringr)#
-library(rio)    #
-library(purrr)  #
+library(stringr)
+library(rio)
+library(purrr)
 library(icpsrdata)
 library(pewdata)
 library(ropercenter)

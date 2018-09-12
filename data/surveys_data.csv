@@ -179,7 +179,8 @@ lb2013,,idenpa,,,,2013,,,wt,misc,lb,lb2013,,,,
 lb2015,,idenpa,,,,2015,,,wt,misc,lb,lb2015,,,,
 lb2016,,idenpa,,,,2016,,,wt,misc,lb,lb2016,,,,
 lb2017,,idenpa,,,,2017,,,wt,misc,lb,lb2017,,,,
-nbcwsj199306,,United States,,,,1993,,,weight,roper,nbcwsj,USNBCWSJ1993-4039,,,,"list(file = file_path, var_names = c(""q20g"", ""weight""), var_positions = c(90, 118), var_widths = c(1, 6))"
+nbcwsj199306,,United States,,,,1993,,,weight,roper,nbcwsj,USNBCWSJ1993-4039,,,,"list(file = file_path, var_names = c(""q15f"", ""q20g"", ""weight""), var_positions = c(62, 90, 118), var_widths = c(1, 1, 6))"
+nbcwsj199406,,United States,,,,1994,,,weight,roper,nbcwsj,USNBCWSJ1994-4048,,,,"list(file = file_path, var_names = c(""q12a8"", ""weight""), var_positions = c(92, 153), var_widths = c(1, 6))"
 nbcwsj199906,,United States,,,,1999,,,weight_1,roper,nbcwsj,USNBCWSJ1999-4098,,,,
 npes_combo,npes_combo,Netherlands,,,,,a1,,,icpsr,npes,ICPSR_28221,,,,
 pew2002,,country,,,,2002,,,weight,pew,global,12044,,,,

@@ -46,6 +46,7 @@ amb_venezuela2016,,Venezuela,,,,2016,,,wt,misc,amb,amb_venezuela2016,,http://dat
 anes_combo,,United States,,,,,vcf0004,,vcf0009x,icpsr,anes,ICPSR_08475,,,,
 angus_reid1995,,Canada,,,,1995,,,wt,roper,angus_reid,CNAREID1995-9504,Social_Issues_Forum,,,
 ap_us1996,,United States,,,,1996,,,pweight,roper,ap,USAPICR1996-924L,,,,
+arromer199111,,Argentina,,,,1991,,,,roper,arromer,ARROMER1991-TOP008 ,,,,
 asiab2004,,country,,,,2004,,,weight,icpsr,asiab,ICPSR_20420,,,,
 asiab2005,,country,,,,2005,,,weight,misc,asiab,asiabarometer2005,,,,
 asiab2006,,country,,,,2006,,,,misc,asiab,asiabarometer2006,,,,
@@ -158,7 +159,7 @@ issp2008,,v5,,,,,,"data_frame(orig=c(""AT-Austria"", ""AU-Australia"", ""BE-Belg
 issp2008a,,v5,,,,2008,,,weight,gesis,issp,ZA5690,,,,
 issp2012,,v4,,,,,dateyr,,weight,gesis,issp,ZA5900,,,,
 jgss,,Japan,,,,,ryear,,weight,icpsr,jgss,ICPSR_04472,,,,
-lat200006,,United States,,,,2000,,,weight,roper,lat,USLAT2000-442,,,,"list(file = file_path, var_names = c(""q30"", ""q31"", ""q33"", ""q34"", ""q54"", ""q57"", ""weight""), var_cards = c(1, 1, 1, 1, 2, 2, 3), var_positions = c(64, 65, 67, 68, 15, 18, 8), var_widths = c(1, 1, 1, 1, 1, 1, 5), total_cards = 3)"
+lat200006,,United States,,,,2000,,,weight,roper,lat,USLAT2000-442,,,,"list(file = file_path, var_names = c(""q24"", ""q30"", ""q31"", ""q33"", ""q34"", ""q54"", ""q57"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 2, 2, 3), var_positions = c(58, 64, 65, 67, 68, 15, 18, 8), var_widths = c(1, 1, 1, 1, 1, 1, 1, 5), total_cards = 3)"
 lb1995,,pais,,,,1995,,,wt,misc,lb,lb1995,,,,
 lb1996,,pais,,,,1996,,,wt,misc,lb,lb1996,,,,
 lb1997,,idenpa,,,,1997,,,wt,misc,lb,lb1997,,,,
@@ -195,6 +196,7 @@ pewrel2014_us,,United States,,,,2014,,,weight,pew,religion,u-s-religious-landsca
 pewrel2015_ee,,country,,,,2015,,,final_weight,pew,religion,eastern-european-survey-dataset,,,,
 pewrel2016_us,,United States,,,,2016,,,weight_w20,pew,religion,american-trends-panel-wave-20,,,,
 pgss,,Poland,,,,,pgssyear,,weight,misc,pgss,pgss,,,,
+pipa200711,,country,,,,2008,,,weight,roper,pipa,MCUMARY2007-11,,,,
 politbarometer_2015,,Germany,,,,2015,,,v322,gesis,politbarometer,ZA6700,,,,
 politbarometer_east2000,,Germany,,,,2000,,,v291,gesis,politbarometer,ZA3426,,,,
 politbarometer_east2001,,Germany,,,,2001,,,v254,gesis,politbarometer,ZA3555,,,,

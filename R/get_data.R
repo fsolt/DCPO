@@ -152,9 +152,12 @@ walk(roper_ascii_files, function(file) {
                          paste0(ra_ds$surv_program, "_files"),
                          file,
                          paste0(file, ".dat"))
-  x <- do.call(read_ascii, eval(parse(text = ra_ds$read_ascii_args))) %>%
-    mutate(weight0 = as.numeric(weight),
-           weight = weight0/mean(weight0))
+  x <- do.call(read_ascii, eval(parse(text = ra_ds$read_ascii_args)))
+  if (!is.na(ra_ds$wt)) {
+    x <- x %>%
+      mutate(weight0 = as.numeric(weight),
+             weight = weight0/mean(weight0))
+  }
   export(x, str_replace(file_path, "dat$", "RData"))
 })
 

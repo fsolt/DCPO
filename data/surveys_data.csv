@@ -46,7 +46,9 @@ amb_venezuela2016,,Venezuela,,,,2016,,,wt,misc,amb,amb_venezuela2016,,http://dat
 anes_combo,,United States,,,,,vcf0004,,vcf0009x,icpsr,anes,ICPSR_08475,,,,
 angus_reid1995,,Canada,,,,1995,,,wt,roper,angus_reid,CNAREID1995-9504,Social_Issues_Forum,,,
 ap_us1996,,United States,,,,1996,,,pweight,roper,ap,USAPICR1996-924L,,,,
+arkolsky198905,,Argentina,,,,1989,,,,roper,arkolsky,ARKOLSKY1989-SIST12,,,,"list(file = file_path, var_names = c(""p28""), var_cards = c(4), var_positions = c(7), var_widths = c(1), total_cards = 4)"
 arromer199111,,Argentina,,,,1991,,,,roper,arromer,ARROMER1991-TOP008 ,,,,
+arromer199207,,Argentina,,,,1992,,,,roper,arromer,ARROMER1992-TOP012,,,,
 arromer199408,,Argentina,,,,1994,,,,roper,arromer,ARROMER1994-TOP024,,,,
 arromer199603,,Argentina,,,,1996,,,,roper,arromer,ARROMER1996-TOP034,,,,
 asiab2004,,country,,,,2004,,,weight,icpsr,asiab,ICPSR_20420,,,,
@@ -90,6 +92,12 @@ cces2014,,United States,,,,2014,,,weight,misc,cces,cces2014,,doi:10.7910/DVN/XFX
 cces2015,,United States,,,,2015,,,weight,misc,cces,cces2015,,doi:10.7910/DVN/SWMWX8,,
 cces2016,,United States,,,,2016,,,commonweight,misc,cces,cces2016,,doi:10.7910/DVN/GDF6Z0,,
 cdcee,,v3,,,"c(""East Germany""=""Germany"", ""West Germany""=""Germany"")",,v666,,wt <- t_data$v633; wt[!is.na(t_data$v634)] <- t_data$v634[!is.na(t_data$v634)]; wt[!is.na(t_data$v636)] <- t_data$v636[!is.na(t_data$v636)]; wt[!is.na(t_data$v637)] <- t_data$v637[!is.na(t_data$v637)]; wt[!is.na(t_data$v638)] <- t_data$v638[!is.na(t_data$v638)]; wt[!is.na(t_data$v639)] <- t_data$v639[!is.na(t_data$v639)]; wt[!is.na(t_data$v640)] <- t_data$v640[!is.na(t_data$v640)]; wt[is.na(wt)] <- 1,gesis,cdcee,ZA4054,,,,
+chcep199012,,Chile,,,,1990,,,weight,roper,chcep,CHCEP1990-151,,,,"list(file = file_path, var_names = c(""p21"", ""weight""),  var_positions = c(121, 175), var_widths = c(1, 9))"
+chcep199109,,Chile,,,,1991,,,pond,roper,chcep,CHCEP1991-1022,,,,
+chcep199909,,Chile,,,,1999,,,weight,roper,chcep,CHCEP1999-1011,,,,"list(file = file_path, var_names = c(""p40"", ""weight""),  var_positions = c(232, 352), var_widths = c(1, 8))"
+chcep200604,,Chile,,,,2006,,,factor_m2,roper,chcep,CHCEP2006-0531,,,,
+chcep200803,,Chile,,,,2008,,,pond,roper,chcep,CHCEP2008-0416,,,,
+chcep200806,,Chile,,,,2008,,,fcorrecc,roper,chcep,CHCEP2008-0626,,,,
 cnn199301,,United States,,,,1993,,,weight,roper,cnn,USYANK1993-85202,,,,
 cnn199406,,United States,,,,1994,,,weight,roper,cnn,USYANK1994-94011,,,,
 cnn199810,,United States,,,,1998,,,weight,roper,cnn,USYANK1998-98014,,,,

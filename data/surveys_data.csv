@@ -88,6 +88,7 @@ bsa2015,,United Kingdom,,,,2015,,,wtfactor,ukds,bsa,8116,,,,
 bsa2016,,United Kingdom,,,,2016,,,wtfactor,ukds,bsa,8252,,,,
 cbsnyt198008,,United States,,,,1980,,,weight,roper,cbsnyt,USCBSNYT1980-AUG,,,,"list(file = file_path, var_names = c(""v81"", ""weight""), var_positions = c(96, 124), var_widths = c(1, 6))"
 cbsnyt198105,,United States,,,,1981,,,weight,roper,cbsnyt,USCBSNYT1981-APRIL,,,,
+cbsnyt198106,,United States,,,,1981,,,weight,roper,cbsnyt,USCBSNYT1981-JUNESOCSEC,,,,"list(file = file_path, var_names = c(""q25"", ""weight""), var_cards = c(1, 3), var_positions = c(63, 49), var_widths = c(1, 6), total_cards = 3)"
 cbsnyt198905,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-APRIL,,,,"list(file = file_path, var_names = c(""q14a"", ""q14b"", ""q14c"", ""q14d"", ""weight""), var_cards = c(1, 1, 1, 1, 3), var_positions = c(49, 50, 51, 52, 49), var_widths = c(1, 1, 1, 1, 6), total_cards = 3)"
 cces2009,,United States,,,,2009,,,v200,misc,cces,cces2009,,hdl:1902.1/20536,,
 cces2012,,United States,,,,2012,,,v103,misc,cces,cces2012,,hdl:1902.1/21447,,
@@ -241,10 +242,10 @@ pgss,,Poland,,,,,pgssyear,,weight,misc,pgss,pgss,,,,
 pipa200711,,country,,,,2008,,,weight,roper,pipa,MCUMARY2007-11,,,,
 pocbos199801,,Poland,,,,1998,,,weight,roper,pocbos,POCBOS1998-9804,,,,"list(file = file_path, var_names = c(""p35"", ""weight""), var_positions = c(122, 235), var_widths = c(1, 9))"
 politbarometer_2015,,Germany,,,,2015,,,v322,gesis,politbarometer,ZA6700,,,,
-politbarometer_east1991,,Germany,,,,1991,,,wt <- v277 * .279,gesis,politbarometer,ZA2114,,,,
-politbarometer_east1992,,Germany,,,,1992,,,wt <- v332 * .279,gesis,politbarometer,ZA2287,,,,
-politbarometer_east1993,,Germany,,,,1993,,,wt <- v321 * .279,gesis,politbarometer,ZA2390,,,,
-politbarometer_east1995,,Germany,,,,1995,,,wt <- v250 * .279,gesis,politbarometer,ZA2777,,,,
+politbarometer_east1991,,Germany,,,,1991,,,wt <- t_data$v277 * .279,gesis,politbarometer,ZA2114,,,,
+politbarometer_east1992,,Germany,,,,1992,,,wt <- t_data$v332 * .279,gesis,politbarometer,ZA2287,,,,
+politbarometer_east1993,,Germany,,,,1993,,,wt <- t_data$v321 * .279,gesis,politbarometer,ZA2390,,,,
+politbarometer_east1995,,Germany,,,,1995,,,wt <- t_data$v250 * .279,gesis,politbarometer,ZA2777,,,,
 politbarometer_east2000,,Germany,,,,2000,,,v291,gesis,politbarometer,ZA3426,,,,
 politbarometer_east2001,,Germany,,,,2001,,,v254,gesis,politbarometer,ZA3555,,,,
 politbarometer_west_combo,,Germany,,,,,v4,,v78,gesis,politbarometer,ZA2391,,,,

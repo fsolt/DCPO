@@ -186,6 +186,8 @@ gallup_uk1981,,United Kingdom,,,,1981,,,,misc,roper_request,GBSSLT1981-CQ792,,,,
 gallup_uk198202,,United Kingdom,,,,1982,,,,roper,gallup_uk,GBSSLT1982-CQ806,,,,
 gallup_uk1985,,United Kingdom,,,,1985,,,,misc,roper_request,GBSSLT1985-CQ958A,,,,
 gallup_uk1986,,United Kingdom,,,,1986,,,,misc,roper_request,GBSSLT1986-CQ044A,,,,
+gallup_us196208,,United States,,,,1962,,,,roper,gallup_us,USAIPO1962-0662,,,,"list(file = file_path, var_names = c(""q25a"", ""q25b"", ""q25c""), var_positions = c(46, 47, 48), var_widths = c(1, 1, 1))"
+gallup_us196512,,United States,,,,1965,,,,roper,gallup_us,USAIPO1965-0721,,,,"list(file = file_path, var_names = c(""q44a"", ""q44b"", ""q44c"", ""q44d"", ""weight""), var_positions = c(29, 30, 31, 32, 64), var_widths = c(1, 1, 1, 1, 1))"
 gallup_us196909,,United States,,,,1969,,,weight,roper,gallup_us,USAIPO1969-0788,,,,"list(file = file_path, var_names = c(""q44a"", ""q44b"", ""q44c"", ""q44d"", ""weight""), var_positions = c(29, 30, 31, 32, 64), var_widths = c(1, 1, 1, 1, 1))"
 gallup_us197706,,United States,,,,1977,,,weight,roper,gallup_us,USAIPO1977-0978,,,,
 gallup_us198206,,United States,,,,1982,,,weight,roper,gallup_us,USAIPO1982-1197G,,,,"list(file = file_path, var_names = c(""q09j"", ""weight""), var_positions = c(38, 1), var_widths = c(1, 1))"
@@ -247,7 +249,15 @@ nbcwsj199609,,United States,,,,1996,,,weight,roper,nbcwsj,USNBCWSJ1996-4073,,,,"
 nbcwsj199801,,United States,,,,1998,,,weight,roper,nbcwsj,USNBCWSJ1998-4086,,,,"list(file = file_path, var_names = c(""q16d"", ""weight""), var_positions = c(72, 190), var_widths = c(1, 6))"
 nbcwsj199802,,United States,,,,1998,,,weight,roper,nbcwsj,USNBCWSJ1998-4088,,,,"list(file = file_path, var_names = c(""q16"", ""weight""), var_positions = c(151, 300), var_widths = c(1, 6))"
 nbcwsj199906,,United States,,,,1999,,,weight_1,roper,nbcwsj,USNBCWSJ1999-4098,,,,
+nbcwsj200001,,United States,,,,2000,,,weight_1,roper,nbcwsj,USNBCWSJ2000-6003,,,,
+nbcwsj200006,,United States,,,,2000,,,weight_1,roper,nbcwsj,USNBCWSJ2000-6006,,,,
+nbcwsj200007,,United States,,,,2000,,,weight_1,roper,nbcwsj,USNBCWSJ2000-6007A,,,,
+nbcwsj200301,,United States,,,,2003,,,weight_1,roper,nbcwsj,USNBCWSJ2003-6030,,,,
+nbcwsj200311,,United States,,,,2003,,,weights,roper,nbcwsj,USNBCWSJ2003-6038,,,,
 nbcwsj200809,,United States,,,,2008,,,weight_1,roper,nbcwsj,USNBCWSJ2008-6086,,,,
+nbcwsj200505,,United States,,,,2005,,,weight_1,roper,nbcwsj,USNBCWSJ2005-6054,,,,
+nbcwsj200705,,United States,,,,2007,,,weight_1,roper,nbcwsj,USNBCWSJ2007-6072,,,,
+nbcwsj200910,,United States,,,,2009,,,weight_1,roper,nbcwsj,USNBCWSJ2009-6098,,,,
 npes_combo,npes_combo,Netherlands,,,,,a1,,,icpsr,npes,ICPSR_28221,,,,
 pew2002,,country,,,,2002,,,weight,pew,global,12044,,,,
 pew2007,,country,,,,2007,,,weight,pew,global,12025,,,,

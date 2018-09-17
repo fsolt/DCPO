@@ -86,10 +86,15 @@ bsa2013,,United Kingdom,,,,2013,,,wtfactor,ukds,bsa,7500,,,,
 bsa2014,,United Kingdom,,,,2014,,,wtfactor,ukds,bsa,7809,,,,
 bsa2015,,United Kingdom,,,,2015,,,wtfactor,ukds,bsa,8116,,,,
 bsa2016,,United Kingdom,,,,2016,,,wtfactor,ukds,bsa,8252,,,,
+cbsnyt197710,,United States,,,,1977,,,weight,roper,cbsnyt,USCBSNYT1977-OCT,,,,"list(file = file_path, var_names = c(""q28b"", ""weight""), var_cards = c(1, 3), var_positions = c(73, 49), var_widths = c(1, 6), total_cards = 3)"
+cbsnyt197911,,United States,,,,1979,,,weight,roper,cbsnyt,USCBSNYT1979-NOV,,,,"list(file = file_path, var_names = c(""q41"", ""weight""), var_positions = c(154, 1), var_widths = c(1, 6))"
 cbsnyt198008,,United States,,,,1980,,,weight,roper,cbsnyt,USCBSNYT1980-AUG,,,,"list(file = file_path, var_names = c(""v81"", ""weight""), var_positions = c(96, 124), var_widths = c(1, 6))"
 cbsnyt198105,,United States,,,,1981,,,weight,roper,cbsnyt,USCBSNYT1981-APRIL,,,,
 cbsnyt198106,,United States,,,,1981,,,weight,roper,cbsnyt,USCBSNYT1981-JUNESOCSEC,,,,"list(file = file_path, var_names = c(""q25"", ""weight""), var_cards = c(1, 3), var_positions = c(63, 49), var_widths = c(1, 6), total_cards = 3)"
-cbsnyt198905,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-APRIL,,,,"list(file = file_path, var_names = c(""q14a"", ""q14b"", ""q14c"", ""q14d"", ""weight""), var_cards = c(1, 1, 1, 1, 3), var_positions = c(49, 50, 51, 52, 49), var_widths = c(1, 1, 1, 1, 6), total_cards = 3)"
+cbsnyt198901,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-JAN,,,,"list(file = file_path, var_names = c(""q22"", ""weight""), var_cards = c(1, 3), var_positions = c(69, 49), var_widths = c(1, 6), total_cards = 3)"
+cbsnyt198905,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-APRIL,,,,"list(file = file_path, var_names = c(""q7"", ""q8"", ""q14a"", ""q14b"", ""q14c"", ""q14d"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 1, 3), var_positions = c(40, 41, 49, 50, 51, 52, 49), var_widths = c(1, 1, 1, 1, 1, 1, 6), total_cards = 3)"
+cbsnyt198909,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-SEP2,,,,"list(file = file_path, var_names = c(""q15"", ""q16"", ""q19a"", ""q19b"", ""q19c"", ""q19e"", ""q19g"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 1, 1, 3), var_positions = c(54, 55, 58, 59, 60, 62, 64, 49), var_widths = c(1, 1, 1, 1, 1, 1, 1, 6), total_cards = 3)"
+cbsnyt199801,,United States,,,,1998,,,weight,roper,cbsnyt,USCBSNYT1998-98001A,,,,
 cces2009,,United States,,,,2009,,,v200,misc,cces,cces2009,,hdl:1902.1/20536,,
 cces2012,,United States,,,,2012,,,v103,misc,cces,cces2012,,hdl:1902.1/21447,,
 cces2014,,United States,,,,2014,,,weight,misc,cces,cces2014,,doi:10.7910/DVN/XFXJVY,,
@@ -203,6 +208,12 @@ issp2012,,v4,,,,,dateyr,,weight,gesis,issp,ZA5900,,,,
 itdoxa199303,,Italy,,,,1993,,,,roper,itdoxa,ITDOXA1993-93010-07,,,,
 jgss,,Japan,,,,,ryear,,weight,icpsr,jgss,ICPSR_04472,,,,
 lat200006,,United States,,,,2000,,,weight,roper,lat,USLAT2000-442,,,,"list(file = file_path, var_names = c(""q24"", ""q30"", ""q31"", ""q33"", ""q34"", ""q54"", ""q57"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 2, 2, 3), var_positions = c(58, 64, 65, 67, 68, 15, 18, 8), var_widths = c(1, 1, 1, 1, 1, 1, 1, 5), total_cards = 3)"
+lat200301,,United States,,,,2003,,,wtvar,roper,lat,USLAT2003-481,,,,
+lat200311,,United States,,,,2003,,,wtvar,roper,lat,USLAT2003-491,,,,
+lat200501,,United States,,,,2005,,,wtvar,roper,lat,USLAT2005-514,,,,
+lat200605,,United States,,,,2006,,,wtvar,roper,lat,USLAT2006-526,,,,
+lat200710,,United States,,,,2007,,,wtvar,roper,lat,USLAT2007-547,,,,
+lat200712,,United States,,,,2007,,,wtvar,roper,lat,USLAT2007-548,,,,
 lb1995,,pais,,,,1995,,,wt,misc,lb,lb1995,,,,
 lb1996,,pais,,,,1996,,,wt,misc,lb,lb1996,,,,
 lb1997,,idenpa,,,,1997,,,wt,misc,lb,lb1997,,,,
@@ -223,9 +234,20 @@ lb2013,,idenpa,,,,2013,,,wt,misc,lb,lb2013,,,,
 lb2015,,idenpa,,,,2015,,,wt,misc,lb,lb2015,,,,
 lb2016,,idenpa,,,,2016,,,wt,misc,lb,lb2016,,,,
 lb2017,,idenpa,,,,2017,,,wt,misc,lb,lb2017,,,,
+nbc198507,,United States,,,,1985,,,,roper,nbcwsj,USNBC1985-JUL2,,,,
+nbcwsj199106,,United States,,,,1991,,,wvar1,roper,nbcwsj,USNBCWSJ1991-JUN,,,,
 nbcwsj199306,,United States,,,,1993,,,weight,roper,nbcwsj,USNBCWSJ1993-4039,,,,"list(file = file_path, var_names = c(""q15f"", ""q20g"", ""weight""), var_positions = c(62, 90, 118), var_widths = c(1, 1, 6))"
 nbcwsj199406,,United States,,,,1994,,,weight,roper,nbcwsj,USNBCWSJ1994-4048,,,,"list(file = file_path, var_names = c(""q12a8"", ""weight""), var_positions = c(92, 153), var_widths = c(1, 6))"
+nbcwsj199512,,United States,,,,1995,,,weight,roper,nbcwsj,USNBCWSJ1995-4065,,,,"list(file = file_path, var_names = c(""q13"", ""weight""), var_positions = c(73, 315), var_widths = c(1, 6))"
+nbcwsj199603,,United States,,,,1996,,,weight,roper,nbcwsj,USNBCWSJ1996-4067,,,,"list(file = file_path, var_names = c(""q17"", ""weight""), var_positions = c(113, 290), var_widths = c(1, 6))"
+nbcwsj199605,,United States,,,,1996,,,weight,roper,nbcwsj,USNBCWSJ1996-4068,,,,"list(file = file_path, var_names = c(""q20"", ""weight""), var_positions = c(110, 290), var_widths = c(1, 6))"
+nbcwsj199606,,United States,,,,1996,,,weight,roper,nbcwsj,USNBCWSJ1996-4069,,,,"list(file = file_path, var_names = c(""q19b"", ""weight""), var_positions = c(144, 310), var_widths = c(1, 6))"
+nbcwsj199608,,United States,,,,1996,,,weight,roper,nbcwsj,USNBCWSJ1996-4071,,,,"list(file = file_path, var_names = c(""q15a"", ""weight""), var_positions = c(63, 310), var_widths = c(1, 6))"
+nbcwsj199609,,United States,,,,1996,,,weight,roper,nbcwsj,USNBCWSJ1996-4073,,,,"list(file = file_path, var_names = c(""q27"", ""weight""), var_positions = c(130, 310), var_widths = c(1, 6))"
+nbcwsj199801,,United States,,,,1998,,,weight,roper,nbcwsj,USNBCWSJ1998-4086,,,,"list(file = file_path, var_names = c(""q16d"", ""weight""), var_positions = c(72, 190), var_widths = c(1, 6))"
+nbcwsj199802,,United States,,,,1998,,,weight,roper,nbcwsj,USNBCWSJ1998-4088,,,,"list(file = file_path, var_names = c(""q16"", ""weight""), var_positions = c(151, 300), var_widths = c(1, 6))"
 nbcwsj199906,,United States,,,,1999,,,weight_1,roper,nbcwsj,USNBCWSJ1999-4098,,,,
+nbcwsj200809,,United States,,,,2008,,,weight_1,roper,nbcwsj,USNBCWSJ2008-6086,,,,
 npes_combo,npes_combo,Netherlands,,,,,a1,,,icpsr,npes,ICPSR_28221,,,,
 pew2002,,country,,,,2002,,,weight,pew,global,12044,,,,
 pew2007,,country,,,,2007,,,weight,pew,global,12025,,,,
@@ -276,10 +298,12 @@ psra2008,,United States,,,,2008,,,weight,roper,psra,USPSRA2008-NW11,,,,
 ress2014,,Russia,,,,2014,,,dweight,misc,ess,ress2014,,http://www.europeansocialsurvey.org/docs/related_studies/CESSI_ESS7/ESS7RU_main_data.zip,http://www.europeansocialsurvey.org/docs/related_studies/CESSI_ESS7/ESS7RU_questionnaire.pdf,
 sasas2014,,South Africa,,,,2014,,,weightza,misc,ess,sasas2014,,http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/SASAS14_e01.stata.zip,http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/sasas2014_questionnaire_q2.pdf,
 usgss,,United States,,,,,year,,wtssnr,icpsr,gss,ICPSR_36797,,,,
-usap8901,,United States,,,,1989,,,weight,roper,usap,USMGAP1989-025,,,,
-usap8907,,United States,,,,1989,,,weight,roper,usap,USMGAP1989-027,,,,
-usap9205,,United States,,,,1992,,,pweight,roper,usap,USAPICR1992-922H,,,,
-usap9502,,United States,,,,1995,,,pweight,roper,usap,USAPICR1995-906K,,,,
+usap198009,,United States,,,,1980,,,,roper,usap,USNBCAP1980-SEPT,,,,
+usap198010,,United States,,,,1980,,,,roper,usap,USNBCAP1980-OCT,,,,
+usap198901,,United States,,,,1989,,,weight,roper,usap,USMGAP1989-025,,,,
+usap198907,,United States,,,,1989,,,weight,roper,usap,USMGAP1989-027,,,,
+usap199205,,United States,,,,1992,,,pweight,roper,usap,USAPICR1992-922H,,,,
+usap199502,,United States,,,,1995,,,pweight,roper,usap,USAPICR1995-906K,,,,
 usnwr198509,,United States,,,,1985,,,weight,roper,usnwr,USRSPUSN1985-640-019,,,,
 uspew1993_nii,,United States,,,,1993,,,weight,roper,pew,USTM1993-NII0893,,,,"list(file = file_path, var_names = c(""q17"", ""weight""), var_positions = c(69, 206), var_widths = c(1, 3))"
 uspew1996_media,,United States,,,,1996,,,weight,roper,pew,USPEW1996-96004,,,,"list(file = file_path, var_names = c(""q8e"", ""weight""), var_positions = c(47, 306), var_widths = c(1, 7))"

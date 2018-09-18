@@ -186,8 +186,8 @@ gallup_uk1981,,United Kingdom,,,,1981,,,,misc,roper_request,GBSSLT1981-CQ792,,,,
 gallup_uk198202,,United Kingdom,,,,1982,,,,roper,gallup_uk,GBSSLT1982-CQ806,,,,
 gallup_uk1985,,United Kingdom,,,,1985,,,,misc,roper_request,GBSSLT1985-CQ958A,,,,
 gallup_uk1986,,United Kingdom,,,,1986,,,,misc,roper_request,GBSSLT1986-CQ044A,,,,
-gallup_us196208,,United States,,,,1962,,,,roper,gallup_us,USAIPO1962-0662,,,,"list(file = file_path, var_names = c(""q25a"", ""q25b"", ""q25c""), var_positions = c(46, 47, 48), var_widths = c(1, 1, 1))"
-gallup_us196512,,United States,,,,1965,,,,roper,gallup_us,USAIPO1965-0721,,,,"list(file = file_path, var_names = c(""q44a"", ""q44b"", ""q44c"", ""q44d"", ""weight""), var_positions = c(29, 30, 31, 32, 64), var_widths = c(1, 1, 1, 1, 1))"
+gallup_us196208,,United States,,,,1962,,,,roper,gallup_us,USAIPO1962-0662,,,,"list(file = file_path, var_names = c(""q21a"", ""q21b"", ""q21c""), var_cards = c(1, 1, 1), var_positions = c(53, 54, 55), var_widths = c(1, 1, 1), total_cards = 2)"
+gallup_us196512,,United States,,,,1965,,,,roper,gallup_us,USAIPO1965-0721,,,,"list(file = file_path, var_names = c(""q25a"", ""q25b"", ""q25c""), var_cards = c(2, 2, 2), var_positions = c(46, 47, 48), var_widths = c(1, 1, 1), total_cards = 2)"
 gallup_us196909,,United States,,,,1969,,,weight,roper,gallup_us,USAIPO1969-0788,,,,"list(file = file_path, var_names = c(""q44a"", ""q44b"", ""q44c"", ""q44d"", ""weight""), var_positions = c(29, 30, 31, 32, 64), var_widths = c(1, 1, 1, 1, 1))"
 gallup_us197706,,United States,,,,1977,,,weight,roper,gallup_us,USAIPO1977-0978,,,,
 gallup_us198206,,United States,,,,1982,,,weight,roper,gallup_us,USAIPO1982-1197G,,,,"list(file = file_path, var_names = c(""q09j"", ""weight""), var_positions = c(38, 1), var_widths = c(1, 1))"

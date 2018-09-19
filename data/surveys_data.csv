@@ -22,12 +22,18 @@ abcwapo200702,,United States,,,,2007,,,weight,roper,abcwapo,USABCWASH2007-1031,,
 abcwapo200707,,United States,,,,2007,,,weight,roper,abcwapo,USABCWASH2007-1041,,,,
 abcwapo200711,,United States,,,,2007,,,weight,roper,abcwapo,USABCWASH2007-1050,,,,
 abcwapo200712,,United States,,,,2007,,,weight,roper,abcwapo,USABCWASH2007-1054,,,,
+abcwapo200801,,United States,,,,2008,,,weight,roper,abcwapo,USABCWASH2008-1057,,,,
+abcwapo200806,,United States,,,,2008,,,weight,roper,abcwapo,USABCWASH2008-1065,,,,
+abcwapo200808,,United States,,,,2008,,,weight,roper,abcwapo,USABCWASH2008-1068,,,,
 abcwapo200905,,United States,,,,2009,,,weight,roper,abcwapo,USABCWASH2009-1089,,,,
+abcwapo200906,,United States,,,,2009,,,weight,roper,abcwapo,USABCWASH2009-1091,,,,
 abcwapo201002,,United States,,,,2010,,,weight,roper,abcwapo,USABCWASH2010-1102,,,,
 abcwapo201103,,United States,,,,2011,,,weight,roper,abcwapo,USABCWASH2011-1121,,,,
 abcwapo201107,,United States,,,,2011,,,weight,roper,abcwapo,USABCWASH2011-1125,,,,
+abcwapo201201,,United States,,,,2012,,,weight,roper,abcwapo,USABCWASH2012-1133,,,,
 abcwapo201203,,United States,,,,2012,,,weight,roper,abcwapo,USABCWASH2012-1135,,,,
 abcwapo201303,,United States,,,,2013,,,weight,roper,abcwapo,USABCWASH2013-1147,,,,
+abcwapo201307,,United States,,,,2013,,,weight,roper,abcwapo,USABCWASH2013-1150,,,,
 abcwapo201402,,United States,,,,2014,,,weight,roper,abcwapo,USABCWASH2014-1159,,,,
 abcwapo201405,,United States,,,,2014,,,weight,roper,abcwapo,USABCWASH2014-1161,,,,
 allbus,,Germany,,,,,year,,v1565,gesis,allbus,ZA4582,,,,
@@ -109,6 +115,8 @@ cbsnyt197911,,United States,,,,1979,,,weight,roper,cbsnyt,USCBSNYT1979-NOV,,,,"l
 cbsnyt198008,,United States,,,,1980,,,weight,roper,cbsnyt,USCBSNYT1980-AUG,,,,"list(file = file_path, var_names = c(""v81"", ""weight""), var_positions = c(96, 124), var_widths = c(1, 6))"
 cbsnyt198105,,United States,,,,1981,,,weight,roper,cbsnyt,USCBSNYT1981-APRIL,,,,
 cbsnyt198106,,United States,,,,1981,,,weight,roper,cbsnyt,USCBSNYT1981-JUNESOCSEC,,,,"list(file = file_path, var_names = c(""q25"", ""weight""), var_cards = c(1, 3), var_positions = c(63, 49), var_widths = c(1, 6), total_cards = 3)"
+cbsnyt198501,,United States,,,,1985,,,weight,roper,cbsnyt,USCBSNYT1985-JAN,,,,"list(file = file_path, var_names = c(""q42"", ""weight""), var_cards = c(2, 3), var_positions = c(19, 49), var_widths = c(1, 6), total_cards = 3)"
+cbsnyt198511,,United States,,,,1985,,,weight,roper,cbsnyt,USCBSNYT1985-NOVREL,,,,"list(file = file_path, var_names = c(""q25"", ""weight""), var_cards = c(1, 3), var_positions = c(63, 49), var_widths = c(1, 6), total_cards = 3)"
 cbsnyt198901,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-JAN,,,,"list(file = file_path, var_names = c(""q22"", ""weight""), var_cards = c(1, 3), var_positions = c(69, 49), var_widths = c(1, 6), total_cards = 3)"
 cbsnyt198905,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-APRIL,,,,"list(file = file_path, var_names = c(""q7"", ""q8"", ""q14a"", ""q14b"", ""q14c"", ""q14d"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 1, 3), var_positions = c(40, 41, 49, 50, 51, 52, 49), var_widths = c(1, 1, 1, 1, 1, 1, 6), total_cards = 3)"
 cbsnyt198909,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-SEP2,,,,"list(file = file_path, var_names = c(""q15"", ""q16"", ""q19a"", ""q19b"", ""q19c"", ""q19e"", ""q19g"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 1, 1, 3), var_positions = c(54, 55, 58, 59, 60, 62, 64, 49), var_widths = c(1, 1, 1, 1, 1, 1, 1, 6), total_cards = 3)"
@@ -391,4 +399,13 @@ uspew2016_3pol,,United States,,,,2016,,,weight,pew,politics,pol3-16,,,,
 uspew2016_fp,,United States,,,,2016,,,weight,pew,politics,20060061,,,,
 uspew2016_10pol,,United States,,,,2016,,,weight,roper,pew,USPEW2016-1025,,,,
 uspew2017_6typo,,United States,,,,2017,,,weight,pew,politics,typology-17,,,,
+usvcu2001,,United States,,,,2001,,,finalwt,roper,vcu,USVIRGCU2001-LIFE,,,,
+usvcu2002,,United States,,,,2002,,,finalwt,roper,vcu,USVIRGCU2002-LIFE,,,,
+usvcu2003,,United States,,,,2003,,,finalwt,roper,vcu,USVIRGCU2003-LIFE,,,,
+usvcu2004,,United States,,,,2004,,,finalwt,roper,vcu,USVIRGCU2004-LIFE,,,,
+usvcu2005,,United States,,,,2005,,,finalwt,roper,vcu,USVIRGCU2005-LIFE,,,,
+usvcu2006,,United States,,,,2006,,,finwgt,roper,vcu,USVIRGCU2006-LIFE,,,,
+usvcu2007,,United States,,,,2007,,,weight,roper,vcu,USVIRGCU2007-LIFE,,,,
+usvcu2008,,United States,,,,2008,,,weight,roper,vcu,USVIRGCU2008-LIFE,,,,
+usvcu2010,,United States,,,,2010,,,weight,roper,vcu,USVIRGCU2010-LIFE,,,,
 wvs_combo,s025,s003,,,"c(""Northern Ireland""=""Northern Ireland"")",,s020,,s017,misc,wvs,wvs_combo,,,,

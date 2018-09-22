@@ -169,6 +169,7 @@ dcpo_setup <- function(vars,
           wt <- with(t_data, get(ds$wt))
         } else eval(parse(text = ds$wt))
         t_data$wt_dcpo <- wt
+        t_data$wt_dcpo[t_data$wt_dcpo > 10] <- 10
         rm(wt)
       } else t_data$wt_dcpo <- 1
     }

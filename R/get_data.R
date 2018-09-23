@@ -396,6 +396,44 @@ pwalk(cces_files, function(file_id, data_link) {
     export(file.path(dl_dir, file_id, paste0(file_id, ".RData")))
 })
 
+# Australian Election Study
+dl_dir <- file.path("../data/dcpo_surveys",
+                    "misc_files",
+                    "aes_files")
+
+aes_page <- "http://www.australianelectionstudy.org/voter_studies.html"
+aes_data_links <- read_html(aes_page) %>%
+  html_nodes(xpath = "//a[contains(.,'Data (SPSS)')]") %>%
+  html_attr("href")
+aes_codebook_links <- read_html(aes_page) %>%
+  html_nodes(xpath = "//a[contains(.,'Codebook')]") %>%
+  html_attr("href")
+walk2(aes_data_links, aes_codebook_links, function(data_link, codebook_link) {
+  file_id <- data_link %>%
+    str_replace("^.*/", "") %>%
+    str_replace("\\.sav", "")
+  dir.create(file.path(dl_dir, file_id), recursive = TRUE, showWarnings = FALSE)
+  dl_data <- html_session(aes_page) %>%
+    jump_to(data_link)
+  writeBin(httr::content(dl_data$response, "raw"), file.path(dl_dir, file_id, paste0(file_id, ".sav")))
+
+  tryCatch(
+    {x <- tryCatch(haven::read_por(file.path(dl_dir, file_id, paste0(file_id, ".sav"))),
+                   error = function(e) {
+                     foreign::read.spss(file.path(dl_dir, file_id, paste0(file_id, ".sav")),
+                                        to.data.frame = TRUE,
+                                        use.value.labels = FALSE)
+                   })
+    save(x, file = file.path(dl_dir, file_id, paste0(file_id, ".RData")))},
+    error = function(e) warning(paste("Conversion from .por to .RData failed for", item))
+  )
+
+  dl_cb <- html_session(aes_page) %>%
+    jump_to(codebook_link)
+
+  pdf_file <- paste0(file_id, "_cb.pdf")
+  writeBin(httr::content(dl_cb$response, "raw"), file.path(dl_dir, file_id, pdf_file))
+})
 
 # Roper by Request
 roper_request_dir <- "../data/dcpo_surveys/misc_files/roper_request_files"

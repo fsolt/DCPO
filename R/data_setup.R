@@ -20,7 +20,7 @@
 #' @importFrom rio import
 #' @importFrom forcats fct_relabel
 #' @importFrom labelled labelled to_character to_factor
-#' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower
+#' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower str_length
 #'
 #' @export
 
@@ -216,7 +216,7 @@ dcpo_setup <- function(vars,
   all_data$y_r = with(all_data, as.integer(round(n * value))) # number of 'yes' response equivalents, given data weights
 
   max_cp_digits <- max(all_data$cutpoint) %>%
-    str_length()
+    stringr::str_length()
 
   all_data2 <- all_data %>%
     select(-value, -L1) %>%

@@ -1,4 +1,5 @@
 survey,cy_var,country_var,cc_origin,cc_dict,cc_match,year,year_var,year_dict,wt,archive,surv_program,file_id,subfile,data_link,cb_link,read_ascii_args
+abcwapo198105,,United States,,,,1981,,,weight,roper,abcwapo,USABCWASH1981-8846,,,,"list(file = file_path, var_names = c(""q45"", ""weight""), var_cards = c(2, 3), var_positions = c(15, 25), var_widths = c(1, 6), total_cards = 3)"
 abcwapo199406,,United States,,,,1994,,,weight,roper,abcwapo,USABCWASH1994-5294,,,,
 abcwapo199507,,United States,,,,1995,,,wght,roper,abcwapo,USABCWASH1995-5729,,,,
 abcwapo199509,,United States,,,,1995,,,wgt,roper,abcwapo,USABC1995-5796,,,,
@@ -137,6 +138,7 @@ cbsnyt198810,,United States,,,,1988,,,weight,roper,cbsnyt,USCBSNYT1988-8810-B,,,
 cbsnyt198901,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-JAN,,,,"list(file = file_path, var_names = c(""q22"",  ""q47"", ""weight""), var_cards = c(1, 2, 3), var_positions = c(69, 26, 49), var_widths = c(1, 1, 6), total_cards = 3)"
 cbsnyt198905,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-APRIL,,,,"list(file = file_path, var_names = c(""q7"", ""q8"", ""q14a"", ""q14b"", ""q14c"", ""q14d"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 1, 3), var_positions = c(40, 41, 49, 50, 51, 52, 49), var_widths = c(1, 1, 1, 1, 1, 1, 6), total_cards = 3)"
 cbsnyt198909,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-SEP2,,,,"list(file = file_path, var_names = c(""q15"", ""q16"", ""q19a"", ""q19b"", ""q19c"", ""q19e"", ""q19g"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 1, 1, 3), var_positions = c(54, 55, 58, 59, 60, 62, 64, 49), var_widths = c(1, 1, 1, 1, 1, 1, 1, 6), total_cards = 3)"
+cbsnyt199302,,United States,,,,1993,,,weight,roper,cbsnyt,USCBSNYT1993-FEB93A,,,,"list(file = file_path, var_names = c(""q45"", ""q46"", ""weight""), var_cards = c(2, 2, 3), var_positions = c(9, 10, 49), var_widths = c(1, 1, 6), total_cards = 3)"
 cbsnyt199801,,United States,,,,1998,,,weight,roper,cbsnyt,USCBSNYT1998-98001A,,,,
 cces2009,,United States,,,,2009,,,v200,misc,cces,cces2009,,hdl:1902.1/20536,,
 cces2012,,United States,,,,2012,,,v103,misc,cces,cces2012,,hdl:1902.1/21447,,
@@ -233,15 +235,25 @@ gallup_us196208,,United States,,,,1962,,,,roper,gallup_us,USAIPO1962-0662,,,,"li
 gallup_us196512,,United States,,,,1965,,,,roper,gallup_us,USAIPO1965-0721,,,,"list(file = file_path, var_names = c(""q25a"", ""q25b"", ""q25c""), var_cards = c(2, 2, 2), var_positions = c(46, 47, 48), var_widths = c(1, 1, 1), total_cards = 2)"
 gallup_us196909,,United States,,,,1969,,,weight,roper,gallup_us,USAIPO1969-0788,,,,"list(file = file_path, var_names = c(""q44a"", ""q44b"", ""q44c"", ""q44d"", ""weight""), var_positions = c(29, 30, 31, 32, 64), var_widths = c(1, 1, 1, 1, 1))"
 gallup_us197706,,United States,,,,1977,,,weight,roper,gallup_us,USAIPO1977-0978,,,,
-gallup_us198206,,United States,,,,1982,,,weight,roper,gallup_us,USAIPO1982-1197G,,,,"list(file = file_path, var_names = c(""q09j"", ""weight""), var_positions = c(38, 1), var_widths = c(1, 1))"
+gallup_us197811_ct,,United States,,,,1978,,,weight,roper,gallup_us,USAIPOSPGO1978-78139,,,,"list(file = file_path, var_names = c(""q60"", ""weight""), var_positions = c(67, 1), var_widths = c(1, 1))"
+gallup_us198206,,United States,,,,1982,,,weight,roper,gallup_us,USAIPO1982-1197G,,,,"list(file = file_path, var_names = c(""q09h"", ""q09j"", ""weight""), var_positions = c(36, 38, 1), var_widths = c(1, 1, 1))"
+gallup_us198606,,United States,,,,1986,,,weight,roper,gallup_us,USAIPO1986-1266G,,,,
+gallup_us198703,,United States,,,,1987,,,weight,roper,gallup_us,USAIPOSPAI1987-852,,,,"list(file = file_path, var_names = c(""q20"", ""weight""), var_positions = c(32, 4), var_widths = c(1, 3))"
+gallup_us198807,,United States,,,,1988,,,weight,roper,gallup_us,USAIPOSPAI1988-874,,,,
 gallup_us198909,,United States,,,,1989,,,weight,roper,gallup_us,USAIPOSPGONEW1989-89262,,,,
-gallup_us199206,,United States,,,,1992,,,weight,roper,gallup_us,USAIPOGNS1992-222054,,,,"list(file = file_path, var_names = c(""q24"", ""weight""), var_cards = c(4, 1), var_positions = c(46, 13), var_widths = c(1, 3), total_cards = 4)"
+gallup_us198910,,United States,,,,1989,,,weight,roper,gallup_us,USAIPOGNS1989-89139-W2,,,,
+gallup_us199109,,United States,,,,1991,,,weight,roper,gallup_us,USAIPOGNS1991-222013,,,,"list(file = file_path, var_names = c(""q7"", ""weight""), var_cards = c(3, 1), var_positions = c(41, 13), var_widths = c(1, 3), total_cards = 4)"
+gallup_us199206,,United States,,,,1992,,,weight,roper,gallup_us,USAIPOGNS1992-222054,,,,"list(file = file_path, var_names = c(""q24"", ""q25"", ""weight""), var_cards = c(4, 4, 1), var_positions = c(46, 47, 13), var_widths = c(1, 1, 3), total_cards = 4)"
 gallup_us199603,,United States,,,,1996,,,weight,roper,gallup_us,USAIPOCNUS1996-9603008,,,,"list(file = file_path, var_names = c(""q43a"", ""q44"", ""weight""), var_cards = c(6, 6, 1), var_positions = c(62, 64, 13), var_widths = c(1, 1, 3), total_cards = 7,  card_pattern = ""(?<=^.{10})\\d"", respondent_pattern = ""(?<=^\\s{2})\\d{4}"")"
-gallup_us199902,,United States,,,,1999,,,,misc,roper_request,USAIPOGNS1999-9902009,,,,
+gallup_us199611,,United States,,,,1996,,,weight,roper,gallup_us,USAIPOGNS1996-9611036,,,,"list(file = file_path, var_names = c(""q12"", ""weight""), var_cards = c(6, 1), var_positions = c(51, 13), var_widths = c(1, 3), total_cards = 7,  card_pattern = ""(?<=^.{10})\\d"", respondent_pattern = ""^\\d{6}"")"
+gallup_us199902,,United States,,,,1999,,,weight,roper,gallup_us,USAIPOGNS1999-9902009,,,,"list(file = file_path, var_names = c(""q35"", ""q39a"", ""weight""), var_cards = c(7, 7, 1), var_positions = c(39, 49, 13), var_widths = c(1, 1, 3), total_cards = 7,  card_pattern = ""(?<=^.{10})\\d"", respondent_pattern = ""(?<=^\\s{2})\\d{4}"")"
+gallup_us200305,,United States,,,,2003,,,wtfctr,misc,roper_request,USAIPOGNS2003-31,,,,
+gallup_us200401,,United States,,,,2004,,,wtfctr,roper,gallup_us,USAIPOCNUS2004-02,,,,
 gallup_us200402,,United States,,,,2004,,,wtfctr,roper,gallup_us,USAIPOGNS2004-08,,,,
 gallup_us200508,,United States,,,,2005,,,wtfctr,roper,gallup_us,USAIPOGNS2005-39,,,,
 gallup_us200709,,United States,,,,2007,,,wtfctr,roper,gallup_us,USAIPOUSA2007-30,,,,
 gallup_us200905,,United States,,,,2009,,,wtfctr,roper,gallup_us,USAIPOGNS2009-09,,,,
+gallup_us201112,,United States,,,,2011,,,wtfctr,roper,gallup_us,USAIPOUSA2011-22,,,,
 gallup_us201211,,United States,,,,2012,,,wtfctr,roper,gallup_us,USAIPOUSA2012-19,,,,
 issp1988,,v3,,"data_frame(orig=c(""aus"", ""d"", ""gb"", ""usa"", ""a"", ""h"", ""nl"", ""i"", ""irl""), dest = c(""Australia"", ""Germany"", ""United Kingdom"", ""United States"", ""Austria"", ""Hungary"", ""Netherlands"", ""Italy"", ""Ireland""))",,,,"data_frame(orig=c(""aus"", ""d"", ""gb"", ""usa"", ""a"", ""h"", ""nl"", ""i"", ""irl""), year = c(""1988"", ""1988"", ""1988"", ""1988"", ""1988"", ""1988"", ""1988"", ""1989"", ""1989""))",v116,gesis,issp,ZA1700,,,,
 issp1991,,v3,,"data_frame(orig=c(""aus"", ""D-W"", ""D-E"", ""gb"", ""usa"", ""a"", ""h"", ""nl"", ""i"", ""irl"", ""il"", ""nz"", ""n"", ""nirl"", ""rp"", ""pl"", ""rus"", ""slo""), dest = c(""Australia"", ""Germany"", ""Germany"", ""United Kingdom"", ""United States"", ""Austria"", ""Hungary"", ""Netherlands"", ""Italy"", ""Ireland"", ""Israel"", ""New Zealand"", ""Norway"", ""Northern Ireland"", ""Philippines"", ""Poland"", ""Russian Federation"", ""Slovenia""))",,,,"data_frame(orig=c(""aus"", ""D-W"", ""D-E"", ""gb"", ""usa"", ""a"", ""h"", ""nl"", ""i"", ""irl"", ""il"", ""nz"", ""n"", ""nirl"", ""rp"", ""pl"", ""rus"", ""slo""), year = c(""1993"", ""1991"", ""1991"", ""1991"", ""1991"", ""1993"", ""1991"", ""1991"", ""1990"", ""1991"", ""1991"", ""1991"", ""1991"", ""1991"", ""1991"", ""1991"", ""1991"", ""1991""))",v131,gesis,issp,ZA2150,,,,
@@ -425,4 +437,5 @@ usvcu2006,,United States,,,,2006,,,finwgt,roper,vcu,USVIRGCU2006-LIFE,,,,
 usvcu2007,,United States,,,,2007,,,weight,roper,vcu,USVIRGCU2007-LIFE,,,,
 usvcu2008,,United States,,,,2008,,,weight,roper,vcu,USVIRGCU2008-LIFE,,,,
 usvcu2010,,United States,,,,2010,,,weight,roper,vcu,USVIRGCU2010-LIFE,,,,
+uswapo199808,,United States,,,,1998,,,wgt,roper,wapo,USWASH1998-WPH006B,,,,
 wvs_combo,s025,s003,,,"c(""Northern Ireland""=""Northern Ireland"")",,s020,,s017,misc,wvs,wvs_combo,,,,

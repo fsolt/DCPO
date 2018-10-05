@@ -20,7 +20,7 @@
 #' @importFrom rio import
 #' @importFrom forcats fct_relabel
 #' @importFrom labelled labelled to_character to_factor
-#' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower str_length
+#' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower str_length str_trim
 #'
 #' @export
 
@@ -175,15 +175,16 @@ dcpo_setup <- function(vars,
     }
 
     # Get variable of interest
-    t_data$target <- with(t_data, as.numeric(get(v$variable)))
+    t_data$target <- with(t_data, as.numeric(get(v$variable) %>% stringr::str_trim()))
     if (!is.na(v$to_na)) {
       for (j in eval(parse(text = v$to_na))) {
         t_data$target[t_data$target == j] <- NA
       }
     }
     vals <- eval(parse(text = v$values))
+    options(warn = 2)
     t_data$target <- do.call(dplyr::recode, c(list(t_data$target), setNames(1:length(vals), vals)))
-
+    options(warn = 0)
 
     # Summarize by country and year at each cutpoint
     for (j in 1:(length(vals) - 1)) {

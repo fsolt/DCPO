@@ -10,6 +10,7 @@ data {
   int<lower=1, upper=Q> qq[N];  // question for observation n
   int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
   int<lower=1, upper=Q> rq[R];  // question for question-cutpoint r
+  int<lower=1, upper=Q> r_fixed;  // question-cutpoint with difficulty fixed at .5
   int<lower=1> rcp[R]; 			// cutpoint for question-cutpoint r
   int<lower=0> y_r[N];    		// number of respondents giving selected answer for observation n
   int<lower=0> n_r[N];    		// total number of respondents for observation n
@@ -34,11 +35,15 @@ transformed parameters {
 
   for (r in 2:R) {
     alpha[r] = exp(xi[r,1]);
-  	if (rq[r] == rq[r-1]) {
-  	  beta[r] = beta[r-1] + exp(xi[r,2]);
-  	} else {
-  	  beta[r] = xi[r,2];
-  	}
+    if (r == r_fixed) {
+      beta[r] = .5;
+    } else {
+    	if (rq[r] == rq[r-1]) {
+    	  beta[r] = beta[r-1] + exp(xi[r,2]);
+    	} else {
+    	  beta[r] = xi[r,2];
+    	}
+    }
   }
 
   for (k in 1:K) {

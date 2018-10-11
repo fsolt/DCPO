@@ -39,13 +39,13 @@ dcpo <- function(x,
     summarize(rq = first(qcode),
               rcp = max(cutpoint))
 
-  if (!missing(baseline_item)) {
+  if (!missing(scale_item)) {
     r_fixed <- x %>%
-      filter(variable_cp == baseline_item) %>%
+      filter(variable_cp == scale_item) %>%
       pull(rcode) %>%
       unique()
     if (length(r_fixed) > 1) {
-      error("baseline_item must specify a single question-cutpoint")
+      error("scale_item must specify a single question-cutpoint")
     }
   }
 

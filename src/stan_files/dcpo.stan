@@ -1,9 +1,9 @@
 data {
-  int<lower=1> K;     			// number of countries
-  int<lower=1> T; 				// number of years
-  int<lower=1> Q; 				// number of questions
-  int<lower=1> R;         		// number of question-cutpoints
-  int<lower=1> N; 				// number of KTQR observations
+  int<lower=1> K;     			    // number of countries
+  int<lower=1> T; 				      // number of years
+  int<lower=1> Q; 				      // number of questions
+  int<lower=1> R;         	  	// number of question-cutpoints
+  int<lower=1> N; 				      // number of KTQR observations
   int<lower=1, upper=K> kk[N]; 	// country for observation n
   int<lower=1, upper=T> tt[N]; 	// year for observation n
   int<lower=1> kktt[N];         // country-year for observation n
@@ -11,18 +11,18 @@ data {
   int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
   int<lower=1, upper=Q> rq[R];  // question for question-cutpoint r
   int<lower=1, upper=Q> r_fixed;  // question-cutpoint with difficulty fixed at .5
-  int<lower=1> rcp[R]; 			// cutpoint for question-cutpoint r
-  int<lower=0> y_r[N];    		// number of respondents giving selected answer for observation n
-  int<lower=0> n_r[N];    		// total number of respondents for observation n
+  int<lower=1> rcp[R]; 		    	// cutpoint for question-cutpoint r
+  int<lower=0> y_r[N];      		// number of respondents giving selected answer for observation n
+  int<lower=0> n_r[N];    	  	// total number of respondents for observation n
 }
 
 parameters {
-  vector[K*T] theta_raw; 			// non-centered public opinion ("ability")
-  vector[2] xi[R]; 					// alpha/beta (discrimination/difficulty) pair vectors
-  vector[2] mu; 					// vector for alpha/beta means
+  vector[K*T] theta_raw; 		  	// non-centered public opinion ("ability")
+  vector[2] xi[R]; 				    	// alpha/beta (discrimination/difficulty) pair vectors
+  vector[2] mu; 				      	// vector for alpha/beta means
   vector<lower=0>[2] tau; 			// vector for alpha/beta residual sds
   cholesky_factor_corr[2] L_Omega;	// Cholesky decomposition of the correlation matrix for log(alpha) and beta
-  real<lower=0> sigma_theta[K]; 	// country variance parameter (see Linzer and Stanton 2012, 12)
+  real<lower=0> sigma_theta[K]; // country variance parameter (see Linzer and Stanton 2012, 12)
 }
 
 transformed parameters {
@@ -35,18 +35,18 @@ transformed parameters {
 
   for (r in 2:R) {
     alpha[r] = exp(xi[r,1]);
-    if (r == r_fixed) {
+    if (r == r_fixed) {       // set difficulty for scale item
       beta[r] = .5;
-    } else {
+    } else {                  // difficulty for higher responses to same question must be greater
     	if (rq[r] == rq[r-1]) {
     	  beta[r] = beta[r-1] + exp(xi[r,2]);
     	} else {
-    	  beta[r] = xi[r,2];
+    	  beta[r] = xi[r,2];    // difficulty for lowest response to any question
     	}
     }
   }
 
-  for (k in 1:K) {
+  for (k in 1:K) {            // random walk prior for opinion
     theta[(k-1)*T+1] = theta_raw[(k-1)*T+1];
     for (t in 2:T) {
       theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + sigma_theta[k] * theta_raw[(k-1)*T+t];

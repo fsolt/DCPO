@@ -47,6 +47,8 @@ dcpo <- function(x,
     if (length(r_fixed) > 1) {
       error("scale_item must specify a single question-cutpoint")
     }
+  } else {
+    r_fixed <- 0
   }
 
   if (missing(iv)) {

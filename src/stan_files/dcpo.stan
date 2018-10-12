@@ -71,7 +71,7 @@ model {
   theta_raw ~ normal(0, 1);
 
   // measurement model
-  y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr])); // likelihood
+  y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr]));   // likelihood
 
 }
 

@@ -155,7 +155,7 @@ walk(roper_ascii_files, function(file) {
   x <- do.call(read_ascii, eval(parse(text = ra_ds$read_ascii_args)))
   if (!is.na(ra_ds$wt)) {
     x <- x %>%
-      mutate(weight0 = as.numeric(weight),
+      mutate(weight0 = as.numeric(weight %>% stringr::str_trim()),
              weight = weight0/mean(weight0))
   }
   export(x, str_replace(file_path, "dat$", "RData"))

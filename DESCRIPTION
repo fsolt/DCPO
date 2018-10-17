@@ -25,10 +25,10 @@ Imports:
   bayesplot,
   forcats
 LinkingTo: 
-  StanHeaders (>= 2.18.0)
-  rstan (>= 2.18.1)
-  BH (>= 1.66.0-1)
-  Rcpp (>= 0.12.0)
+  StanHeaders (>= 2.18.0),
+  rstan (>= 2.18.1),
+  BH (>= 1.66.0-1),
+  Rcpp (>= 0.12.0),
   RcppEigen (>= 0.3.3.4.0)
 Suggests: knitr
 VignetteBuilder: knitr

@@ -1,5 +1,4 @@
 library(gesis)
-library(tidyverse)
 library(stringr)
 library(rio)
 library(purrr)
@@ -10,6 +9,7 @@ library(rvest)
 library(RSelenium)
 library(ukds)
 library(essurvey)
+library(tidyverse)
 
 #' @import rio
 #' @import icpsrdata
@@ -56,19 +56,38 @@ walk(seq_len(nrow(ds)), function(i) {
     icpsrdata::icpsr_download(file_id, download_dir = dl_dir)
     new_dir <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)))
     new_dir2 <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)), "DS0001")
-    data_file <- list.files(path = new_dir2) %>% str_subset(".dta") %>% last()
+    data_file <- list.files(path = new_dir2) %>% str_subset("\\.dta") %>% last()
     if (is.na(data_file)) {
       data_file <- list.files(path = new_dir2) %>%
-        str_subset(".por") %>%
+        str_subset("\\.por") %>%
         last()
+    }
+    if (is.na(data_file)) {
+      data_file <- list.files(path = new_dir2) %>%
+        str_subset("\\.txt") %>%
+        last()
+      file_path <- file.path(new_dir2, data_file)
+      x <- do.call(ropercenter::read_ascii, eval(parse(text = ds$read_ascii_args[i])))
+      if (!is.na(ds$wt[i])) {
+        x <- x %>%
+          mutate(weight0 = as.numeric(weight %>% stringr::str_trim()),
+                 weight = weight0/mean(weight0))
+      }
+      export(x, file.path(new_dir, str_replace(data_file, "txt$", "RData")))
     }
     if (str_detect(data_file, ".por")) {
       # workaround for rio bug importing .por
       haven::read_por(file.path(new_dir2, data_file)) %>%
         export(str_replace(file.path(new_dir, data_file), ".por", ".RData"))
     } else {
-      convert(file.path(new_dir2, data_file),
-              str_replace(file.path(new_dir, data_file), ".dta", ".RData"))
+      tryCatch(convert(file.path(new_dir2, data_file),
+                       str_replace(file.path(new_dir, data_file), ".por", ".RData")),
+               error = function(c) suppressWarnings(
+                 foreign::read.dta(file.path(new_dir2, data_file),
+                                    convert.factors = FALSE) %>%
+                   export(str_replace(file.path(new_dir, data_file), ".dta", ".RData"))
+               )
+      )
     }
   } # end icpsr
   if (archive=="pew") {

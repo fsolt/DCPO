@@ -12,7 +12,7 @@ Depends:
   Rcpp (>= 0.12.17), 
   methods
 Imports: 
-  rstan (>= 2.17.3), 
+  rstan (>= 2.18.1), 
   rstantools (>= 1.5.0), 
   readr, 
   reshape2, 
@@ -24,10 +24,11 @@ Imports:
   stringr,
   bayesplot,
   forcats
-LinkingTo: StanHeaders (>= 2.17.2),
-  rstan (>= 2.17.3),
-  BH (>= 1.66.0-1),
-  Rcpp (>= 0.12.17),
+LinkingTo: 
+  StanHeaders (>= 2.18.0)
+  rstan (>= 2.18.1)
+  BH (>= 1.66.0-1)
+  Rcpp (>= 0.12.0)
   RcppEigen (>= 0.3.3.4.0)
 Suggests: knitr
 VignetteBuilder: knitr

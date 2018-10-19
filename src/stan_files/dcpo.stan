@@ -60,7 +60,7 @@ model {
   for (r in 1:R) {
     xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
   }
-  sigma_theta ~ normal(0, .05);
+  sigma_theta ~ normal(0, .025);
   L_Omega ~ lkj_corr_cholesky(4);
   mu[1] ~ normal(1, 1);
   tau[1] ~ exponential(.2);

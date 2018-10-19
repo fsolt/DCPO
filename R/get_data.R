@@ -38,7 +38,14 @@ walk(seq_len(nrow(ds)), function(i) {
     new_dir <- file.path(dl_dir, file_id)
     dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
     doi <- str_replace(file_id, "ZA", "")
-    gesis::download_dataset(s, doi = doi, path = new_dir)
+    tryCatch(gesis::download_dataset(s, doi = doi, path = new_dir),
+             error = function(c) {
+               gesis::download_dataset(s, doi = doi, path = new_dir, filetype = ".zip")
+               zip_file <- list.files(path = new_dir) %>% str_subset(".zip") %>% last()
+               unzip(file.path(new_dir, zip_file), exdir = new_dir)
+               unlink(file.path(new_dir, zip_file))
+             }
+    )
     try(gesis::download_codebook(doi = doi, path = new_dir))
     data_file <- list.files(path = new_dir) %>% str_subset(".dta") %>% last()
     if (data_file %>% str_detect(".zip$")) {

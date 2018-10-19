@@ -9,7 +9,6 @@
 #' @param chains a positive integer specifying the number of Markov chains; the default is 3
 #' @param cores a positive integer specifying the number of processor cores to use; the default is the lesser of the number of chains or half the available cores
 #' @param adapt_delta a double between 0 and 1; the default is .95.  Lower values complete faster at a greater risk of nonconvergence
-#' @param iv an optional data frame of independent variables
 #' @param chime play chime when complete?
 #
 #' @details \code{dcpo}, when passed a data frame \code{x} of survey marginals created by \code{dcpo_setup}, estimates a latent variable of public opinion.
@@ -31,7 +30,6 @@ dcpo <- function(x,
                  chains = 3,
                  cores = min(chains, parallel::detectCores()/2),
                  adapt_delta = .95,
-                 iv,
                  chime = TRUE) {
 
   rq <- x %>%
@@ -51,60 +49,32 @@ dcpo <- function(x,
     r_fixed <- 0
   }
 
-  if (missing(iv)) {
-    dcpo_data <- list(  K    = max(x$ccode),
-                        T    = max(x$tcode),
-                        Q    = max(x$qcode),
-                        R    = max(x$rcode),
-                        N    = length(x$y_r),
-                        kk   = x$ccode,
-                        tt   = x$tcode,
-                        kktt = x$ktcode,
-                        qq   = x$qcode,
-                        rr   = x$rcode,
-                        rq   = rq$rq,
-                        r_fixed = r_fixed,
-                        rcp  = rq$rcp,
-                        y_r  = x$y_r,
-                        n_r  = x$n
-    )
 
-    dcpo_model <- stanmodels$dcpo
-    out1 <- suppressWarnings(sampling(dcpo_model,
-                     data = dcpo_data,
-                     seed = seed,
-                     iter = iter,
-                     cores = cores,
-                     chains = chains,
-                     control = list(max_treedepth = 20, adapt_delta=adapt_delta)))
-  } else {
-    dcpo_data <- list(  K    = max(x$ccode),
-                        T    = max(x$tcode),
-                        Q    = max(x$qcode),
-                        R    = max(x$rcode),
-                        N    = length(x$y_r),
-                        kk   = x$ccode,
-                        tt   = x$tcode,
-                        kktt = x$ktcode,
-                        qq   = x$qcode,
-                        rr   = x$rcode,
-                        rq   = rq$rq,
-                        rcp  = rq$rcp,
-                        y_r  = x$y_r,
-                        n_r  = x$n,
-                        V = ncol(policy),
-                        W = as.matrix(policy)
-    )
+  dcpo_data <- list(  K    = max(x$ccode),
+                      T    = max(x$tcode),
+                      Q    = max(x$qcode),
+                      R    = max(x$rcode),
+                      N    = length(x$y_r),
+                      kk   = x$ccode,
+                      tt   = x$tcode,
+                      kktt = x$ktcode,
+                      qq   = x$qcode,
+                      rr   = x$rcode,
+                      rq   = rq$rq,
+                      r_fixed = r_fixed,
+                      rcp  = rq$rcp,
+                      y_r  = x$y_r,
+                      n_r  = x$n
+  )
 
-    dcpo_model <- stanmodels$dcpo_as_dv
-    out1 <- suppressWarnings(sampling(dcpo_model,
-                     data = dcpo_data,
-                     seed = seed,
-                     iter = iter,
-                     cores = cores,
-                     chains = chains,
-                     control = list(max_treedepth = 20, adapt_delta=adapt_delta)))
-  }
+  dcpo_model <- stanmodels$dcpo
+  out1 <- suppressWarnings(sampling(dcpo_model,
+                                    data = dcpo_data,
+                                    seed = seed,
+                                    iter = iter,
+                                    cores = cores,
+                                    chains = chains,
+                                    control = list(max_treedepth = 20, adapt_delta=adapt_delta)))
 
   # Chime
   if(chime) {

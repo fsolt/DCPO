@@ -5,7 +5,7 @@
 \title{Estimate Dynamic Comparative Public Opinion}
 \usage{
 dcpo(x, scale_item, seed = 324, iter = 3000, chains = 3,
-  cores = min(chains, parallel::detectCores()/2), adapt_delta = 0.95, iv,
+  cores = min(chains, parallel::detectCores()/2), adapt_delta = 0.95,
   chime = TRUE)
 }
 \arguments{
@@ -22,8 +22,6 @@ dcpo(x, scale_item, seed = 324, iter = 3000, chains = 3,
 \item{cores}{a positive integer specifying the number of processor cores to use; the default is the lesser of the number of chains or half the available cores}
 
 \item{adapt_delta}{a double between 0 and 1; the default is .95.  Lower values complete faster at a greater risk of nonconvergence}
-
-\item{iv}{an optional data frame of independent variables}
 
 \item{chime}{play chime when complete?}
 }

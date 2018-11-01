@@ -236,6 +236,7 @@ eb774,,country,,,"c(""GB-NIR - Northern Ireland""=""United Kingdom"", ""DE-E - G
 eb815,,country,,,"c(""GB-NIR Northern Ireland""=""United Kingdom"", ""DE-E Germany East""=""Germany"", ""DE-W - Germany - West""=""Germany"")",2014,,,"wt <- t_data$w1; wt[t_data$c_dcpo==""Germany""] <- t_data$w3[t_data$c_dcpo==""Germany""]; wt[t_data$c_dcpo==""United Kingdom""] <- t_data$w4[t_data$c_dcpo==""United Kingdom""]",gesis,eb,ZA5929,,,,
 eb834,,country,,,"c(""GB-NIR Northern Ireland""=""United Kingdom"", ""DE-E Germany East""=""Germany"", ""DE-W - Germany - West""=""Germany"")",2015,,,"wt <- t_data$w1; wt[t_data$c_dcpo==""Germany""] <- t_data$w3[t_data$c_dcpo==""Germany""]; wt[t_data$c_dcpo==""United Kingdom""] <- t_data$w4[t_data$c_dcpo==""United Kingdom""]",gesis,eb,ZA6595,,,,
 ees2009,,t102,,,,2009,,,v100,gesis,ees,ZA5055,,,,
+eqls_combo,,y16_country,,,,,wave,,wcalib,ukds,eqls,7348,,,,
 ess1,,cntry,iso2c,,,,inwyr,,dweight,misc,ess,ess1,,,,
 ess2,,cntry,iso2c,,,,inwyr,,dweight,misc,ess,ess2,,,,
 ess3,,cntry,iso2c,,,,inwyr,,dweight,misc,ess,ess3,,,,

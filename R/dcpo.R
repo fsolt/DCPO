@@ -30,7 +30,8 @@ dcpo <- function(x,
                  chains = 3,
                  cores = min(chains, parallel::detectCores()/2),
                  adapt_delta = .95,
-                 chime = TRUE) {
+                 chime = TRUE,
+                 ...) {
 
   rq <- x %>%
     group_by(rcode) %>%
@@ -54,12 +55,14 @@ dcpo <- function(x,
                       T    = max(x$tcode),
                       Q    = max(x$qcode),
                       R    = max(x$rcode),
+                      S    = max(as.numeric(as.factor(paste(x$ccode, x$rcode)))),
                       N    = length(x$y_r),
                       kk   = x$ccode,
                       tt   = x$tcode,
                       kktt = x$ktcode,
                       qq   = x$qcode,
                       rr   = x$rcode,
+                      ss   = as.numeric(as.factor(paste(x$ccode, x$rcode))),
                       rq   = rq$rq,
                       r_fixed = r_fixed,
                       rcp  = rq$rcp,

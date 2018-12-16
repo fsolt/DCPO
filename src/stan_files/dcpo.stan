@@ -29,13 +29,14 @@ transformed parameters {
   vector[R] alpha; 		// discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
   vector[R] beta; 		// difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
   vector[K*T] theta; 	// public opinion ("ability")
+  vector[N] pi;       // predicted probability
 
   alpha[1] = exp(xi[1,1]);
   beta[1] = xi[1,2];
 
   for (r in 2:R) {
     alpha[r] = exp(xi[r,1]);
-    if (r == r_fixed) {       // set difficulty for scale item
+    if (r == r_fixed) {       // set difficulty for scale question-cutpoint
       beta[r] = .5;
     } else {                  // difficulty for higher responses to same question must be greater
     	if (rq[r] == rq[r-1]) {
@@ -52,6 +53,8 @@ transformed parameters {
       theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + sigma_theta[k] * theta_raw[(k-1)*T+t];
     }
   }
+
+  pi = inv_logit(alpha[rr] .* (theta[kktt] - beta[rr]));
 }
 
 model {
@@ -71,18 +74,17 @@ model {
   theta_raw ~ normal(0, 1);
 
   // measurement model
-  y_r ~ binomial_logit(n_r, alpha[rr] .* (theta[kktt] - beta[rr]));   // likelihood
+  y_r ~ binomial_logit(n_r, pi);   // likelihood
 
 }
 
 generated quantities {
-  corr_matrix[2] Omega;
-  vector[N] pred_prob;
-
-  Omega = multiply_lower_tri_self_transpose(L_Omega);
+  vector[N] y_r_pred;
+  vector[N] log_likelihood;
 
   // Simulations from the posterior predictive distribution (in my tests, vectorizing this was slower)
   for (n in 1:N) {
-    pred_prob[n] = inv_logit(alpha[rr[n]] .* (theta[kktt[n]] - beta[rr[n]]));
+    y_r_pred[n] = binomial_rng(n_r[n], pi[n]);
+    log_likelihood[n] = binomial_lpmf(y_r[n] | n_r[n], pi[n]);
   }
 }

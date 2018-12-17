@@ -245,7 +245,8 @@ dcpo_setup <- function(vars,
     group_by(ccode) %>%
     mutate(tq = length(unique(paste(tcode, qcode))),
            year_obs = length(unique(tcode))) %>%
-    ungroup()
+    ungroup() %>%
+    filter(!(y_r == 0 | y_r==n))
 
   # Chime
   if(chime) {

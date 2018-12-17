@@ -3,14 +3,14 @@ data {
   int<lower=1> T; 				      // number of years
   int<lower=1> Q; 				      // number of questions
   int<lower=1> R;         	  	// number of question-cutpoints
-  int<lower=1> S;               // number of country-question-cutpoints
+  int<lower=1> S;               // number of country-questions
   int<lower=1> N; 				      // number of KTQR observations
   int<lower=1, upper=K> kk[N]; 	// country for observation n
   int<lower=1, upper=T> tt[N]; 	// year for observation n
   int<lower=1> kktt[N];         // country-year for observation n
   int<lower=1, upper=Q> qq[N];  // question for observation n
   int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
-  int<lower=1, upper=S> ss[N];  // country-question-cutpoint for observation n
+  int<lower=1, upper=S> ss[N];  // country-question for observation n
   int<lower=1, upper=Q> rq[R];  // question for question-cutpoint r
   int<lower=0, upper=Q> r_fixed;  // question-cutpoint with difficulty fixed at .5
   int<lower=1> rcp[R]; 		    	// cutpoint for question-cutpoint r
@@ -44,20 +44,20 @@ transformed parameters {
     if (r == r_fixed) {       // set difficulty for scale question-cutpoint
       beta[r] = .5;
     } else {                  // difficulty for higher responses to same question must be greater
-    	if (rq[r] == rq[r-1]) {
-    	  beta[r] = beta[r-1] + exp(xi[r,2]);
+    	if (rq[r] == rq[r-1] && xi[r,2] < xi[r-1,2]) {
+    	  beta[r] = beta[r-1];
     	} else {
     	  beta[r] = xi[r,2];    // difficulty for lowest response to any question
     	}
     }
   }
 
-  delta = sigma_delta * delta_raw;
+  delta = .00005 * sigma_delta * delta_raw;
 
   for (k in 1:K) {            // random walk prior for opinion
     theta[(k-1)*T+1] = theta_raw[(k-1)*T+1];  // first year in all countries
     for (t in 2:T) {
-      theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + sigma_theta[k] * theta_raw[(k-1)*T+t];
+      theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + .025 * sigma_theta[k] * theta_raw[(k-1)*T+t];
     }
   }
 
@@ -70,13 +70,14 @@ model {
   for (r in 1:R) {
     xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
   }
-  sigma_theta ~ normal(0, .025);
-  sigma_delta ~ cauchy(0, .1);
+  sigma_theta ~ normal(0, 1);
+  sigma_delta ~ cauchy(0, 1);
   L_Omega ~ lkj_corr_cholesky(4);
   mu[1] ~ normal(1, 1);
   tau[1] ~ exponential(.2);
   mu[2] ~ normal(-1, 1);
   tau[2] ~ exponential(.2);
+  delta_raw ~ normal(0, 1);
 
   // transition model
   theta_raw ~ normal(0, 1);

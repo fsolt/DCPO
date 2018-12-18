@@ -76,7 +76,7 @@ model {
   L_Omega ~ lkj_corr_cholesky(4);
   mu[1] ~ normal(1, 1);
   tau[1] ~ exponential(.2);
-  mu[2] ~ normal(-1, 2);
+  mu[2] ~ normal(-1, 1);
   tau[2] ~ exponential(.2);
   // delta_raw ~ normal(0, 1);
 

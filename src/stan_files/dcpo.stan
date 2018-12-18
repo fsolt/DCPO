@@ -25,15 +25,15 @@ parameters {
   vector<lower=0>[2] tau; 			// vector for alpha/beta residual sds
   cholesky_factor_corr[2] L_Omega;	// Cholesky decomposition of the correlation matrix for log(alpha) and beta
   real<lower=0> sigma_theta[K]; // country-specific error variance parameter (see Linzer and Stanton 2012, 12)
-  real<lower=0> sigma_delta;    // country-question-cutpoint intercept error variance
-  vector[S] delta_raw;					// raw country-question-cutpoint intercepts
+  // real<lower=0> sigma_delta;    // country-question-cutpoint intercept error variance
+  // vector[S] delta_raw;					// raw country-question-cutpoint intercepts
 }
 
 transformed parameters {
   vector[R] alpha; 		// discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
   vector[R] beta; 		// difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
   vector[K*T] theta; 	// public opinion ("ability")
-  vector[S] delta;    // country-question-cutpoint intercepts
+  // vector[S] delta;    // country-question-cutpoint intercepts
   vector[N] pi;       // predicted probability
 
   alpha[1] = exp(xi[1,1]);
@@ -44,15 +44,15 @@ transformed parameters {
     if (r == r_fixed) {       // set difficulty for scale question-cutpoint
       beta[r] = .5;
     } else {                  // difficulty for higher responses to same question must be greater
-    	if (rq[r] == rq[r-1] && xi[r,2] < xi[r-1,2]) {
-    	  beta[r] = beta[r-1];
+    	if (rq[r] == rq[r-1]) {
+        beta[r] = beta[r-1] + exp(xi[r,2]);
     	} else {
     	  beta[r] = xi[r,2];    // difficulty for lowest response to any question
     	}
     }
   }
 
-  delta = .00005 * sigma_delta * delta_raw;
+  // delta = .00005 * sigma_delta * delta_raw;
 
   for (k in 1:K) {            // random walk prior for opinion
     theta[(k-1)*T+1] = theta_raw[(k-1)*T+1];  // first year in all countries
@@ -61,7 +61,8 @@ transformed parameters {
     }
   }
 
-  pi = inv_logit(alpha[rr] .* (theta[kktt] - beta[rr]) + delta[ss]);
+  // pi = inv_logit(alpha[rr] .* (theta[kktt] - beta[rr]) + delta[ss]);
+  pi = inv_logit(alpha[rr] .* (theta[kktt] - beta[rr]));
 }
 
 model {
@@ -71,13 +72,13 @@ model {
     xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
   }
   sigma_theta ~ normal(0, 1);
-  sigma_delta ~ cauchy(0, 1);
+  // sigma_delta ~ cauchy(0, 1);
   L_Omega ~ lkj_corr_cholesky(4);
   mu[1] ~ normal(1, 1);
   tau[1] ~ exponential(.2);
-  mu[2] ~ normal(-1, 1);
+  mu[2] ~ normal(-1, 2);
   tau[2] ~ exponential(.2);
-  delta_raw ~ normal(0, 1);
+  // delta_raw ~ normal(0, 1);
 
   // transition model
   theta_raw ~ normal(0, 1);

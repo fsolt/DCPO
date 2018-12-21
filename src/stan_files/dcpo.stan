@@ -62,7 +62,7 @@ transformed parameters {
   }
 
   // pi = inv_logit(alpha[rr] .* (theta[kktt] - beta[rr]) + delta[ss]);
-  pi = inv_logit(alpha[rr] .* (theta[kktt] - beta[rr]));
+  pi = alpha[rr] .* (theta[kktt] - beta[rr]);
 }
 
 model {
@@ -94,7 +94,7 @@ generated quantities {
 
   // Simulations from the posterior predictive distribution (in my tests, vectorizing this was slower)
   for (n in 1:N) {
-    y_r_pred[n] = binomial_rng(n_r[n], pi[n]);
+    y_r_pred[n] = binomial_rng(n_r[n], inv_logit(pi[n]));
     log_likelihood[n] = binomial_lpmf(y_r[n] | n_r[n], pi[n]);
   }
 }

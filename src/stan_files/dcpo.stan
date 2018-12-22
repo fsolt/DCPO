@@ -25,8 +25,6 @@ parameters {
   vector<lower=0>[2] tau; 			// vector for alpha/beta residual sds
   cholesky_factor_corr[2] L_Omega;	// Cholesky decomposition of the correlation matrix for log(alpha) and beta
   real<lower=0> sigma_theta[K]; // country-specific error variance parameter (see Linzer and Stanton 2012, 12)
-  // real<lower=0> sigma_delta;    // country-question-cutpoint intercept error variance
-  // vector[S] delta_raw;					// raw country-question-cutpoint intercepts
 }
 
 transformed parameters {
@@ -52,8 +50,6 @@ transformed parameters {
     }
   }
 
-  // delta = .00005 * sigma_delta * delta_raw;
-
   for (k in 1:K) {            // random walk prior for opinion
     theta[(k-1)*T+1] = theta_raw[(k-1)*T+1];  // first year in all countries
     for (t in 2:T) {
@@ -61,7 +57,6 @@ transformed parameters {
     }
   }
 
-  // pi = inv_logit(alpha[rr] .* (theta[kktt] - beta[rr]) + delta[ss]);
   pi = alpha[rr] .* (theta[kktt] - beta[rr]);
 }
 
@@ -72,13 +67,11 @@ model {
     xi[r] ~ multi_normal_cholesky(mu, L_Sigma);
   }
   sigma_theta ~ normal(0, 1);
-  // sigma_delta ~ cauchy(0, 1);
   L_Omega ~ lkj_corr_cholesky(4);
   mu[1] ~ normal(1, 1);
   tau[1] ~ exponential(.2);
   mu[2] ~ normal(-1, 1);
   tau[2] ~ exponential(.2);
-  // delta_raw ~ normal(0, 1);
 
   // transition model
   theta_raw ~ normal(0, 1);

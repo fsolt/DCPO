@@ -3,14 +3,12 @@ data {
   int<lower=1> T; 				      // number of years
   int<lower=1> Q; 				      // number of questions
   int<lower=1> R;         	  	// number of question-cutpoints
-  int<lower=1> S;               // number of country-questions
   int<lower=1> N; 				      // number of KTQR observations
   int<lower=1, upper=K> kk[N]; 	// country for observation n
   int<lower=1, upper=T> tt[N]; 	// year for observation n
   int<lower=1> kktt[N];         // country-year for observation n
   int<lower=1, upper=Q> qq[N];  // question for observation n
   int<lower=1, upper=R> rr[N]; 	// question-cutpoint for observation n
-  int<lower=1, upper=S> ss[N];  // country-question for observation n
   int<lower=1, upper=Q> rq[R];  // question for question-cutpoint r
   int<lower=0, upper=Q> r_fixed;  // question-cutpoint with difficulty fixed at .5
   int<lower=1> rcp[R]; 		    	// cutpoint for question-cutpoint r
@@ -31,8 +29,7 @@ transformed parameters {
   vector[R] alpha; 		// discrimination of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using 1/alpha))
   vector[R] beta; 		// difficulty of question-cutpoint r (see Stan Development Team 2015, 61; Gelman and Hill 2007, 314-320; McGann 2014, 118-120 (using lambda))
   vector[K*T] theta; 	// public opinion ("ability")
-  // vector[S] delta;    // country-question-cutpoint intercepts
-  vector[N] pi;       // predicted probability
+  vector[N] pi;       // predicted probability on logit scale
 
   alpha[1] = exp(xi[1,1]);
   beta[1] = xi[1,2];
@@ -45,7 +42,7 @@ transformed parameters {
     	if (rq[r] == rq[r-1]) {
         beta[r] = beta[r-1] + exp(xi[r,2]);
     	} else {
-    	  beta[r] = xi[r,2];    // difficulty for lowest response to any question
+    	  beta[r] = xi[r,2];    // difficulty for lowest cutpoint on any question
     	}
     }
   }
@@ -53,7 +50,7 @@ transformed parameters {
   for (k in 1:K) {            // random walk prior for opinion
     theta[(k-1)*T+1] = theta_raw[(k-1)*T+1];  // first year in all countries
     for (t in 2:T) {
-      theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + .025 * sigma_theta[k] * theta_raw[(k-1)*T+t];
+      theta[(k-1)*T+t] = theta[(k-1)*T+t-1] + .05 * sigma_theta[k] * theta_raw[(k-1)*T+t];
     }
   }
 

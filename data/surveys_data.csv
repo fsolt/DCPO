@@ -463,6 +463,7 @@ ptvs2008,,Portugal,,,,2008,,,ponderador,misc,ptvs,ptvs2008,,http://er.cies.iscte
 ptvs2012,,Portugal,,,,2012,,,pond,misc,ptvs,ptvs2012,,http://er.cies.iscte-iul.pt/sites/default/dfiles/ElectorsSurvey_PT_2012_db_0.sav,http://er.cies.iscte-iul.pt/sites/default/dfiles/ElectorsSurvey_PT_2012_quest_EN.pdf,
 ress2014,,Russia,,,,2014,,,dweight,misc,ess,ress2014,,http://www.europeansocialsurvey.org/docs/related_studies/CESSI_ESS7/ESS7RU_main_data.zip,http://www.europeansocialsurvey.org/docs/related_studies/CESSI_ESS7/ESS7RU_questionnaire.pdf,
 sasas2014,,South Africa,,,,2014,,,weightza,misc,ess,sasas2014,,http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/SASAS14_e01.stata.zip,http://www.europeansocialsurvey.org/docs/related_studies/SASAS_2014/sasas2014_questionnaire_q2.pdf,
+som_combo,,Sweden,,,,,year,,,misc,som,som_combo,,,,
 tt2002,,country,,,"c(""GB""=""United Kingdom"", ""NL""=""Netherlands"")",2002,,,,icpsr,tt,ICPSR_03730,,,,
 tt2003,,country,,"data_frame(orig=c(1:8), dest = c(""France"", ""Germany"", ""Italy"", ""Netherlands"", ""Poland"", ""Portugal"", ""United Kingdom"", ""United States""))",,2003,,,weight,icpsr,tt,ICPSR_03972,,,,"list(file = file_path, var_names = c(""country"", ""var024"", ""weight""), var_positions = c(1, 64, 447), var_widths = c(1, 1, 7))"
 tt2004,,var001,,,"c(""DEUTSCHLAND""= ""Germany"", ""ESPANA""=""Spain"", ""ITALIA""=""Italy"", ""NEDERLANDS""=""Netherlands"")",2004,,,var135,icpsr,tt,ICPSR_04243,,,,

@@ -59,7 +59,7 @@ dcpo_setup <- function(vars,
     v <- vars_table[i, ]
     ds <- surveys_data[surveys_data$survey==v$survey, ]
 
-    # Get dataset (if necessary)
+    # Import dataset (if necessary)
     if (vars_table[["survey"]][i] != c(0, head(vars_table[["survey"]], -1))[i]) {
       dataset_path <- file.path(datapath,
                                 paste0(ds$archive, "_files"),
@@ -176,12 +176,8 @@ dcpo_setup <- function(vars,
 
     # Get variable of interest
     t_data$target <- with(t_data, as.numeric(get(v$variable) %>% stringr::str_trim()))
-    if (!is.na(v$to_na)) {
-      for (j in eval(parse(text = v$to_na))) {
-        t_data$target[t_data$target == j] <- NA
-      }
-    }
     vals <- eval(parse(text = v$values))
+    t_data$target <- if_else(t_data$target %in% vals, t_data$target, NA_real_)
     options(warn = 2)
     t_data$target <- do.call(dplyr::recode, c(list(t_data$target), setNames(1:length(vals), vals)))
     options(warn = 0)

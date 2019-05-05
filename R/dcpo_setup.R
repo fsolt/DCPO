@@ -53,6 +53,7 @@ dcpo_setup <- function(vars,
     }
   )
 
+  # loop rather than purrr to avoid reloading datasets (some are big and slow)
   all_sets <- list()
   for (i in seq(nrow(vars_table))) {
     cat(i, " ")
@@ -182,67 +183,41 @@ dcpo_setup <- function(vars,
     t_data$target <- do.call(dplyr::recode, c(list(t_data$target), setNames(1:length(vals), vals)))
     options(warn = 0)
 
-    # Summarize by country and year at each cutpoint
-    for (j in 1:(length(vals) - 1)) {
-      vars0 <- t_data %>%
-        dplyr::select(c_dcpo, y_dcpo, wt_dcpo, target) %>%
-        group_by(c_dcpo, y_dcpo) %>%
-        filter(!is.na(target)) %>%
-        summarise(survey = ds$survey,
-                  item = weighted.mean(target > j, wt_dcpo),
-                  n = length(na.omit(target)),
-                  cutpoint = j)
-      if (j == 1) vars1 <- vars0 else vars1 <- rbind(vars1, vars0)
-    }
+    # Summarize by country and year
+    vars1 <- t_data %>%
+      dplyr::select(c_dcpo, y_dcpo, wt_dcpo, target) %>%
+      filter(!is.na(target)) %>%
+      group_by(c_dcpo, y_dcpo, target) %>%
+      summarise(survey = v$survey,
+                item = v$item,
+                n = mean(wt_dcpo) * length(na.omit(target))) %>%
+      ungroup() %>%
+      rename(country = c_dcpo,
+             year = y_dcpo,
+             survey = survey,
+             item = item,
+             r = target,
+             n = n)
 
-    # Rename vars in summary
-    names(vars1) <- c("country", "year", "survey", v$item,
-                      "n", "cutpoint")
     all_sets[[i]] <- vars1
-    rm(vars0, vars1)
+    rm(vars1)
   }
 
+  all_data <- bind_rows(all_sets)
   rm(list = c("t_data", "ds", "v"))
 
-  for (i in seq(length(all_sets))) {
-    add <- reshape2::melt(all_sets[i], id.vars = c("country", "year", "survey", "n",
-                                                   "cutpoint"), na.rm=T)
-    if (i == 1) all_data <- add else all_data <- rbind(all_data, add)
-  }
-  rm(add)
-  all_data$y_r = with(all_data, as.integer(round(n * value))) # number of 'yes' response equivalents, given data weights
-
-  max_cp_digits <- max(all_data$cutpoint) %>%
-    stringr::str_length()
-
   all_data2 <- all_data %>%
-    select(-value, -L1) %>%
-    group_by(country, year, variable, cutpoint) %>%
-    summarize(y_r = sum(y_r),     # When two surveys ask the same question in
-              n = sum(n),         # the same country-year, add samples together
-              survey = first(survey)) %>%
+    group_by(country, year, item, r) %>%
+    summarize(n = sum(n),     # When two surveys ask the same question in
+              survey = paste0(survey, collapse = ", ")) %>% # the same country-year, add samples together
     ungroup() %>%
     group_by(country) %>%
-    mutate(cc_rank = n(),         # number of country-year-item-cuts (data-richness)
+    mutate(cc_rank = n(),         # number of country-year-items (data-richness)
            firstyr = as.integer(first(year, order_by = year)),
            lastyr = as.integer(last(year, order_by = year)),
            year = as.integer(year)) %>%
     ungroup() %>%
-    arrange(desc(cc_rank), country, year) %>% # order by data-richness
-    # Generate numeric codes for countries, years, questions, and question-cuts
-    mutate(variable = as.character(variable),
-           variable_cp = paste(variable, formatC(cutpoint, width = max_cp_digits, format = "d", flag = "0"), sep="_gt"),
-           ccode = as.integer(factor(country, levels = unique(country))),
-           tcode = as.integer(year - min(year) + 1),
-           qcode = as.integer(factor(variable, levels = unique(variable))),
-           rcode = as.integer(factor(variable_cp, levels = unique(variable_cp))),
-           ktcode = as.integer((ccode-1)*max(tcode)+tcode)) %>%
-    arrange(ccode, tcode, qcode, rcode) %>%
-    group_by(ccode) %>%
-    mutate(tq = length(unique(paste(tcode, qcode))),
-           year_obs = length(unique(tcode))) %>%
-    ungroup() %>%
-    filter(!(y_r == 0 | y_r==n))
+    arrange(desc(cc_rank), country, year)
 
   # Chime
   if(chime) {

@@ -96,12 +96,12 @@ model {
   sd_raw_bar_theta_evolve_IG ~ inv_gamma(0.5, 0.5); // ditto
   B_cut ~ normal(0, 1);
   // Likelihood
-  for (t in 1:T) {
+  for (r in 1:R) {
     for (q in 1:Q) {
       real z_denom = sqrt(1 + quad_form(Sigma_theta, to_vector(alpha[q])));
       vector[R-1] cut = p2l_vector(beta[q][1:(R-1)] / z_denom);
       for (k in 1:K) {
-        for (r in 1:R) {
+        for (t in 1:T) {
   	      if (N[t, k, q, r] > 0) {
       	    real eta;
       	    N_pos += 1;

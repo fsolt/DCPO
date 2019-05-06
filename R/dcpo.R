@@ -25,59 +25,71 @@
 
 dcpo <- function(x,
                  scale_item,
-                 seed = 324,
-                 iter = 3000,
-                 chains = 3,
-                 cores = min(chains, parallel::detectCores()/2),
-                 adapt_delta = .95,
                  chime = TRUE,
                  ...) {
 
-  rq <- x %>%
-    group_by(rcode) %>%
-    summarize(rq = first(qcode),
-              rcp = max(cutpoint))
 
-  if (!missing(scale_item)) {
-    r_fixed <- x %>%
-      filter(variable_cp == scale_item) %>%
-      pull(rcode) %>%
-      unique()
-    if (length(r_fixed) > 1) {
-      error("scale_item must specify a single question-cutpoint")
-    }
-  } else {
-    r_fixed <- 0
-  }
+  unobs_years <- setdiff(min(x$year):max(x$year), unique(x$year)) # identify years that are completely unobserved in survey data
 
+  # add dummy rows for completely unobserved years
+  x_new <- bind_rows(x, x %>%
+                       slice(1:length(unobs_years)) %>%
+                       mutate(year = unobs_years,
+                              n = 0))
 
-  dcpo_data <- list(  K    = max(x$ccode),
-                      T    = max(x$tcode),
-                      Q    = max(x$qcode),
-                      R    = max(x$rcode),
-                      S    = max(as.numeric(as.factor(paste(x$ccode, x$qcode)))),
-                      N    = length(x$y_r),
-                      kk   = x$ccode,
-                      tt   = x$tcode,
-                      kktt = x$ktcode,
-                      qq   = x$qcode,
-                      rr   = x$rcode,
-                      ss   = as.numeric(as.factor(paste(x$ccode, x$qcode))),
-                      rq   = rq$rq,
-                      r_fixed = r_fixed,
-                      rcp  = rq$rcp,
-                      y_r  = x$y_r,
-                      n_r  = x$n
+  n_tkqr <- reshape2::acast(x_new,
+                            year ~ country ~ item ~ r,
+                            fun.aggregate = sum,
+                            value.var = "n",
+                            drop = FALSE)
+
+  n_qr <- as.data.frame(apply(n_tkqr, c(3, 4), sum)) %>%
+    tibble::rownames_to_column()
+
+  unused_cp <- n_qr %>%
+    dplyr::mutate_all(~if_else(. > 0, 0, 1)) %>%
+    dplyr::select(-`1`, -rowname) %>%
+    as.matrix()
+
+  scale_q <- stringr::str_replace(scale_item, "_.*", "")
+  scale_r <- stringr::str_replace(scale_item, ".*_", "")
+
+  scale_item_matrix <- n_qr %>%
+    janitor::clean_names() %>%
+    dplyr::mutate_at(vars(matches(paste0("x\\d+$"))), ~if_else(. > 0, 10, 0)) %>%
+    mutate_at(vars(matches(paste0("x", scale_r, "$"))), ~if_else(rowname == scale_q, . + 1, 0)) %>%
+    dplyr::mutate_at(vars(matches(paste0("x\\d+$"))), ~if_else(. > 0, . - 10, 0)) %>%
+    select(-rowname, -x1) %>%
+    as.matrix()
+  stopifnot(sum(scale_item_matrix) == 1)
+
+  dcpo_data <- list(  K          = dplyr::n_distinct(x$country),
+                      T          = max(x$year) - min(x$year) + 1,
+                      Q          = dplyr::n_distinct(x$item),
+                      R          = max(x$r),
+                      N          = n_tkqr,
+                      unused_cut = unused_cp,
+                      fixed_cutp = scale_item_matrix,
+                      N_nonzero  = length(which(n_tkqr != 0))
   )
 
   dcpo_model <- stanmodels$dcpo
-  out1 <- suppressWarnings(sampling(dcpo_model,
-                                    data = dcpo_data,
-                                    seed = seed,
-                                    iter = iter,
-                                    cores = cores,
-                                    chains = chains,
-                                    control = list(max_treedepth = 20, adapt_delta=adapt_delta)))
+  stan_args <- list(object = dcpo_model,
+                    data = dcpo_data,
+                    ...)
+  if (!length(stan_args$control)) {
+    stan_args$control <- list(max_treedepth = 12)
+  }
+  if (!length(stan_args$init_r)) {
+    stan_args$init_r <- 1L
+  }
+  if (!length(stan_args$seed)) {
+    stan_args$seed <- 324
+  }
+  if (!length(stan_args$cores)) {
+    stan_args$cores <- min(chains, parallel::detectCores()/2)
+  }
+  out1 <- do.call(rstan::sampling, stan_args)
 
   # Chime
   if(chime) {

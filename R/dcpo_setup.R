@@ -171,9 +171,8 @@ dcpo_setup <- function(vars,
         } else eval(parse(text = ds$wt))
         t_data$wt_dcpo <- wt
         t_data$wt_dcpo[t_data$wt_dcpo > 10] <- 10
-        if (all(is.na(t_data$wt_dcpo))) {
-          t_data$wt_dcpo <- 1
-        }
+        t_data$wt_dcpo <- t_data$wt_dcpo/mean(t_data$wt_dcpo, na.rm = TRUE)
+        t_data$wt_dcpo[is.na(t_data$wt_dcpo)] <- 1
         rm(wt)
       } else t_data$wt_dcpo <- 1
     }

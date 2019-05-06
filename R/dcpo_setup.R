@@ -112,7 +112,7 @@ dcpo_setup <- function(vars,
       # Get years
       t_data$y_dcpo <- if (!is.na(ds$year_dict)) { # if there's a year dictionary...
         t_data[[ds$country_var]] %>%
-          labelled(., attr(., "labels")) %>%
+          labelled::labelled(., attr(., "labels")) %>%
           to_factor(levels = "labels") %>%
           as.character() %>%
           countrycode("orig", "year", custom_dict = eval(parse(text = ds$year_dict)))
@@ -165,12 +165,15 @@ dcpo_setup <- function(vars,
         filter(!is.na(y_dcpo))
 
       # Get weights
-      if (!is.na(ds$wt)) {
+      if (!is.na(ds$wt) & !all(is.na(ds$wt))) {
         if (length(unlist(strsplit(ds$wt, split = " "))) == 1) {
           wt <- with(t_data, get(ds$wt))
         } else eval(parse(text = ds$wt))
         t_data$wt_dcpo <- wt
         t_data$wt_dcpo[t_data$wt_dcpo > 10] <- 10
+        if (all(is.na(t_data$wt_dcpo))) {
+          t_data$wt_dcpo <- 1
+        }
         rm(wt)
       } else t_data$wt_dcpo <- 1
     }

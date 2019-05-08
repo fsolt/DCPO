@@ -18,8 +18,9 @@
 #' @return a stanfit object
 #'
 #' @import rstan
-#' @import beepr
+#' @importFrom beepr beep
 #' @importFrom dplyr "%>%" group_by summarize first
+#' @importFrom reshape2 acast
 #'
 #' @export
 

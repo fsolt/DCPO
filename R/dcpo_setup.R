@@ -31,7 +31,7 @@ dcpo_setup <- function(vars,
   if ("data.frame" %in% class(vars)) {
     vars_table <- vars
   } else {
-    vars_table <- read_csv(vars, col_types = "ccccc")
+    vars_table <- read_csv(vars, col_types = "cccc")
   }
 
   # Revise countrycode::countrycode to work better with custom names in cc_dcpo

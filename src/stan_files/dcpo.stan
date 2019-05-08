@@ -26,7 +26,7 @@ data {
 
 parameters {
   real raw_bar_theta_N01[T, K];     // country means (on N(0,1) scale, without random walk)
-  matrix[Q, 1] alpha;               // question discrimination
+  real<lower=0> alpha[Q, 1];      // question discrimination
   ordered[R-1] raw_beta[Q];         // response difficulty (before fixed_cutp)
   vector<lower=0>[1] sd_theta_N01;  // standard normal
   vector<lower=0>[1] sd_theta_IG;   // inverse-gamma

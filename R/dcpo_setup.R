@@ -12,15 +12,14 @@
 #'
 #' @return a data frame
 #'
-#' @import readr
-#' @import reshape2
 #' @import dplyr
-#' @import beepr
 #' @import countrycode
+#' @importFrom beepr beep
+#' @importFrom readr read_csv
 #' @importFrom rio import
 #' @importFrom forcats fct_relabel
 #' @importFrom labelled labelled to_character to_factor
-#' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower str_length str_trim
+#' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower str_trim
 #'
 #' @export
 
@@ -31,7 +30,7 @@ dcpo_setup <- function(vars,
   if ("data.frame" %in% class(vars)) {
     vars_table <- vars
   } else {
-    vars_table <- read_csv(vars, col_types = "cccc")
+    vars_table <- readr::read_csv(vars, col_types = "cccc")
   }
 
   # Revise countrycode::countrycode to work better with custom names in cc_dcpo
@@ -66,7 +65,7 @@ dcpo_setup <- function(vars,
                                 paste0(ds$archive, "_files"),
                                 paste0(ds$surv_program, "_files"),
                                 ds$file_id)
-      dataset_file <- list.files(path = dataset_path) %>% str_subset(".RData") %>% last()
+      dataset_file <- list.files(path = dataset_path) %>% stringr::str_subset(".RData") %>% last()
       if (!is.na(ds$subfile)) dataset_file <- paste0(ds$subfile, ".RData")
       t_data <- rio::import(file.path(dataset_path, dataset_file))
 
@@ -90,10 +89,10 @@ dcpo_setup <- function(vars,
           {if (!is.null(attr(t_data[[ds$country_var]], "labels")))
             labelled::labelled(., attr(., "labels")) %>%
               labelled::to_factor(levels = "prefixed") %>%
-              forcats::fct_relabel(., function(x) str_replace(x, "\\[\\d+\\]\\s+", ""))
+              forcats::fct_relabel(., function(x) stringr::str_replace(x, "\\[\\d+\\]\\s+", ""))
             else .} %>%
             as.character() %>%
-            str_replace("Hait\xed", "Haiti") %>%
+            stringr::str_replace("Hait\xed", "Haiti") %>%
             {if (!is.na(ds$cc_dict))
               countrycode(., "orig", "dest", custom_dict = eval(parse(text = ds$cc_dict)))
               else if (!is.na(ds$cc_origin))
@@ -119,7 +118,7 @@ dcpo_setup <- function(vars,
       } else if (!is.na(ds$year_var)) { # if there's a year variable...
         if (length(unique(t_data$c_dcpo))==1) { # single-country study
           t_data[[ds$year_var]]
-        } else if (str_detect(ds$survey, "ess")) {
+        } else if (stringr::str_detect(ds$survey, "ess")) {
           if ("inwyr" %in% names(t_data)) {
             t_data %>%
               group_by(c_dcpo) %>%
@@ -140,16 +139,16 @@ dcpo_setup <- function(vars,
             t_data[[ds$year_var]] %>%
               labelled(., attr(., "labels")) %>%
               labelled::to_character(levels = "prefixed") %>%
-              str_extract("\\d{4}")
+              stringr::str_extract("\\d{4}")
           )
         } else if (ds$survey == "amb_combo") {
           t_data[[ds$year_var]]
         } else { # single-wave cross-national surveys with interviews bleeding over years
           t_data %>%
             mutate(year = ifelse(between(t_data[[ds$year_var]],
-                                         1950, as.numeric(str_extract(Sys.Date(), "\\d{4}"))),
+                                         1950, as.numeric(stringr::str_extract(Sys.Date(), "\\d{4}"))),
                                  t_data[[ds$year_var]],
-                                 str_extract(ds$survey, "\\d{4}") %>% as.numeric()),
+                                 stringr::str_extract(ds$survey, "\\d{4}") %>% as.numeric()),
                    group_dcpo = c_dcpo) %>%
                    {if (!is.na(ds$cy_var))
                      mutate(., group_dcpo = t_data[[ds$cy_var]])
@@ -215,8 +214,6 @@ dcpo_setup <- function(vars,
     ungroup() %>%
     group_by(country) %>%
     mutate(cc_rank = n(),         # number of country-year-items (data-richness)
-           firstyr = as.integer(first(year, order_by = year)),
-           lastyr = as.integer(last(year, order_by = year)),
            year = as.integer(year)) %>%
     ungroup() %>%
     arrange(desc(cc_rank), country, year)

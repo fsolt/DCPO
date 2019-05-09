@@ -79,7 +79,7 @@ dcpo <- function(x,
                     data = dcpo_data,
                     ...)
   if (!length(stan_args$control)) {
-    stan_args$control <- list(max_treedepth = 12)
+    stan_args$control <- list(max_treedepth = 20)
   }
   if (!length(stan_args$init_r)) {
     stan_args$init_r <- 1L

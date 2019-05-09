@@ -87,8 +87,11 @@ dcpo <- function(x,
   if (!length(stan_args$seed)) {
     stan_args$seed <- 324
   }
+  if (!length(stan_args$chains)) {
+    stan_args$chains <- 3
+  }
   if (!length(stan_args$cores)) {
-    stan_args$cores <- min(chains, parallel::detectCores()/2)
+    stan_args$cores <- min(stan_args$chains, parallel::detectCores()/2)
   }
   out1 <- do.call(rstan::sampling, stan_args)
 

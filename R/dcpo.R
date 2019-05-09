@@ -21,6 +21,7 @@
 #' @importFrom beepr beep
 #' @importFrom dplyr "%>%" group_by summarize first
 #' @importFrom reshape2 acast
+#' @importFrom janitor clean_names
 #'
 #' @export
 

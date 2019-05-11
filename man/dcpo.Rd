@@ -31,6 +31,4 @@ a stanfit object
 }
 \details{
 \code{dcpo}, when passed a data frame \code{x} of survey marginals created by \code{dcpo_setup}, estimates a latent variable of public opinion.
-
-If a data frame of independent variables including observations for all countries that appear in \code{x} for each year in the time period from the first to last year to appear in \code{x} is passed to the argument \code{iv}, \code{dcpo} will also estimate coefficients for these predictors.
 }

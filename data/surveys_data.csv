@@ -92,7 +92,7 @@ asiab2004,,country,,,,2004,,,weight,icpsr,asiab,ICPSR_20420,,,,
 asiab2005,,country,,,,2005,,,weight,misc,asiab,asiabarometer2005,,,,
 asiab2006,,country,,,,2006,,,,misc,asiab,asiabarometer2006,,,,
 asiab2007,,country,,,,2007,,,weigh,misc,asiab,asiabarometer2007,,,,
-autnes2017,,Austria,,,,2017,,,"wt <- rowMeans(t_data %>% select(contains(""weightd"")), na.rm = TRUE)",misc,autnes,autnes2017,,,,
+autnes2017,,Austria,,,,2017,,,"wt <- rowMeans(t_data %>% select(contains(""weightd"")), na.rm = TRUE)",dataverse,autnes,autnes2017,,doi:10.11587/I7QIYJ,,
 bges1992,,United Kingdom,,,,1992,,,wtfactor,ukds,bges,2981,,,,
 bges1997,,United Kingdom,,,,1997,,,wtallgb,icpsr,bges,ICPSR_02615,,,,
 brdir199109,,Brazil,,,,1991,,,peso,roper,datafolha,BRDIR1991-1033,,,,
@@ -296,7 +296,7 @@ gallup_us199206,,United States,,,,1992,,,weight,roper,gallup_us,USAIPOGNS1992-22
 gallup_us199603,,United States,,,,1996,,,weight,roper,gallup_us,USAIPOCNUS1996-9603008,,,,"list(file = file_path, var_names = c(""q43a"", ""q44"", ""weight""), var_cards = c(6, 6, 1), var_positions = c(62, 64, 13), var_widths = c(1, 1, 3), total_cards = 7,  card_pattern = ""(?<=^.{10})\\d"", respondent_pattern = ""(?<=^\\s{2})\\d{4}"")"
 gallup_us199611,,United States,,,,1996,,,weight,roper,gallup_us,USAIPOGNS1996-9611036,,,,"list(file = file_path, var_names = c(""q12"", ""weight""), var_cards = c(6, 1), var_positions = c(51, 13), var_widths = c(1, 3), total_cards = 7,  card_pattern = ""(?<=^.{10})\\d"", respondent_pattern = ""^\\d{6}"")"
 gallup_us199902,,United States,,,,1999,,,weight,roper,gallup_us,USAIPOGNS1999-9902009,,,,"list(file = file_path, var_names = c(""q35"", ""q39a"", ""weight""), var_cards = c(7, 7, 1), var_positions = c(39, 49, 13), var_widths = c(1, 1, 3), total_cards = 7,  card_pattern = ""(?<=^.{10})\\d"", respondent_pattern = ""(?<=^\\s{2})\\d{4}"")"
-gallup_us200305,,United States,,,,2003,,,wtfctr,misc,roper_request,USAIPOGNS2003-31,,,,
+gallup_us200305,,United States,,,,2003,,,wtfctr,roper,gallup_us,USAIPOGNS2003-31,,,,
 gallup_us200401,,United States,,,,2004,,,wtfctr,roper,gallup_us,USAIPOCNUS2004-02,,,,
 gallup_us200402,,United States,,,,2004,,,wtfctr,roper,gallup_us,USAIPOGNS2004-08,,,,
 gallup_us200508,,United States,,,,2005,,,wtfctr,roper,gallup_us,USAIPOGNS2005-39,,,,

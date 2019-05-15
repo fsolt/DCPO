@@ -34,11 +34,204 @@ get_surveys <- function(vars,
     vars_table <- vars
   } else if (file.exists(vars)) {
     vars_table <- readr::read_csv(vars, col_types = "cccc")
+  } else {
+    vars_table <- tibble(survey = vars)
   }
 
-ds <- surveys_data
+  ds <- surveys_data %>%
+    filter(survey %in% vars_table$survey) %>%
+    mutate(dl_dir = file.path(datapath,
+                              paste0(archive, "_files"),
+                              paste0(surv_program, "_files")),
+           new_dir = file.path(dl_dir, file_id),
+           file_exists = list.files(path = new_dir) %>%
+             str_subset(".RData") %>%
+             length() > 0) %>%
+    filter(!file_exists)
 
-s <- gesis::login()
+  # Gesis
+  gesis_ds <- ds %>%
+    filter(archive == "gesis")
+  if (nrow(gesis_ds) > 0) {
+    s <- gesis::login()
+    walk(gesis_ds, function(file_id, new_dir, ...) {
+      dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+      doi <- str_replace(file_id, "ZA", "")
+      tryCatch(gesis::download_dataset(s, doi = doi, path = new_dir),
+               error = function(c) {
+                 gesis::download_dataset(s, doi = doi, path = new_dir, filetype = ".zip")
+                 zip_file <- list.files(path = new_dir) %>% str_subset(".zip") %>% last()
+                 unzip(file.path(new_dir, zip_file), exdir = new_dir)
+                 unlink(file.path(new_dir, zip_file))
+               }
+      )
+      try(gesis::download_codebook(doi = doi, path = new_dir))
+      data_file <- list.files(path = new_dir) %>% str_subset(".dta") %>% last()
+      if (data_file %>% str_detect(".zip$")) {
+        unzip(file.path(new_dir, data_file), exdir = new_dir)
+        unlink(file.path(new_dir, data_file))
+        data_file <- list.files(path = new_dir) %>%
+          str_subset(".dta") %>%
+          last()
+      }
+      rio::convert(file.path(new_dir, data_file),
+                   str_replace(file.path(new_dir, data_file), ".dta", ".RData"))
+    })
+  }
+
+  # ICPSR
+  icpsr_ds <- ds %>%
+    filter(archive == "icpsr")
+  if (nrow(icpsr_ds) > 0) {
+    walk(gesis_ds, function(file_id, dl_dir, read_ascii_args, wt, ...) {
+      icpsr_id <- file_id %>% str_replace("ICPSR_", "") %>% as.numeric(file_id)
+      icpsrdata::icpsr_download(icpsr_id, download_dir = dl_dir)
+      new_dir <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)))
+      new_dir2 <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)), "DS0001")
+      data_file <- list.files(path = new_dir2) %>% str_subset("\\.dta") %>% last()
+      if (is.na(data_file)) {
+        data_file <- list.files(path = new_dir2) %>%
+          str_subset("\\.por") %>%
+          last()
+      }
+      if (is.na(data_file)) {
+        data_file <- list.files(path = new_dir2) %>%
+          str_subset("\\.txt") %>%
+          last()
+        file_path <- file.path(new_dir2, data_file)
+        x <- do.call(ropercenter::read_ascii, eval(parse(text = read_ascii_args)))
+        if (!is.na(wt)) {
+          x <- x %>%
+            mutate(weight0 = as.numeric(weight %>% stringr::str_trim()),
+                   weight = weight0/mean(weight0))
+        }
+        rio::export(x, file.path(new_dir, str_replace(data_file, "txt$", "RData")))
+      }
+      if (str_detect(data_file, ".por")) {
+        # workaround for rio bug importing .por
+        haven::read_por(file.path(new_dir2, data_file)) %>%
+          rio::export(str_replace(file.path(new_dir, data_file), ".por", ".RData"))
+      } else {
+        tryCatch(rio::convert(file.path(new_dir2, data_file),
+                              str_replace(file.path(new_dir, data_file), ".por", ".RData")),
+                 error = function(c) suppressWarnings(
+                   foreign::read.dta(file.path(new_dir2, data_file),
+                                     convert.factors = FALSE) %>%
+                     rio::export(str_replace(file.path(new_dir, data_file), ".dta", ".RData"))
+                 )
+        )
+      }
+    })
+  }
+
+  # Pew
+  pew_ds <- ds %>%
+    filter(archive == "pew")
+  pew_sp <- pew_ds %>%
+    select(surv_program) %>%
+    unique() %>%
+    unlist()
+  walk(pew_sp, function(sp) {
+    pew_sp_files <- pew_ds %>%
+      filter(surv_program == sp) %>%
+      select(file_id) %>%
+      unlist()
+    pewdata::pew_download(area = sp,
+                          file_id = pew_sp_files,
+                          download_dir = file.path(datapath,
+                                                   "pew_files",
+                                                   paste0(sp, "_files")))
+    Sys.sleep(2)
+  })
+
+  # Roper Center
+  roper_ds <- ds %>%
+    filter(archive == "roper")
+  roper_sp <- roper_ds %>%
+    select(surv_program) %>%
+    unique() %>%
+    unlist()
+  walk(roper_sp, function(sp) {
+    roper_sp_files <- roper_ds %>%
+      filter(surv_program == sp) %>%
+      select(file_id) %>%
+      unlist()
+    ropercenter::roper_download(file_id = roper_sp_files,
+                                download_dir = file.path("../data/dcpo_surveys/roper_files",
+                                                         paste0(sp, "_files")))
+    Sys.sleep(2)
+  })
+
+  # Roper ASCII files
+  roper_ascii_files <- roper_ds %>%
+    filter(!is.na(read_ascii_args)) %>%
+    pull(file_id)
+  walk(roper_ascii_files, function(file) {
+    ra_ds <- ds %>%
+      filter(file_id %in% file)
+    file_path <- file.path("../data/dcpo_surveys/roper_files",
+                           paste0(ra_ds$surv_program, "_files"),
+                           file,
+                           paste0(file, ".dat"))
+    x <- do.call(read_ascii, eval(parse(text = ra_ds$read_ascii_args)))
+    if (!is.na(ra_ds$wt)) {
+      x <- x %>%
+        mutate(weight0 = as.numeric(weight %>% stringr::str_trim()),
+               weight = weight0/mean(weight0))
+    }
+    rio::export(x, str_replace(file_path, "dat$", "RData"))
+  })
+
+  # European Social Survey
+  ess_ds <- ds %>%
+    filter(surv_program == "ess" & is.na(data_link))
+  pwalk(ess_ds, function(survey, new_dir, dl_dir, ...) {
+    dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+    suppressWarnings(essurvey::download_rounds(rounds = str_extract(survey, "\\d+"),
+                                               output_dir = dl_dir))
+    data_file <- list.files(path = new_dir) %>%
+      str_subset("\\.dta") %>%
+      last()
+    rio::convert(file.path(new_dir,  data_file),
+                 paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+  })
+
+  # Dataverse
+  cces_ds <- ds %>%
+    filter(surv_program == "cces")
+  pwalk(cces_files, function(file_id, data_link, new_dir, ...) {
+    dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+    cces_info <- dataverse::get_dataset(data_link)
+    cces_ids <- cces_info$files %>%
+      janitor::clean_names() %>%
+      select(label, id)
+    walk2(cces_ids$label, cces_ids$id, function(name, id) {
+      name2 <- ifelse(tools::file_ext(name) == "tab", paste0(tools::file_path_sans_ext(name), ".dta"), name)
+      f <- dataverse::get_file(file = id, dataset = data_link)
+      writeBin(as.vector(f), file.path(dl_dir, file_id, name2))
+    })
+    data_file <- list.files(path = file.path(cces_dir, file_id)) %>% str_subset("dta") %>% last()
+    haven::read_dta(file.path(dl_dir, file_id, data_file), encoding = "latin1") %>%
+      rio::export(file.path(dl_dir, file_id, paste0(file_id, ".RData")))
+  })
+
+# UK Data Service
+ukds_ds <- ds %>%
+  filter(archive == "ukds")
+ukds_sp <- ukds_ds %>%
+  select(surv_program) %>%
+  unique() %>%
+  unlist()
+walk(ukds_sp, function(sp) {
+  ukds_sp_files <- ukds_ds %>%
+    filter(surv_program == sp) %>%
+    select(file_id) %>%
+    unlist()
+  ukds::ukds_download(file_id = ukds_sp_files,
+                              download_dir = file.path("../data/dcpo_surveys/ukds_files",
+                                                       paste0(sp, "_files")))
+})
+
 walk(seq_len(nrow(ds)), function(i) {
   archive <- ds$archive[i]
   surv_program <- ds$surv_program[i]
@@ -46,76 +239,6 @@ walk(seq_len(nrow(ds)), function(i) {
   data_link <- ds$data_link[i]
   cb_link <- ds$cb_link[i]
 
-  dl_dir <- file.path("../data/dcpo_surveys",
-                      paste0(archive, "_files"),
-                      paste0(surv_program, "_files"))
-  if (archive=="gesis") {
-    new_dir <- file.path(dl_dir, file_id)
-    dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-    doi <- str_replace(file_id, "ZA", "")
-    tryCatch(gesis::download_dataset(s, doi = doi, path = new_dir),
-             error = function(c) {
-               gesis::download_dataset(s, doi = doi, path = new_dir, filetype = ".zip")
-               zip_file <- list.files(path = new_dir) %>% str_subset(".zip") %>% last()
-               unzip(file.path(new_dir, zip_file), exdir = new_dir)
-               unlink(file.path(new_dir, zip_file))
-             }
-    )
-    try(gesis::download_codebook(doi = doi, path = new_dir))
-    data_file <- list.files(path = new_dir) %>% str_subset(".dta") %>% last()
-    if (data_file %>% str_detect(".zip$")) {
-      unzip(file.path(new_dir, data_file), exdir = new_dir)
-      unlink(file.path(new_dir, data_file))
-      data_file <- list.files(path = new_dir) %>%
-        str_subset(".dta") %>%
-        last()
-    }
-    rio::convert(file.path(new_dir, data_file),
-            str_replace(file.path(new_dir, data_file), ".dta", ".RData"))
-  } # end gesis
-  if (archive=="icpsr") {
-    file_id <- file_id %>% str_replace("ICPSR_", "") %>% as.numeric(file_id)
-    icpsrdata::icpsr_download(file_id, download_dir = dl_dir)
-    new_dir <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)))
-    new_dir2 <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)), "DS0001")
-    data_file <- list.files(path = new_dir2) %>% str_subset("\\.dta") %>% last()
-    if (is.na(data_file)) {
-      data_file <- list.files(path = new_dir2) %>%
-        str_subset("\\.por") %>%
-        last()
-    }
-    if (is.na(data_file)) {
-      data_file <- list.files(path = new_dir2) %>%
-        str_subset("\\.txt") %>%
-        last()
-      file_path <- file.path(new_dir2, data_file)
-      x <- do.call(ropercenter::read_ascii, eval(parse(text = ds$read_ascii_args[i])))
-      if (!is.na(ds$wt[i])) {
-        x <- x %>%
-          mutate(weight0 = as.numeric(weight %>% stringr::str_trim()),
-                 weight = weight0/mean(weight0))
-      }
-      rio::export(x, file.path(new_dir, str_replace(data_file, "txt$", "RData")))
-    }
-    if (str_detect(data_file, ".por")) {
-      # workaround for rio bug importing .por
-      haven::read_por(file.path(new_dir2, data_file)) %>%
-        rio::export(str_replace(file.path(new_dir, data_file), ".por", ".RData"))
-    } else {
-      tryCatch(rio::convert(file.path(new_dir2, data_file),
-                       str_replace(file.path(new_dir, data_file), ".por", ".RData")),
-               error = function(c) suppressWarnings(
-                 foreign::read.dta(file.path(new_dir2, data_file),
-                                    convert.factors = FALSE) %>%
-                   rio::export(str_replace(file.path(new_dir, data_file), ".dta", ".RData"))
-               )
-      )
-    }
-  } # end icpsr
-  if (archive=="pew") {
-    dir.create(dl_dir, recursive = TRUE, showWarnings = FALSE)
-    pewdata::pew_download(surv_program, file_id, download_dir = dl_dir)
-  } #end pew
   misc_special <- c("ess", "pgss", "wvs", "roper_request")
   if (archive=="misc" & !(surv_program %in% misc_special)) {
     new_dir <- file.path(dl_dir, file_id)
@@ -136,71 +259,12 @@ walk(seq_len(nrow(ds)), function(i) {
     }
     if (tools::file_ext(data_file)!="") {
       rio::convert(file.path(new_dir, data_file),
-              paste0(file.path(new_dir, file_id), ".RData"))
+                   paste0(file.path(new_dir, file_id), ".RData"))
     }
     if (!is.na(cb_link)) {
       download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
     }
   }
-})
-
-
-# Roper Center
-roper_ds <- ds %>%
-  filter(archive == "roper")
-roper_sp <- roper_ds %>%
-  select(surv_program) %>%
-  unique() %>%
-  unlist()
-walk(roper_sp, function(sp) {
-  roper_sp_files <- roper_ds %>%
-    filter(surv_program == sp) %>%
-    select(file_id) %>%
-    unlist()
-  ropercenter::roper_download(file_id = roper_sp_files,
-                              download_dir = file.path("../data/dcpo_surveys/roper_files",
-                                                       paste0(sp, "_files")))
-  Sys.sleep(5)
-})
-
-
-# Roper ASCII files
-roper_ascii_files <- ds %>%
-  filter(!is.na(read_ascii_args)) %>%
-  pull(file_id)
-
-walk(roper_ascii_files, function(file) {
-  ra_ds <- ds %>%
-    filter(file_id %in% file)
-  file_path <- file.path("../data/dcpo_surveys/roper_files",
-                         paste0(ra_ds$surv_program, "_files"),
-                         file,
-                         paste0(file, ".dat"))
-  x <- do.call(read_ascii, eval(parse(text = ra_ds$read_ascii_args)))
-  if (!is.na(ra_ds$wt)) {
-    x <- x %>%
-      mutate(weight0 = as.numeric(weight %>% stringr::str_trim()),
-             weight = weight0/mean(weight0))
-  }
-  rio::export(x, str_replace(file_path, "dat$", "RData"))
-})
-
-
-# UK Data Service
-ukds_ds <- ds %>%
-  filter(archive == "ukds")
-ukds_sp <- ukds_ds %>%
-  select(surv_program) %>%
-  unique() %>%
-  unlist()
-walk(ukds_sp, function(sp) {
-  ukds_sp_files <- ukds_ds %>%
-    filter(surv_program == sp) %>%
-    select(file_id) %>%
-    unlist()
-  ukds::ukds_download(file_id = ukds_sp_files,
-                              download_dir = file.path("../data/dcpo_surveys/ukds_files",
-                                                       paste0(sp, "_files")))
 })
 
 # Poland GSS
@@ -365,23 +429,7 @@ walk2(c(2015, 2013, 2011:2000, 1998:1995), 2:19, function(file_year, li_no) {
 })
 
 
-# European Social Survey
-dl_dir <- file.path("../data/dcpo_surveys",
-                    "misc_files",
-                    "ess_files")
-dir.create(dl_dir, recursive = TRUE, showWarnings = FALSE)
-ess_rounds <- essurvey::show_rounds()
 
-walk(ess_rounds, function(round) {
-  new_dir <- file.path(dl_dir, paste0("ess", round))
-  dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-  suppressWarnings(essurvey::download_rounds(rounds = round, output_dir = dl_dir))
-  data_file <- list.files(path = new_dir) %>%
-    str_subset("\\.dta") %>%
-    last()
-  rio::convert(file.path(new_dir,  data_file),
-          paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
-})
 
 
 # AsiaBarometer (2005, 2006, 2007) can't automate download--permission lasts only 72 hrs
@@ -395,30 +443,7 @@ walk(c(2005, 2006, 2007), function(yr) {
 })
 
 
-# CCES
-dl_dir <- file.path("../data/dcpo_surveys",
-                    "misc_files",
-                    "cces_files")
 
-cces_files <- ds %>%
-  filter(surv_program == "cces") %>%
-  select(file_id, data_link)
-
-pwalk(cces_files, function(file_id, data_link) {
-  dir.create(file.path(dl_dir, file_id), recursive = TRUE, showWarnings = FALSE)
-  cces_info <- dataverse::get_dataset(data_link)
-  cces_ids <- cces_info$files %>%
-    janitor::clean_names() %>%
-    select(label, id)
-  walk2(cces_ids$label, cces_ids$id, function(name, id) {
-    name2 <- ifelse(tools::file_ext(name) == "tab", paste0(tools::file_path_sans_ext(name), ".dta"), name)
-    f <- dataverse::get_file(file = id, dataset = data_link)
-    writeBin(as.vector(f), file.path(dl_dir, file_id, name2))
-  })
-  data_file <- list.files(path = file.path(cces_dir, file_id)) %>% str_subset("dta") %>% last()
-  haven::read_dta(file.path(dl_dir, file_id, data_file), encoding = "latin1") %>%
-    rio::export(file.path(dl_dir, file_id, paste0(file_id, ".RData")))
-})
 
 # Australian Election Study
 dl_dir <- file.path("../data/dcpo_surveys",

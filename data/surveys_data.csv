@@ -140,11 +140,11 @@ cbsnyt198905,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-APRIL,,,,
 cbsnyt198909,,United States,,,,1989,,,weight,roper,cbsnyt,USCBSNYT1989-SEP2,,,,"list(file = file_path, var_names = c(""q15"", ""q16"", ""q19a"", ""q19b"", ""q19c"", ""q19e"", ""q19g"", ""weight""), var_cards = c(1, 1, 1, 1, 1, 1, 1, 3), var_positions = c(54, 55, 58, 59, 60, 62, 64, 49), var_widths = c(1, 1, 1, 1, 1, 1, 1, 6), total_cards = 3)"
 cbsnyt199302,,United States,,,,1993,,,weight,roper,cbsnyt,USCBSNYT1993-FEB93A,,,,"list(file = file_path, var_names = c(""q45"", ""q46"", ""weight""), var_cards = c(2, 2, 3), var_positions = c(9, 10, 49), var_widths = c(1, 1, 6), total_cards = 3)"
 cbsnyt199801,,United States,,,,1998,,,weight,roper,cbsnyt,USCBSNYT1998-98001A,,,,
-cces2009,,United States,,,,2009,,,v200,misc,cces,cces2009,,hdl:1902.1/20536,,
-cces2012,,United States,,,,2012,,,v103,misc,cces,cces2012,,hdl:1902.1/21447,,
-cces2014,,United States,,,,2014,,,weight,misc,cces,cces2014,,doi:10.7910/DVN/XFXJVY,,
-cces2015,,United States,,,,2015,,,weight,misc,cces,cces2015,,doi:10.7910/DVN/SWMWX8,,
-cces2016,,United States,,,,2016,,,commonweight,misc,cces,cces2016,,doi:10.7910/DVN/GDF6Z0,,
+cces2009,,United States,,,,2009,,,v200,dataverse,cces,cces2009,,hdl:1902.1/20536,,
+cces2012,,United States,,,,2012,,,v103,dataverse,cces,cces2012,,hdl:1902.1/21447,,
+cces2014,,United States,,,,2014,,,weight,dataverse,cces,cces2014,,doi:10.7910/DVN/XFXJVY,,
+cces2015,,United States,,,,2015,,,weight,dataverse,cces,cces2015,,doi:10.7910/DVN/SWMWX8,,
+cces2016,,United States,,,,2016,,,commonweight,dataverse,cces,cces2016,,doi:10.7910/DVN/GDF6Z0,,
 cdcee,,v3,,,"c(""East Germany""=""Germany"", ""West Germany""=""Germany"")",,v666,,wt <- t_data$v633; wt[!is.na(t_data$v634)] <- t_data$v634[!is.na(t_data$v634)]; wt[!is.na(t_data$v636)] <- t_data$v636[!is.na(t_data$v636)]; wt[!is.na(t_data$v637)] <- t_data$v637[!is.na(t_data$v637)]; wt[!is.na(t_data$v638)] <- t_data$v638[!is.na(t_data$v638)]; wt[!is.na(t_data$v639)] <- t_data$v639[!is.na(t_data$v639)]; wt[!is.na(t_data$v640)] <- t_data$v640[!is.na(t_data$v640)]; wt[is.na(wt)] <- 1,gesis,cdcee,ZA4054,,,,
 chcep199012,,Chile,,,,1990,,,weight,roper,chcep,CHCEP1990-151,,,,"list(file = file_path, var_names = c(""p21"", ""weight""),  var_positions = c(121, 175), var_widths = c(1, 9))"
 chcep199109,,Chile,,,,1991,,,pond,roper,chcep,CHCEP1991-1022,,,,

@@ -24,9 +24,12 @@
 #' @importFrom stringr str_replace str_subset str_detect
 #' @importFrom essurvey download_rounds
 #' @importFrom dataverse get_dataset get_file
-#' @importFrom purrr walk
+#' @importFrom purrr walk walk2 pwalk
 #' @importFrom haven read_por
 #' @importFrom foreign read.spss
+#' @importFrom tools file_ext file_path_sans_ext
+#'
+#' @export
 
 get_surveys <- function(vars,
                         datapath = "../data/dcpo_surveys",
@@ -56,7 +59,7 @@ get_surveys <- function(vars,
     filter(archive == "gesis")
   if (nrow(gesis_ds) > 0) {
     s <- gesis::login()
-    walk(gesis_ds, function(file_id, new_dir, ...) {
+    pwalk(gesis_ds, function(file_id, new_dir, ...) {
       dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
       doi <- str_replace(file_id, "ZA", "")
       tryCatch(gesis::download_dataset(s, doi = doi, path = new_dir),
@@ -85,7 +88,7 @@ get_surveys <- function(vars,
   icpsr_ds <- ds %>%
     filter(archive == "icpsr")
   if (nrow(icpsr_ds) > 0) {
-    walk(gesis_ds, function(file_id, dl_dir, read_ascii_args, wt, ...) {
+    pwalk(gesis_ds, function(file_id, dl_dir, read_ascii_args, wt, ...) {
       icpsr_id <- file_id %>% str_replace("ICPSR_", "") %>% as.numeric(file_id)
       icpsrdata::icpsr_download(icpsr_id, download_dir = dl_dir)
       new_dir <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)))
@@ -207,16 +210,16 @@ get_surveys <- function(vars,
   }
 
   # Dataverse
-  cces_ds <- ds %>%
-    filter(surv_program == "cces")
-  if (nrow(cces_ds) > 0) {
-    pwalk(cces_ds, function(file_id, data_link, new_dir, ...) {
+  dataverse_ds <- ds %>%
+    filter(archive == "dataverse")
+  if (nrow(dataverse_ds) > 0) {
+    pwalk(dataverse_ds, function(file_id, data_link, new_dir, ...) {
       dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-      cces_info <- dataverse::get_dataset(data_link)
-      cces_ids <- cces_info$files %>%
+      dataverse_info <- dataverse::get_dataset(data_link)
+      dataverse_ids <- dataverse_info$files %>%
         janitor::clean_names() %>%
         select(label, id)
-      walk2(cces_ids$label, cces_ids$id, function(name, id) {
+      walk2(dataverse_ids$label, dataverse_ids$id, function(name, id) {
         name2 <- ifelse(tools::file_ext(name) == "tab", paste0(tools::file_path_sans_ext(name), ".dta"), name)
         f <- dataverse::get_file(file = id, dataset = data_link)
         writeBin(as.vector(f), file.path(new_dir, name2))
@@ -224,6 +227,36 @@ get_surveys <- function(vars,
       data_file <- list.files(path = new_dir) %>% str_subset("dta") %>% last()
       haven::read_dta(file.path(new_dir, data_file), encoding = "latin1") %>%
         rio::export(file.path(new_dir, paste0(file_id, ".RData")))
+    })
+  }
+
+  # Misc
+  misc_ds <- ds %>%
+    filter(archive == "misc" & !(is.na(data_link)))
+  if (nrow(misc_ds > 0)) {
+    pwalk(misc_ds, function(new_dir, data_link, cb_link, ...) {
+      dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+      dl_file <- str_extract(data_link, "[^//]*$")
+      download.file(data_link, file.path(new_dir, dl_file))
+      if (str_detect(dl_file, "zip$")) {
+        unzip(file.path(new_dir, dl_file), exdir = new_dir)
+        unlink(file.path(new_dir, list.files(new_dir, ".zip")))
+      }
+      data_file <- list.files(path = new_dir) %>%
+        str_subset("\\.dta") %>%
+        last()
+      if (is.na(data_file)) {
+        data_file <- list.files(path = new_dir) %>%
+          str_subset("\\.sav") %>%
+          last()
+      }
+      if (tools::file_ext(data_file) != "") {
+        rio::convert(file.path(new_dir, data_file),
+                     paste0(file.path(new_dir, file_id), ".RData"))
+      }
+      if (!is.na(cb_link)) {
+        download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
+      }
     })
   }
 
@@ -244,40 +277,7 @@ walk(ukds_sp, function(sp) {
                                                        paste0(sp, "_files")))
 })
 
-walk(seq_len(nrow(ds)), function(i) {
-  archive <- ds$archive[i]
-  surv_program <- ds$surv_program[i]
-  file_id <- ds$file_id[i]
-  data_link <- ds$data_link[i]
-  cb_link <- ds$cb_link[i]
 
-  misc_special <- c("ess", "pgss", "wvs", "roper_request")
-  if (archive=="misc" & !(surv_program %in% misc_special)) {
-    new_dir <- file.path(dl_dir, file_id)
-    dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-    dl_file <- str_extract(data_link, "[^//]*$")
-    download.file(data_link, file.path(new_dir, dl_file))
-    if (str_detect(dl_file, "zip$")) {
-      unzip(file.path(new_dir, dl_file), exdir = new_dir)
-      unlink(file.path(new_dir, list.files(new_dir, ".zip")))
-    }
-    data_file <- list.files(path = new_dir) %>%
-      str_subset("\\.dta") %>%
-      last()
-    if (is.na(data_file)) {
-      data_file <- list.files(path = new_dir) %>%
-        str_subset("\\.sav") %>%
-        last()
-    }
-    if (tools::file_ext(data_file)!="") {
-      rio::convert(file.path(new_dir, data_file),
-                   paste0(file.path(new_dir, file_id), ".RData"))
-    }
-    if (!is.na(cb_link)) {
-      download.file(cb_link, file.path(new_dir, paste0(file_id, ".pdf")))
-    }
-  }
-})
 
 # Poland GSS
 pgss_dir <- "../data/dcpo_surveys/misc_files/pgss_files/pgss"
@@ -441,22 +441,6 @@ walk2(c(2015, 2013, 2011:2000, 1998:1995), 2:19, function(file_year, li_no) {
 })
 
 
-
-
-
-# AsiaBarometer (2005, 2006, 2007) can't automate download--permission lasts only 72 hrs
-walk(c(2005, 2006, 2007), function(yr) {
-  yr_dir <- paste0("../data/dcpo_surveys/misc_files/asiab_files/asiabarometer", yr)
-  data_file <- list.files(path = yr_dir) %>%
-    str_subset("\\.sav") %>%
-    last()
-  rio::convert(file.path(yr_dir, data_file),
-          paste0(tools::file_path_sans_ext(file.path(yr_dir, data_file)), ".RData"))
-})
-
-
-
-
 # Australian Election Study
 dl_dir <- file.path("../data/dcpo_surveys",
                     "misc_files",
@@ -533,36 +517,3 @@ walk2(aes_data_links, aes_codebook_links, function(data_link, codebook_link) {
   pdf_file <- paste0(file_id, "_cb.pdf")
   writeBin(httr::content(dl_cb$response, "raw"), file.path(dl_dir, file_id, pdf_file))
 })
-
-# Austrian National Election Study 2017 (can't automate download--dataverse)
-# https://data.aussda.at/dataset.xhtml?persistentId=doi:10.11587/I7QIYJ
-rio::convert("../data/dcpo_surveys/misc_files/autnes_files/autnes2017/10017_da_en_v1_0.dta",
-               "../data/dcpo_surveys/misc_files/autnes_files/autnes2017/autnes2017.RData")
-
-# Mosaic 2000 (can't automate download--Nesstar with registration required)
-# http://fors-getdata.unil.ch/webview/pdf?&mode=ddiToPDF&executepdf=true&study=http://130.223.28.125:80/obj/fStudy/ch.sidos.ddi.339.7245&file=/nesstar/temp/download3463836959683695125.tmp/ch.sidos.ddi.339.7245.zip&server=http://130.223.28.125:80
-rio::convert("../data/dcpo_surveys/misc_files/mosaic_files/mosaic2000/ch.sidos.ddi.339.7245_F1.dta",
-             "../data/dcpo_surveys/misc_files/mosaic_files/mosaic2000/ch.sidos.ddi.339.7245_F1.RData")
-
-# Sweden SOM Institute Cumulative Dataset (can't automate download--permission lasts only 3 months)
-rio::convert("../data/dcpo_surveys/misc_files/som_files/som_combo/SOM Cumulative Dataset-eng.dta",
-             "../data/dcpo_surveys/misc_files/som_files/som_combo/som_combo.RData")
-
-
-# Roper by Request
-roper_request_dir <- "../data/dcpo_surveys/misc_files/roper_request_files"
-roper_request_files <- c("GBSSLT1981-CQ792", "GBSSLT1985-CQ958A", "GBSSLT1986-CQ044A", "USAIPOGNS1999-9902009")
-
-walk(roper_request_files, function(file_id) {
-  data_file <- list.files(path = file.path(roper_request_dir, file_id)) %>% str_subset("por|sav") %>% last()
-
-  tryCatch(rio::convert(file.path(roper_request_dir, file_id, data_file),
-                   file.path(roper_request_dir, file_id, paste0(file_id, ".RData"))),
-           error = function(c) suppressWarnings(
-             foreign::read.spss(file.path(roper_request_dir, file_id, data_file),
-                                to.data.frame = TRUE,
-                                use.value.labels = FALSE) %>%
-               rio::export(file.path(roper_request_dir, file_id, paste0(file_id, ".RData")))
-           ))
-})
-}

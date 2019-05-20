@@ -261,50 +261,51 @@ get_surveys <- function(vars,
   }
 
 # UK Data Service
-ukds_ds <- ds %>%
-  filter(archive == "ukds")
-ukds_sp <- ukds_ds %>%
-  select(surv_program) %>%
-  unique() %>%
-  unlist()
-walk(ukds_sp, function(sp) {
-  ukds_sp_files <- ukds_ds %>%
-    filter(surv_program == sp) %>%
-    select(file_id) %>%
-    unlist()
-  ukds::ukds_download(file_id = ukds_sp_files,
-                              download_dir = file.path("../data/dcpo_surveys/ukds_files",
-                                                       paste0(sp, "_files")))
-})
+# ukds_ds <- ds %>%
+#   filter(archive == "ukds")
+# ukds_sp <- ukds_ds %>%
+#   select(surv_program) %>%
+#   unique() %>%
+#   unlist()
+# walk(ukds_sp, function(sp) {
+#   ukds_sp_files <- ukds_ds %>%
+#     filter(surv_program == sp) %>%
+#     select(file_id) %>%
+#     unlist()
+#   ukds::ukds_download(file_id = ukds_sp_files,
+#                               download_dir = file.path("../data/dcpo_surveys/ukds_files",
+#                                                        paste0(sp, "_files")))
+# })
 
+  # Poland GSS
+  pgss_ds <- ds %>%
+    filter(survey == "pgss")
+  if (nrow(pgss_ds > 0)) {
+    dir.create(pgss_ds$new_dir, recursive = TRUE, showWarnings = FALSE)
 
+    login_link <- "http://www.ads.org.pl/log.php?id=91"
+    s <- html_session(login_link)
+    s1 <- html_form(s)[[1]] %>%
+      set_values(log = getOption("ads_login"),
+                 pas = getOption("ads_password"))
+    s2 <- submit_form(s, s1) %>%
+      jump_to("http://www.ads.org.pl/dnldal.php?id=91&nazwa=P0091SAV.zip")
 
-# Poland GSS
-pgss_dir <- "../data/dcpo_surveys/misc_files/pgss_files/pgss"
-dir.create(pgss_dir, recursive = TRUE, showWarnings = FALSE)
+    file_dir <- file.path(pgss_ds$new_dir, "P0091SAV.zip")
+    writeBin(httr::content(s2$response, "raw"), file_dir)
 
-login_link <- "http://www.ads.org.pl/log.php?id=91"
-s <- html_session(login_link)
-s1 <- html_form(s)[[1]] %>%
-  set_values(log = getOption("ads_login"),
-             pas = getOption("ads_password"))
-s2 <- submit_form(s, s1) %>%
-  jump_to("http://www.ads.org.pl/dnldal.php?id=91&nazwa=P0091SAV.zip")
-
-file_dir <- file.path(pgss_dir, "P0091SAV.zip")
-writeBin(httr::content(s2$response, "raw"), file_dir)
-
-unzip(file_dir, exdir = pgss_dir)
-unlink(file_dir)
-data_file <- list.files(path = pgss_dir) %>%
-  str_subset("\\.sav") %>%
-  last()
-suppressWarnings(
-  foreign::read.spss(file.path(pgss_dir, data_file),
-                     to.data.frame = TRUE,
-                     use.value.labels = FALSE) %>%
-    rio::export(paste0(tools::file_path_sans_ext(file.path(pgss_dir, data_file)), ".RData"))
-)
+    unzip(file_dir, exdir = pgss_ds$new_dir)
+    unlink(file_dir)
+    data_file <- list.files(path = pgss_ds$new_dir) %>%
+      str_subset("\\.sav") %>%
+      last()
+    suppressWarnings(
+      foreign::read.spss(file.path(pgss_ds$new_dir, data_file),
+                         to.data.frame = TRUE,
+                         use.value.labels = FALSE) %>%
+        rio::export(paste0(tools::file_path_sans_ext(file.path(pgss_ds$new_dir, data_file)), ".RData"))
+    )
+  }
 
 
 # WVS

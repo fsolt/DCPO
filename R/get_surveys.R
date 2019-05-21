@@ -281,7 +281,8 @@ get_surveys <- function(vars,
   pgss_ds <- ds %>%
     filter(survey == "pgss")
   if (nrow(pgss_ds > 0)) {
-    dir.create(pgss_ds$new_dir, recursive = TRUE, showWarnings = FALSE)
+    new_dir <- pgss_ds$new_dir[1]
+    dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
 
     login_link <- "http://www.ads.org.pl/log.php?id=91"
     s <- html_session(login_link)
@@ -291,88 +292,92 @@ get_surveys <- function(vars,
     s2 <- submit_form(s, s1) %>%
       jump_to("http://www.ads.org.pl/dnldal.php?id=91&nazwa=P0091SAV.zip")
 
-    file_dir <- file.path(pgss_ds$new_dir, "P0091SAV.zip")
+    file_dir <- file.path(new_dir, "P0091SAV.zip")
     writeBin(httr::content(s2$response, "raw"), file_dir)
 
-    unzip(file_dir, exdir = pgss_ds$new_dir)
+    unzip(file_dir, exdir = new_dir)
     unlink(file_dir)
-    data_file <- list.files(path = pgss_ds$new_dir) %>%
+    data_file <- list.files(path = new_dir) %>%
       str_subset("\\.sav") %>%
       last()
     suppressWarnings(
-      foreign::read.spss(file.path(pgss_ds$new_dir, data_file),
+      foreign::read.spss(file.path(new_dir, data_file),
                          to.data.frame = TRUE,
                          use.value.labels = FALSE) %>%
-        rio::export(paste0(tools::file_path_sans_ext(file.path(pgss_ds$new_dir, data_file)), ".RData"))
+        rio::export(paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
     )
   }
 
 
-# WVS
-dl_dir <- file.path("../data/dcpo_surveys",
-                    "misc_files",
-                    "wvs_files")
-new_dir <- file.path(dl_dir, "wvs_combo")
-dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-nd_old <- list.files(new_dir)
+  # WVS
+  wvs_ds <- ds %>%
+    filter(survey == "wvs_combo")
+  if (nrow(wvs_ds > 0)) {
+    new_dir <- wvs_ds$new_dir[1]
 
-fprof <- RSelenium::makeFirefoxProfile(list(
-  browser.download.dir = file.path(getwd(), new_dir),
-  browser.download.folderList = 2L,
-  browser.download.manager.showWhenStarting = FALSE,
-  browser.helperApps.neverAsk.saveToDisk = "application/x-zip-compressed"))
+    # build path to chrome's default download directory
+    if (Sys.info()[["sysname"]]=="Linux") {
+      default_dir <- file.path("home", Sys.info()[["user"]], "Downloads")
+    } else {
+      default_dir <- file.path("", "Users", Sys.info()[["user"]], "Downloads")
+    }
 
-wvs_page <- "http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp"
-rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
-remDr <- rD[["client"]]
-remDr$navigate(wvs_page)
-webElem <- remDr$findElement(using = "tag name", "body")
-webElem$clickElement()
-webElem$sendKeysToElement(list(key = "end"))
-elem <- remDr$findElements(using = "tag name", "iframe")
-remDr$switchToFrame(elem[[3]])
-elem1 <- remDr$findElements(using = "tag name", "iframe")
-remDr$switchToFrame(elem1[[1]])
-remDr$findElement(using = "link text",
-                  "WVS_Longitudinal_1981-2014_stata_dta_v_2015_04_18")$clickElement()
-Sys.sleep(3)
-remDr$findElement(using = "name", "LINOMBRE")$sendKeysToElement(list(getOption("pew_name")))
-remDr$findElement(using = "name", "LIEMPRESA")$sendKeysToElement(list(getOption("pew_org")))
-remDr$findElement(using = "name", "LIEMAIL")$sendKeysToElement(list(getOption("pew_email")))
-acad_proj <- "a"
-remDr$findElement(using = 'xpath', "//select")$sendKeysToElement(list(acad_proj))
-webElem <- remDr$findElement(using = "tag name", "body")
-webElem$clickElement()
-webElem$sendKeysToElement(list(key = "end"))
-remDr$findElement(using = "name", "LIAGREE")$clickElement()
-remDr$findElement(using = "class", "AJDocumentDownloadBtn")$clickElement()
-remDr$acceptAlert()
+    # create target directory if necessary
+    dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+    nd_old <- list.files(new_dir)
 
-# check that download has completed
-nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-wait <- TRUE
-tryCatch(
-  while(all.equal(str_detect(nd_new, "\\.part$"), logical(0))) {
-    Sys.sleep(1)
-    nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-  }, error = function(e) 1 )
-while(any(str_detect(nd_new, "\\.part$"))) {
-  Sys.sleep(1)
-  nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-}
+    # get list of current default download directory contents
+    dd_old <- list.files(default_dir)
 
-# unzip and convert to .RData
-dl_file <- list.files(new_dir, ".zip$")
-unzip(file.path(new_dir, dl_file), exdir = new_dir)
-unlink(file.path(new_dir, dl_file))
-data_file <- list.files(path = new_dir) %>%
-  str_subset("\\.dta") %>%
-  last()
-rio::convert(file.path(new_dir, data_file),
-        paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+    wvs_page <- "http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp"
+    rD <- RSelenium::rsDriver(browser = "chrome")
+    remDr <- rD[["client"]]
+    remDr$navigate(wvs_page)
+    webElem <- remDr$findElement(using = "tag name", "body")
+    webElem$clickElement()
+    webElem$sendKeysToElement(list(key = "end"))
+    elem <- remDr$findElements(using = "tag name", "iframe")
+    remDr$switchToFrame(elem[[2]])
+    elem1 <- remDr$findElements(using = "tag name", "iframe")
+    remDr$switchToFrame(elem1[[1]])
+    remDr$findElement(using = "partial link text", "stata")$clickElement()
+    Sys.sleep(3)
+    remDr$findElement(using = "name", "LINOMBRE")$sendKeysToElement(list(getOption("pew_name")))
+    remDr$findElement(using = "name", "LIEMPRESA")$sendKeysToElement(list(getOption("pew_org")))
+    remDr$findElement(using = "name", "LIEMAIL")$sendKeysToElement(list(getOption("pew_email")))
+    acad_proj <- "a"
+    remDr$findElement(using = 'xpath', "//select")$sendKeysToElement(list(acad_proj))
+    webElem <- remDr$findElement(using = "tag name", "body")
+    webElem$clickElement()
+    webElem$sendKeysToElement(list(key = "end"))
+    remDr$findElement(using = "name", "LIAGREE")$clickElement()
+    remDr$findElement(using = "class", "AJDocumentDownloadBtn")$clickElement()
+    remDr$acceptAlert()
 
-remDr$close()
-rD[["server"]]$stop()
+    # check that download has completed
+    dd_new <- list.files(default_dir)[!list.files(default_dir) %in% dd_old]
+    wait <- TRUE
+    tryCatch(
+      while(all.equal(stringr::str_detect(dd_new, "\\.part$"), logical(0))) {
+        Sys.sleep(1)
+        dd_new <- list.files(default_dir)[!list.files(default_dir) %in% dd_old]
+      }, error = function(e) 1 )
+    while(any(stringr::str_detect(dd_new, "\\.crdownload$"))) {
+      Sys.sleep(1)
+      dd_new <- list.files(default_dir)[!list.files(default_dir) %in% dd_old]
+    }
+
+    # unzip into specified directory and convert to .RData
+    unzip(file.path(default_dir, dd_new), exdir = file.path(new_dir))
+    unlink(file.path(default_dir, dd_new))
+
+    data_file <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
+    haven::read_dta(file.path(new_dir, data_file), encoding = "latin1") %>%
+      rio::export(file.path(new_dir, paste0(wvs_ds$survey[1], ".RData")))
+
+    remDr$close()
+    rD[["server"]]$stop()
+  }
 
 
 # LatinoBarometro

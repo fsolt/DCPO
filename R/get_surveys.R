@@ -322,12 +322,12 @@ get_surveys <- function(vars,
       default_dir <- file.path("", "Users", Sys.info()[["user"]], "Downloads")
     }
 
+    # get list of current default download directory contents
+    dd_old <- list.files(default_dir)
+
     # create target directory if necessary
     dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
     nd_old <- list.files(new_dir)
-
-    # get list of current default download directory contents
-    dd_old <- list.files(default_dir)
 
     wvs_page <- "http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp"
     rD <- RSelenium::rsDriver(browser = "chrome")
@@ -380,64 +380,73 @@ get_surveys <- function(vars,
   }
 
 
-# LatinoBarometro
-walk2(c(2015, 2013, 2011:2000, 1998:1995), 2:19, function(file_year, li_no) {
-    dl_dir <- file.path("../data/dcpo_surveys",
-                      "misc_files",
-                      "lb_files")
-  new_dir <- file.path(dl_dir, paste0("lb", file_year))
-  dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-  nd_old <- list.files(new_dir)
+  # LatinoBarometro
+  lb_ds <- ds %>%
+    filter(surv_program == "lb")
+  if (nrow(lb_ds) > 0) {
+    pwalk(lb_ds, function(year, dl_dir, new_dir, li_no, ...) {
 
-  fprof <- RSelenium::makeFirefoxProfile(list(
-    browser.download.dir = file.path(getwd(), new_dir),
-    browser.download.folderList = 2L,
-    browser.download.manager.showWhenStarting = FALSE,
-    browser.helperApps.neverAsk.saveToDisk = "application/x-zip-compressed"))
+      # build path to chrome's default download directory
+      if (Sys.info()[["sysname"]]=="Linux") {
+        default_dir <- file.path("home", Sys.info()[["user"]], "Downloads")
+      } else {
+        default_dir <- file.path("", "Users", Sys.info()[["user"]], "Downloads")
+      }
 
-  lb_link <- "http://www.latinobarometro.org/latContents.jsp"
-  rD <- RSelenium::rsDriver(browser = "firefox", extraCapabilities = fprof)
-  remDr <- rD[["client"]]
+      # get list of current default download directory contents
+      dd_old <- list.files(default_dir)
 
-  # download file
-  remDr$navigate(lb_link)
-  remDr$findElement(using = "css selector", "#left_column_content li:nth-child(2) a")$clickElement()
-  Sys.sleep(3)
-  css_selector <- paste0("li:nth-child(",li_no,") a:nth-child(", 3+(between(li_no, 12, 18)), ")")
-  remDr$findElement(using = "css selector", css_selector)$clickElement()
-  Sys.sleep(3)
-  if (file_year!=2015) {
-    remDr$findElement(using = "name", "FANOMBRE")$sendKeysToElement(list(getOption("pew_name")))
-    remDr$findElement(using = "name", "FAEMPRESA")$sendKeysToElement(list(getOption("pew_org")))
-    remDr$findElement(using = "name", "FAEMAIL")$sendKeysToElement(list(getOption("pew_email")))
-    proj_acad <- "p"
-    remDr$findElement(using = 'xpath', "//select")$sendKeysToElement(list(proj_acad))
-    remDr$findElement(using = "name", "FAAGREE")$clickElement()
-    remDr$findElement(using = "class", "LATBoton")$clickElement()
-    Sys.sleep(3)
-    remDr$findElement(using = "class", "LATBoton")$clickElement()
-  }
+      # create target directory if necessary
+      dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
+      nd_old <- list.files(new_dir)
 
-  # check that download has completed
-  nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-  wait <- TRUE
-  tryCatch(
-    while(all.equal(str_detect(nd_new, "\\.part$"), logical(0))) {
-      Sys.sleep(1)
-      nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-    }, error = function(e) 1 )
-  while(any(str_detect(nd_new, "\\.part$"))) {
-    Sys.sleep(1)
-    nd_new <- list.files(new_dir)[!list.files(new_dir) %in% nd_old]
-  }
+      lb_link <- "http://www.latinobarometro.org/latContents.jsp"
+      rD <- RSelenium::rsDriver(browser = "chrome")
+      remDr <- rD[["client"]]
 
-  # unzip and convert to .RData
-  dl_file <- list.files(new_dir, ".zip$")
-  unzip(file.path(new_dir, dl_file), exdir = new_dir)
-  unlink(file.path(new_dir, dl_file))
-  data_file <- list.files(path = new_dir) %>%
-    str_subset(".*[Ee]ng.*\\.dta") %>%
-    last()
+      # download file
+      remDr$navigate(lb_link)
+      remDr$findElement(using = "link text", "Banco de Datos")$clickElement()
+      Sys.sleep(3)
+      remDr$findElement(using = "css selector", paste0("a[href*='", year, "_dta", "']"))$clickElement()
+      Sys.sleep(3)
+      if (file_year<=2015) {
+        remDr$findElement(using = "name", "FANOMBRE")$sendKeysToElement(list(getOption("pew_name")))
+        remDr$findElement(using = "name", "FAEMPRESA")$sendKeysToElement(list(getOption("pew_org")))
+        remDr$findElement(using = "name", "FAEMAIL")$sendKeysToElement(list(getOption("pew_email")))
+        proj_acad <- "p"
+        remDr$findElement(using = 'xpath', "//select")$sendKeysToElement(list(proj_acad))
+        remDr$findElement(using = "name", "FAAGREE")$clickElement()
+        remDr$findElement(using = "class", "LATBoton")$clickElement()
+        Sys.sleep(3)
+        remDr$findElement(using = "class", "LATBoton")$clickElement()
+      }
+
+      # check that download has completed
+      dd_new <- list.files(default_dir)[!list.files(default_dir) %in% dd_old]
+      wait <- TRUE
+      tryCatch(
+        while(all.equal(stringr::str_detect(dd_new, "\\.part$"), logical(0))) {
+          Sys.sleep(1)
+          dd_new <- list.files(default_dir)[!list.files(default_dir) %in% dd_old]
+        }, error = function(e) 1 )
+      while(any(stringr::str_detect(dd_new, "\\.crdownload$"))) {
+        Sys.sleep(1)
+        dd_new <- list.files(default_dir)[!list.files(default_dir) %in% dd_old]
+      }
+
+
+      # unzip into specified directory and convert to .RData
+      unzip(file.path(default_dir, dd_new), exdir = file.path(new_dir))
+      unlink(file.path(default_dir, dd_new))
+
+      data_file <- list.files(path = new_dir) %>%
+        str_subset(".*[Ee]ng.*\\.dta") %>%
+        last()
+      haven::read_dta(file.path(new_dir, data_file), encoding = "latin1") %>%
+        rio::export(paste0(tools::file_path_sans_ext(file.path(new_dir, data_file), ".RData"))
+
+
   rio::convert(file.path(new_dir, data_file),
           paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
 

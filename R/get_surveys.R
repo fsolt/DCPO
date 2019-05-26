@@ -226,8 +226,14 @@ get_surveys <- function(vars,
         janitor::clean_names() %>%
         select(label, id)
       walk2(dataverse_ids$label, dataverse_ids$id, function(name, id) {
-        name2 <- ifelse(tools::file_ext(name) == "tab", paste0(tools::file_path_sans_ext(name), ".dta"), name)
-        f <- dataverse::get_file(file = id, dataset = datverse_doi)
+        name2 <- ifelse(!(any(str_detect(dataverse_ids$label, "dta"))) & tools::file_ext(name) == "tab",
+                        paste0(tools::file_path_sans_ext(name), ".dta"),
+                        name)
+        if (file_id == "autnes2017") {
+          f <- dataverse::get_file(file = id, dataset = datverse_doi, key = Sys.getenv("AUSSDA_KEY"))
+        } else {
+          f <- dataverse::get_file(file = id, dataset = datverse_doi)
+        }
         writeBin(as.vector(f), file.path(new_dir, name2))
       })
       data_file <- list.files(path = new_dir) %>% str_subset("dta") %>% last()
@@ -246,8 +252,7 @@ get_surveys <- function(vars,
 
   # Misc
   misc_ds <- ds %>%
-    filter(archive == "misc" & !(is.na(data_link)) &
-             !(survey=="autnes2017"))
+    filter(archive == "misc" & !(is.na(data_link)))
   if (nrow(misc_ds > 0)) {
     pwalk(misc_ds, function(new_dir, data_link, cb_link, ...) {
       dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)

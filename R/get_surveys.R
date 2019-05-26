@@ -28,6 +28,7 @@
 #' @importFrom haven read_por
 #' @importFrom foreign read.spss
 #' @importFrom tools file_ext file_path_sans_ext
+#' @importFrom utils unzip
 #'
 #' @export
 
@@ -49,9 +50,11 @@ get_surveys <- function(vars,
                               paste0(archive, "_files"),
                               paste0(surv_program, "_files")),
            new_dir = file.path(dl_dir, file_id),
-           file_exists = list.files(path = new_dir) %>%
+           file_exists = purrr::map_lgl(new_dir, function(x) {
+             list.files(path = x) %>%
              str_subset(".RData") %>%
-             length() > 0) %>%
+             length() > 0
+           })) %>%
     filter(!file_exists)
 
   # Gesis
@@ -215,31 +218,43 @@ get_surveys <- function(vars,
   if (nrow(dataverse_ds) > 0) {
     pwalk(dataverse_ds, function(file_id, data_link, new_dir, ...) {
       dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
-      dataverse_info <- dataverse::get_dataset(data_link)
+      dataverse_server <- str_extract(data_link, "data[.a-z]*")
+      dataverse_doi <- str_extract(data_link, "(?<=Id=).*$")
+      Sys.setenv("DATAVERSE_SERVER" = dataverse_server)
+      dataverse_info <- dataverse::get_dataset(dataverse_doi)
       dataverse_ids <- dataverse_info$files %>%
         janitor::clean_names() %>%
         select(label, id)
       walk2(dataverse_ids$label, dataverse_ids$id, function(name, id) {
         name2 <- ifelse(tools::file_ext(name) == "tab", paste0(tools::file_path_sans_ext(name), ".dta"), name)
-        f <- dataverse::get_file(file = id, dataset = data_link)
+        f <- dataverse::get_file(file = id, dataset = datverse_doi)
         writeBin(as.vector(f), file.path(new_dir, name2))
       })
       data_file <- list.files(path = new_dir) %>% str_subset("dta") %>% last()
-      haven::read_dta(file.path(new_dir, data_file), encoding = "latin1") %>%
-        rio::export(file.path(new_dir, paste0(file_id, ".RData")))
+      if (file.exists(file.path(new_dir, data_file))) {
+        haven::read_dta(file.path(new_dir, data_file), encoding = "latin1") %>%
+          rio::export(file.path(new_dir, paste0(file_id, ".RData")))
+      } else {
+        zip_file <- list.files(path = new_dir) %>% str_subset("STATA.zip")
+        utils::unzip(file.path(new_dir, zip_file), exdir = new_dir)
+        data_file <- list.files(path = new_dir) %>% str_subset("dta") %>% last()
+        haven::read_dta(file.path(new_dir, data_file), encoding = "latin1") %>%
+          rio::export(file.path(new_dir, paste0(file_id, ".RData")))
+      }
     })
   }
 
   # Misc
   misc_ds <- ds %>%
-    filter(archive == "misc" & !(is.na(data_link)))
+    filter(archive == "misc" & !(is.na(data_link)) &
+             !(survey=="autnes2017"))
   if (nrow(misc_ds > 0)) {
     pwalk(misc_ds, function(new_dir, data_link, cb_link, ...) {
       dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
       dl_file <- str_extract(data_link, "[^//]*$")
       download.file(data_link, file.path(new_dir, dl_file))
       if (str_detect(dl_file, "zip$")) {
-        unzip(file.path(new_dir, dl_file), exdir = new_dir)
+        utils::unzip(file.path(new_dir, dl_file), exdir = new_dir)
         unlink(file.path(new_dir, list.files(new_dir, ".zip")))
       }
       data_file <- list.files(path = new_dir) %>%
@@ -307,7 +322,6 @@ get_surveys <- function(vars,
         rio::export(paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
     )
   }
-
 
   # WVS
   wvs_ds <- ds %>%
@@ -379,12 +393,11 @@ get_surveys <- function(vars,
     rD[["server"]]$stop()
   }
 
-
   # LatinoBarometro
   lb_ds <- ds %>%
     filter(surv_program == "lb")
   if (nrow(lb_ds) > 0) {
-    pwalk(lb_ds, function(year, dl_dir, new_dir, li_no, ...) {
+    pwalk(lb_ds, function(year, survey, dl_dir, new_dir, ...) {
 
       # build path to chrome's default download directory
       if (Sys.info()[["sysname"]]=="Linux") {
@@ -444,91 +457,14 @@ get_surveys <- function(vars,
         str_subset(".*[Ee]ng.*\\.dta") %>%
         last()
       haven::read_dta(file.path(new_dir, data_file), encoding = "latin1") %>%
-        rio::export(paste0(tools::file_path_sans_ext(file.path(new_dir, data_file), ".RData"))
+        rio::export(paste0(file.path(new_dir, survey), ".RData"))
 
+      # close session
+      remDr$close()
+      rD[["server"]]$stop()
+    })
+  }
 
-  rio::convert(file.path(new_dir, data_file),
-          paste0(tools::file_path_sans_ext(file.path(new_dir, data_file)), ".RData"))
+  # TODO: should return dataframe of surveys not downloaded
+}
 
-  # close session
-  remDr$close()
-  rD[["server"]]$stop()
-})
-
-
-# Australian Election Study
-dl_dir <- file.path("../data/dcpo_surveys",
-                    "misc_files",
-                    "aes_files")
-
-aes_page <- "http://www.australianelectionstudy.org/voter_studies.html"
-aes_data_links <- read_html(aes_page) %>%
-  html_nodes(xpath = "//a[contains(.,'Data (SPSS)')]") %>%
-  html_attr("href")
-aes_codebook_links <- read_html(aes_page) %>%
-  html_nodes(xpath = "//a[contains(.,'Codebook')]") %>%
-  html_attr("href")
-walk2(aes_data_links, aes_codebook_links, function(data_link, codebook_link) {
-  file_id <- data_link %>%
-    str_replace("^.*/", "") %>%
-    str_replace("\\.sav", "")
-  dir.create(file.path(dl_dir, file_id), recursive = TRUE, showWarnings = FALSE)
-  dl_data <- html_session(aes_page) %>%
-    jump_to(data_link)
-  writeBin(httr::content(dl_data$response, "raw"), file.path(dl_dir, file_id, paste0(file_id, ".sav")))
-
-  tryCatch(
-    {x <- tryCatch(haven::read_por(file.path(dl_dir, file_id, paste0(file_id, ".sav"))),
-                   error = function(e) {
-                     foreign::read.spss(file.path(dl_dir, file_id, paste0(file_id, ".sav")),
-                                        to.data.frame = TRUE,
-                                        use.value.labels = FALSE)
-                   })
-    save(x, file = file.path(dl_dir, file_id, paste0(file_id, ".RData")))},
-    error = function(e) warning(paste("Conversion from .por to .RData failed for", item))
-  )
-
-  dl_cb <- html_session(aes_page) %>%
-    jump_to(codebook_link)
-
-  pdf_file <- paste0(file_id, "_cb.pdf")
-  writeBin(httr::content(dl_cb$response, "raw"), file.path(dl_dir, file_id, pdf_file))
-})
-
-# ANPAS (forerunner to AES)
-dl_dir <- file.path("../data/dcpo_surveys",
-                    "misc_files",
-                    "aes_files")
-aes_page <- "http://www.australianelectionstudy.org/anpas.html"
-aes_data_links <- read_html(aes_page) %>%
-  html_nodes(xpath = "//a[contains(.,'Data (SPSS)')]") %>%
-  html_attr("href")
-aes_codebook_links <- read_html(aes_page) %>%
-  html_nodes(xpath = "//a[contains(.,'Codebook')]") %>%
-  html_attr("href")
-walk2(aes_data_links, aes_codebook_links, function(data_link, codebook_link) {
-  file_id <- data_link %>%
-    str_replace("^.*/", "") %>%
-    str_replace("\\.sav", "")
-  dir.create(file.path(dl_dir, file_id), recursive = TRUE, showWarnings = FALSE)
-  dl_data <- html_session(aes_page) %>%
-    jump_to(data_link)
-  writeBin(httr::content(dl_data$response, "raw"), file.path(dl_dir, file_id, paste0(file_id, ".sav")))
-
-  tryCatch(
-    {x <- tryCatch(haven::read_por(file.path(dl_dir, file_id, paste0(file_id, ".sav"))),
-                   error = function(e) {
-                     foreign::read.spss(file.path(dl_dir, file_id, paste0(file_id, ".sav")),
-                                        to.data.frame = TRUE,
-                                        use.value.labels = FALSE)
-                   })
-    save(x, file = file.path(dl_dir, file_id, paste0(file_id, ".RData")))},
-    error = function(e) warning(paste("Conversion from .por to .RData failed for", item))
-  )
-
-  dl_cb <- html_session(aes_page) %>%
-    jump_to(codebook_link)
-
-  pdf_file <- paste0(file_id, "_cb.pdf")
-  writeBin(httr::content(dl_cb$response, "raw"), file.path(dl_dir, file_id, pdf_file))
-})

@@ -5,5 +5,5 @@
 ^dev/.*$
 cleanup*
 ^\.travis\.yml$
-R/get_data.R
+R/get_surveys.R
 ^data-raw$

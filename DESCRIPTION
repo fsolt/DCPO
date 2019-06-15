@@ -23,7 +23,17 @@ Imports:
   labelled, 
   stringr,
   bayesplot,
-  forcats
+  forcats,
+  foreign,
+  haven,
+  janitor,
+  purrr,
+  rvest,
+  RSelenium,
+  gesis,
+  icpsrdata,
+  pewdata,
+  ropercenter
 LinkingTo: 
   StanHeaders (>= 2.18.0),
   rstan (>= 2.18.1),

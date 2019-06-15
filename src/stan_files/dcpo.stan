@@ -30,8 +30,8 @@ parameters {
   ordered[R-1] raw_beta[Q];         // response difficulty (before fixed_cutp)
   vector<lower=0>[1] sd_theta_N01;  // standard normal
   vector<lower=0>[1] sd_theta_IG;   // inverse-gamma
-  vector<lower=0>[K] sd_raw_bar_theta_evolve_N01; // standard normal
-  vector<lower=0>[K] sd_raw_bar_theta_evolve_IG;  // inverse-gamma
+  vector<lower=0> sd_raw_bar_theta_evolve_N01;  // standard normal
+  vector[K] sd_raw_bar_theta_evolve_N01_kk;     // standard normal by country
   real<lower=0> B_cut;              // slope for cutpoint prior
 }
 
@@ -41,7 +41,7 @@ transformed parameters {
   real bar_theta[T, K];         // country means (on [0, 1] scale)
   ordered[R-1] beta[Q];         // response difficulty
   vector[1] sd_theta;           // SD of theta
-  vector[K] sd_raw_bar_theta_evolve;   // country-specific transition SD of theta
+  vector<lower=0>[K] sd_raw_bar_theta_evolve;   // country-specific transition SD of theta
   cov_matrix[1] Sigma_theta;    // variance of theta
   // Assignments
   sd_theta = sd_theta_N01 .* sqrt(sd_theta_IG); // sd_theta ~ cauchy(0, 1);
@@ -49,7 +49,7 @@ transformed parameters {
   for (k in 1:K) {
     // sd_raw_bar_theta_evolve[k] ~ cauchy(0, 1);
     sd_raw_bar_theta_evolve[k] =
-      sd_raw_bar_theta_evolve_N01[k] .* sqrt(sd_raw_bar_theta_evolve_IG[k]);
+      sd_raw_bar_theta_evolve_N01 + sd_raw_bar_theta_evolve_N01_kk[k]*.1;
   }
   for (q in 1:Q) {
     for (r in 1:(R-1)) {
@@ -92,8 +92,8 @@ model {
   to_array_1d(alpha) ~ normal(0, 10);
   sd_theta_N01 ~ normal(0, 1);                      // sd_theta ~ cauchy(0, 1);
   sd_theta_IG ~ inv_gamma(0.5, 0.5);                // ditto
-  sd_raw_bar_theta_evolve_N01 ~ normal(0, 1);       // ditto
-  sd_raw_bar_theta_evolve_IG ~ inv_gamma(0.5, 0.5); // ditto
+  sd_raw_bar_theta_evolve_N01 ~ normal(0, 1);       // constant component
+  sd_raw_bar_theta_evolve_N01_kk ~ normal(0, 1);    // by-country component
   B_cut ~ normal(0, 1);
   // Likelihood
   for (r in 1:R) {

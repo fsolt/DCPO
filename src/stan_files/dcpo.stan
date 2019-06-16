@@ -47,9 +47,9 @@ transformed parameters {
   sd_theta = sd_theta_N01 .* sqrt(sd_theta_IG); // sd_theta ~ cauchy(0, 1);
   Sigma_theta = diag_matrix(sd_theta .* sd_theta);
   for (k in 1:K) {
-    // sd_raw_bar_theta_evolve[k] ~ cauchy(0, 1);
+    // sd_raw_bar_theta_evolve[k] via normal(0, 1) constant and normal(0, .2) country-level term;
     sd_raw_bar_theta_evolve[k] =
-      sd_raw_bar_theta_evolve_N01 + sd_raw_bar_theta_evolve_N01_kk[k]*.1;
+      sd_raw_bar_theta_evolve_N01 + sd_raw_bar_theta_evolve_N01_kk[k] * .2;
   }
   for (q in 1:Q) {
     for (r in 1:(R-1)) {
@@ -92,8 +92,8 @@ model {
   to_array_1d(alpha) ~ normal(0, 10);
   sd_theta_N01 ~ normal(0, 1);                      // sd_theta ~ cauchy(0, 1);
   sd_theta_IG ~ inv_gamma(0.5, 0.5);                // ditto
-  sd_raw_bar_theta_evolve_N01 ~ normal(0, 1);       // constant component
-  sd_raw_bar_theta_evolve_N01_kk ~ normal(0, 1);    // by-country component
+  sd_raw_bar_theta_evolve_N01 ~ normal(0, 1);       // constant term
+  sd_raw_bar_theta_evolve_N01_kk ~ normal(0, 1);    // country-level term
   B_cut ~ normal(0, 1);
   // Likelihood
   for (r in 1:R) {

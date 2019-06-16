@@ -88,8 +88,8 @@ model {
       raw_beta[q][r] ~ normal(priormean, 1);
     }
   }
-  to_array_1d(raw_bar_theta_N01[1:T, 1:K]) ~ normal(0, 1);
-  to_array_1d(alpha[1:Q, 1]) ~ normal(0, 10);
+  to_array_1d(raw_bar_theta_N01) ~ normal(0, 1);
+  to_array_1d(alpha) ~ normal(0, 10);
   sd_theta_N01 ~ normal(0, 1);                      // sd_theta ~ cauchy(0, 1);
   sd_theta_IG ~ inv_gamma(0.5, 0.5);                // ditto
   sd_raw_bar_theta_evolve_N01 ~ normal(0, 1);       // constant term

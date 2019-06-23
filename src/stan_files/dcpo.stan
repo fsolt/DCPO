@@ -25,14 +25,13 @@ data {
 }
 
 parameters {
-  real raw_bar_theta_N01[T, K];     // country means (on N(0,1) scale, without random walk)
+  real raw_bar_theta_N01[T, K];   // country means (on N(0,1) scale, without random walk)
   real<lower=0> alpha[Q, 1];      // question discrimination
-  ordered[R-1] raw_beta[Q];         // response difficulty (before fixed_cutp)
-  vector<lower=0>[1] sd_theta_N01;  // standard normal
-  vector<lower=0>[1] sd_theta_IG;   // inverse-gamma
+  ordered[R-1] raw_beta[Q];       // response difficulty (before fixed_cutp)
+  vector<lower=0>[1] sd_theta;    // standard normal
   real<lower=0> sd_raw_bar_theta_evolve_N01;  // standard normal
   vector[K] sd_raw_bar_theta_evolve_N01_kk;   // standard normal by country
-  real<lower=0> B_cut;              // slope for cutpoint prior
+  real<lower=0> B_cut;            // slope for cutpoint prior
 }
 
 transformed parameters {
@@ -40,11 +39,9 @@ transformed parameters {
   real raw_bar_theta[T, K];     // country means (on N(0,1) scale, with random walk)
   real bar_theta[T, K];         // country means (on [0, 1] scale)
   ordered[R-1] beta[Q];         // response difficulty
-  vector[1] sd_theta;           // SD of theta
   vector<lower=0>[K] sd_raw_bar_theta_evolve;   // country-specific transition SD of theta
   cov_matrix[1] Sigma_theta;    // variance of theta
   // Assignments
-  sd_theta = sd_theta_N01 .* sqrt(sd_theta_IG); // sd_theta ~ cauchy(0, 1);
   Sigma_theta = diag_matrix(sd_theta .* sd_theta);
   for (k in 1:K) {
     // sd_raw_bar_theta_evolve[k] via normal(0, 1) constant and normal(0, .2) country-level term;
@@ -88,13 +85,12 @@ model {
       raw_beta[q][r] ~ normal(priormean, 1);
     }
   }
-  to_array_1d(raw_bar_theta_N01) ~ normal(0, 1);
+  to_array_1d(raw_bar_theta_N01) ~ std_normal();
   to_array_1d(alpha) ~ normal(0, 10);
-  sd_theta_N01 ~ normal(0, 1);                      // sd_theta ~ cauchy(0, 1);
-  sd_theta_IG ~ inv_gamma(0.5, 0.5);                // ditto
-  sd_raw_bar_theta_evolve_N01 ~ normal(0, 1);       // constant term
-  sd_raw_bar_theta_evolve_N01_kk ~ normal(0, 1);    // country-level term
-  B_cut ~ normal(0, 1);
+  sd_theta ~ std_normal();
+  sd_raw_bar_theta_evolve_N01 ~ std_normal();       // constant term
+  sd_raw_bar_theta_evolve_N01_kk ~ std_normal();    // country-level term
+  B_cut ~ std_normal();
   // Likelihood
   for (r in 1:R) {
     for (q in 1:Q) {

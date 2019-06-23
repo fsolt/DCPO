@@ -177,7 +177,12 @@ dcpo_setup <- function(vars,
     }
 
     # Get variable of interest
-    t_data$target <- with(t_data, as.numeric(get(v$variable) %>% stringr::str_trim()))
+    if (length(unlist(strsplit(ds$wt, split = " ")))) == 1 {
+      t_data$target <- with(t_data, as.numeric(get(v$variable) %>% stringr::str_trim()))
+    } else {
+      t_data <- t_data %>%
+        mutate(target = eval(parse(text = test_variable)))
+    }
     vals <- eval(parse(text = v$values))
     t_data$target <- if_else(t_data$target %in% vals, t_data$target, NA_real_)
     options(warn = 2)

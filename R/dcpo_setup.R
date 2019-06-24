@@ -112,7 +112,7 @@ dcpo_setup <- function(vars,
       t_data$y_dcpo <- if (!is.na(ds$year_dict)) { # if there's a year dictionary...
         t_data[[ds$country_var]] %>%
           labelled::labelled(., attr(., "labels")) %>%
-          to_factor(levels = "labels") %>%
+          labelled::to_factor(levels = "labels") %>%
           as.character() %>%
           countrycode("orig", "year", custom_dict = eval(parse(text = ds$year_dict)))
       } else if (!is.na(ds$year_var)) { # if there's a year variable...
@@ -137,7 +137,7 @@ dcpo_setup <- function(vars,
         } else if (ds$survey == "cdcee" | ds$survey == "eqls") {
           suppressWarnings(
             t_data[[ds$year_var]] %>%
-              labelled(., attr(., "labels")) %>%
+              labelled::labelled(., attr(., "labels")) %>%
               labelled::to_character(levels = "prefixed") %>%
               stringr::str_extract("\\d{4}")
           )
@@ -145,7 +145,7 @@ dcpo_setup <- function(vars,
           t_data[[ds$year_var]]
         } else { # single-wave cross-national surveys with interviews bleeding over years
           t_data %>%
-            mutate(year = ifelse(between(t_data[[ds$year_var]],
+            mutate(year = if_else(between(as.numeric(t_data[[ds$year_var]]),
                                          1950, as.numeric(stringr::str_extract(Sys.Date(), "\\d{4}"))),
                                  t_data[[ds$year_var]],
                                  stringr::str_extract(ds$survey, "\\d{4}") %>% as.numeric()),
@@ -177,11 +177,11 @@ dcpo_setup <- function(vars,
     }
 
     # Get variable of interest
-    if (length(unlist(strsplit(ds$wt, split = " ")))) == 1 {
+    if (length(unlist(strsplit(v$variable, split = " "))) == 1) {
       t_data$target <- with(t_data, as.numeric(get(v$variable) %>% stringr::str_trim()))
     } else {
       t_data <- t_data %>%
-        mutate(target = eval(parse(text = test_variable)))
+        mutate(target = eval(parse(text = v$variable)))
     }
     vals <- eval(parse(text = v$values))
     t_data$target <- if_else(t_data$target %in% vals, t_data$target, NA_real_)
@@ -209,7 +209,9 @@ dcpo_setup <- function(vars,
     rm(vars1)
   }
 
+  suppressWarnings(
   all_data <- bind_rows(all_sets)
+  )
   rm(list = c("t_data", "ds", "v"))
 
   all_data2 <- all_data %>%
@@ -225,7 +227,7 @@ dcpo_setup <- function(vars,
 
   # Chime
   if(chime) {
-    beep()
+    beepr::beep()
   }
 
   if(file!="") {

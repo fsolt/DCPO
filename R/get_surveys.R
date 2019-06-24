@@ -38,7 +38,7 @@ get_surveys <- function(vars,
                         chime = TRUE) {
   if ("data.frame" %in% class(vars)) {
     vars_table <- vars
-  } else if (file.exists(vars)) {
+  } else if (file.exists(vars[1])) {
     vars_table <- readr::read_csv(vars, col_types = "cccc")
   } else {
     vars_table <- tibble(survey = vars)

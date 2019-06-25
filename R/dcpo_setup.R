@@ -19,6 +19,7 @@
 #' @importFrom rio import
 #' @importFrom forcats fct_relabel
 #' @importFrom labelled labelled to_character to_factor
+#' @importFrom lubridate year
 #' @importFrom stringr str_detect str_subset str_extract str_replace str_to_lower str_trim
 #'
 #' @export
@@ -143,12 +144,20 @@ dcpo_setup <- function(vars,
           )
         } else if (ds$survey == "amb_combo") {
           t_data[[ds$year_var]]
-        } else { # single-wave cross-national surveys with interviews bleeding over years
+        } else if (ds$surv_program == "afrob") { # single-wave cross-national surveys with interviews bleeding over years
+          t_data %>%
+            mutate(year = lubridate::year(t_data[[ds$year_var]]),
+                   group_dcpo = c_dcpo) %>%
+            group_by(c_dcpo) %>%
+            mutate(y_dcpo = round(mean(year))) %>%
+            ungroup() %>%
+            .[["y_dcpo"]]
+        } else { # cross-national surveys with interviews bleeding over years
           t_data %>%
             mutate(year = if_else(between(as.numeric(t_data[[ds$year_var]]),
-                                         1950, as.numeric(stringr::str_extract(Sys.Date(), "\\d{4}"))),
-                                 t_data[[ds$year_var]],
-                                 stringr::str_extract(ds$survey, "\\d{4}") %>% as.numeric()),
+                                  1950, as.numeric(lubridate::year(Sys.Date()))),
+                             t_data[[ds$year_var]],
+                             stringr::str_extract(ds$survey, "\\d{4}") %>% as.numeric()),
                    group_dcpo = c_dcpo) %>%
                    {if (!is.na(ds$cy_var))
                      mutate(., group_dcpo = t_data[[ds$cy_var]])

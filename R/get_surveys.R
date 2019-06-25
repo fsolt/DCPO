@@ -254,7 +254,7 @@ get_surveys <- function(vars,
   misc_ds <- ds %>%
     filter(archive == "misc" & !(is.na(data_link)))
   if (nrow(misc_ds > 0)) {
-    pwalk(misc_ds, function(new_dir, data_link, cb_link, ...) {
+    pwalk(misc_ds, function(new_dir, data_link, cb_link, file_id, ...) {
       dir.create(new_dir, recursive = TRUE, showWarnings = FALSE)
       dl_file <- str_extract(data_link, "[^//]*$")
       download.file(data_link, file.path(new_dir, dl_file))

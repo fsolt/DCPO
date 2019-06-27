@@ -91,11 +91,11 @@ get_surveys <- function(vars,
   icpsr_ds <- ds %>%
     filter(archive == "icpsr")
   if (nrow(icpsr_ds) > 0) {
-    pwalk(gesis_ds, function(file_id, dl_dir, read_ascii_args, wt, ...) {
+    pwalk(icpsr_ds, function(file_id, dl_dir, read_ascii_args, wt, ...) {
       icpsr_id <- file_id %>% str_replace("ICPSR_", "") %>% as.numeric(file_id)
       icpsrdata::icpsr_download(icpsr_id, download_dir = dl_dir)
-      new_dir <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)))
-      new_dir2 <- file.path(dl_dir, paste0("ICPSR_", file_id %>% sprintf("%05d", .)), "DS0001")
+      new_dir <- file.path(dl_dir, paste0("ICPSR_", icpsr_id %>% sprintf("%05d", .)))
+      new_dir2 <- file.path(dl_dir, paste0("ICPSR_", icpsr_id %>% sprintf("%05d", .)), "DS0001")
       data_file <- list.files(path = new_dir2) %>% str_subset("\\.dta") %>% last()
       if (is.na(data_file)) {
         data_file <- list.files(path = new_dir2) %>%

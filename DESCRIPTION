@@ -27,6 +27,7 @@ Imports:
   foreign,
   haven,
   janitor,
+  lubridate,
   purrr,
   rvest,
   RSelenium,

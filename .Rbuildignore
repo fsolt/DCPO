@@ -7,3 +7,4 @@ cleanup*
 ^\.travis\.yml$
 R/get_surveys.R
 ^data-raw$
+^\.travis\.yml$

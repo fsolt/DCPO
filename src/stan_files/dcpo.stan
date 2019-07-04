@@ -17,28 +17,29 @@ parameters{
   real<lower=0> sigma_delta;	        // question-country intercept error variance
   vector[Q] beta;           			    // item difficulty component
   vector<lower=0>[Q] alpha;        		// item discrimination
-  matrix[T, K] theta_raw; 	          // public opinion, before transition model
+  row_vector[K] raw_theta_N01[T]; 	  // public opinion, before transition model, std normal scale
   vector[P] delta_raw;					      // question-country intercepts
   row_vector[K] theta_init;				    // initial latent traits for first year
   real<lower=0> phi;					        // dispersion parameter
 }
 
 transformed parameters{
-  matrix[T, K] theta; 	              // public opinion
+  row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
+  // matrix[T, K] theta; 	              // public opinion, after transition model, on [0, 1] scale
   vector[N] theta_tt_kk;				      // N-vector for expanded theta vales
   vector<lower=0,upper=1>[N] eta;     // fitted values, on logit scale
   vector[P] delta;						        // item-country difficulty component
   vector<lower=0>[N] a;					      // beta-binomial alpha parameter
   vector<lower=0>[N] b;					      // beta-binomial beta parameter
 
-  theta[1] = theta_init;
+  raw_theta[1] = theta_init;
   delta = sigma_delta * delta_raw;    // parameter expansion for delta
 
-  for (t in 2:T) {                    // transition model
-	  theta[t] = theta[t-1] + sigma_theta * theta_raw[t];
+  for (t in 2:T) {
+	  raw_theta[t] = raw_theta[t-1] + sigma_theta * raw_theta_N01[t]; // transition model
   }
   for (n in 1:N) {                    // expand theta to N-vector
-  	theta_tt_kk[n] = theta[tt[n], kk[n]];
+  	theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
   }
   eta = inv_logit((theta_tt_kk - beta[qq] + delta[pp]) ./ alpha[qq]);  // fitted values model
   a = phi * eta; 						          // reparamaterise beta-binomial alpha par
@@ -52,7 +53,9 @@ model{
   sigma_delta ~ std_normal();
   theta_init ~ std_normal();
   delta_raw ~ std_normal();
-  to_array_1d(theta_raw) ~ std_normal();
+  for (t in 1:T) {
+    raw_theta_N01[t] ~ std_normal();
+  }
   beta ~ std_normal();
   alpha ~ std_normal();
 }

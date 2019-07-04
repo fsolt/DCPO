@@ -15,32 +15,32 @@ data{
 parameters{
   real<lower=0> sigma_theta;	        // opinion evolution error variance
   real<lower=0> sigma_delta;	        // question-country intercept error variance
-  vector[Q] beta;           			    // item difficulty
+  vector[Q] beta;           			    // item difficulty component
   vector<lower=0>[Q] alpha;        		// item discrimination
-  matrix[T,K] theta_raw; 	           	// raw matrix of T by K latent traits
+  matrix[T, K] theta_raw; 	          // public opinion, before transition model
   vector[P] delta_raw;					      // question-country intercepts
   row_vector[K] theta_init;				    // initial latent traits for first year
   real<lower=0> phi;					        // dispersion parameter
 }
 
 transformed parameters{
-  matrix[T,K] theta; 	                // matrix of T by K latent traits
+  matrix[T, K] theta; 	              // public opinion
   vector[N] theta_tt_kk;				      // N-vector for expanded theta vales
   vector<lower=0,upper=1>[N] eta;     // fitted values, on logit scale
-  vector[P] delta;						        // item-country intercepts
+  vector[P] delta;						        // item-country difficulty component
   vector<lower=0>[N] a;					      // beta-binomial alpha parameter
   vector<lower=0>[N] b;					      // beta-binomial beta parameter
 
   theta[1] = theta_init;
   delta = sigma_delta * delta_raw;    // parameter expansion for delta
 
-  for (t in 2:T) {                    // random walk
-	  theta[t] = theta[t-1] + sigma_theta * theta_raw[t-1];
+  for (t in 2:T) {                    // transition model
+	  theta[t] = theta[t-1] + sigma_theta * theta_raw[t];
   }
   for (n in 1:N) {                    // expand theta to N-vector
   	theta_tt_kk[n] = theta[tt[n], kk[n]];
   }
-  eta = inv_logit(beta[qq] + alpha[qq] .* theta_tt_kk + delta[pp]);  // fitted values model
+  eta = inv_logit((theta_tt_kk - beta[qq] + delta[pp]) ./ alpha[qq]);  // fitted values model
   a = phi * eta; 						          // reparamaterise beta-binomial alpha par
   b = phi * (1 - eta); 					      // reparamaterise beta-binomial beta par
 }
@@ -52,9 +52,7 @@ model{
   sigma_delta ~ std_normal();
   theta_init ~ std_normal();
   delta_raw ~ std_normal();
-  for(t in 1:T) {
-	  theta_raw[t] ~ std_normal();
-  }
+  to_array_1d(theta_raw) ~ std_normal();
   beta ~ std_normal();
   alpha ~ std_normal();
 }

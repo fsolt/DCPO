@@ -18,12 +18,14 @@ parameters{
   vector[P] delta_raw;					      // question-country intercepts
   real<lower=0> sigma_delta;	        // question-country intercept error variance
   row_vector[K] raw_theta_N01[T]; 	  // public opinion, before transition model, std normal scale
-  real<lower=0> sd_theta_evolve;	    // public opinion evolution
+  real<lower=0> sd_theta_evolve_N01;	// public opinion evolution mean component
+  row_vector[K] sd_theta_evolve_N01_kk; // public opinion evolution country component
   row_vector[K] theta_init;				    // initial latent traits for first year
   real<lower=0> phi;					        // dispersion parameter
 }
 
 transformed parameters{
+  row_vector[K] sd_theta_evolve;      // public opinion evolution
   row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
   row_vector[K] theta[T]; 	          // public opinion, after transition model, on [0, 1] scale
   vector[N] theta_tt_kk;				      // N-vector for expanded theta vales
@@ -34,11 +36,16 @@ transformed parameters{
 
   delta = sigma_delta * delta_raw;    // parameter expansion for delta
 
+  // sd_theta_evolve[k] via normal(0, 1) constant and normal(0, .05) country-level term;
+  sd_theta_evolve = sd_theta_evolve_N01 + sd_theta_evolve_N01_kk * .05;
+
+  // first year values for raw_theta and theta
   raw_theta[1] = theta_init;
   theta[1] = inv_logit(theta_init);
 
+  // later year values for raw_theta and theta
   for (t in 2:T) {
-	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model
+	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve .* raw_theta_N01[t]; // transition model
 	  theta[t] = inv_logit(raw_theta[t]); // scale to [0, 1]
   }
 
@@ -54,7 +61,8 @@ transformed parameters{
 model{
   y_r ~ beta_binomial(n_r, a, b); 		// response model
   phi ~ gamma(4, 0.1);
-  sd_theta_evolve ~ std_normal();
+  sd_theta_evolve_N01 ~ std_normal();
+  sd_theta_evolve_N01_kk ~ std_normal();
   sigma_delta ~ std_normal();
   theta_init ~ std_normal();
   delta_raw ~ std_normal();

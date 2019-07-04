@@ -13,34 +13,39 @@ data{
 }
 
 parameters{
-  real<lower=0> sigma_theta;	        // opinion evolution error variance
-  real<lower=0> sigma_delta;	        // question-country intercept error variance
-  vector[Q] beta;           			    // item difficulty component
   vector<lower=0>[Q] alpha;        		// item discrimination
-  row_vector[K] raw_theta_N01[T]; 	  // public opinion, before transition model, std normal scale
+  vector[Q] beta;           			    // item difficulty component
   vector[P] delta_raw;					      // question-country intercepts
+  real<lower=0> sigma_delta;	        // question-country intercept error variance
+  row_vector[K] raw_theta_N01[T]; 	  // public opinion, before transition model, std normal scale
+  real<lower=0> sd_theta_evolve;	    // public opinion evolution
   row_vector[K] theta_init;				    // initial latent traits for first year
   real<lower=0> phi;					        // dispersion parameter
 }
 
 transformed parameters{
   row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
-  // matrix[T, K] theta; 	              // public opinion, after transition model, on [0, 1] scale
+  row_vector[K] theta[T]; 	          // public opinion, after transition model, on [0, 1] scale
   vector[N] theta_tt_kk;				      // N-vector for expanded theta vales
   vector<lower=0,upper=1>[N] eta;     // fitted values, on logit scale
   vector[P] delta;						        // item-country difficulty component
   vector<lower=0>[N] a;					      // beta-binomial alpha parameter
   vector<lower=0>[N] b;					      // beta-binomial beta parameter
 
-  raw_theta[1] = theta_init;
   delta = sigma_delta * delta_raw;    // parameter expansion for delta
 
+  raw_theta[1] = theta_init;
+  theta[1] = inv_logit(theta_init);
+
   for (t in 2:T) {
-	  raw_theta[t] = raw_theta[t-1] + sigma_theta * raw_theta_N01[t]; // transition model
+	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model
+	  theta[t] = inv_logit(raw_theta[t]); // scale to [0, 1]
   }
+
   for (n in 1:N) {                    // expand theta to N-vector
   	theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
   }
+
   eta = inv_logit((theta_tt_kk - beta[qq] + delta[pp]) ./ alpha[qq]);  // fitted values model
   a = phi * eta; 						          // reparamaterise beta-binomial alpha par
   b = phi * (1 - eta); 					      // reparamaterise beta-binomial beta par
@@ -49,7 +54,7 @@ transformed parameters{
 model{
   y_r ~ beta_binomial(n_r, a, b); 		// response model
   phi ~ gamma(4, 0.1);
-  sigma_theta ~ std_normal();
+  sd_theta_evolve ~ std_normal();
   sigma_delta ~ std_normal();
   theta_init ~ std_normal();
   delta_raw ~ std_normal();

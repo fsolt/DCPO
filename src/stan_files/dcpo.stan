@@ -12,6 +12,7 @@ data{
   int<lower=1, upper=P> pp[N];        // item-country p for opinion n
   int<lower=1> y_r[N];                // vector of survey responses, cumulative count
   int<lower=1> n_r[N];                // vector of sample sizes
+  int fixed_cutp[Q, R];               // indicates single category with difficulty fixed to .5
 }
 
 parameters{
@@ -30,7 +31,7 @@ parameters{
 }
 
 transformed parameters{
-  row_vector[Q] beta[R];              // question-response difficulty component
+  row_vector[Q] beta[R];                 // question-response difficulty component
   vector[N] beta_rr_qq;               // N-vector for question-response difficulty component
   row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
   row_vector[K] theta[T]; 	          // public opinion, after transition model, on [0, 1] scale
@@ -42,10 +43,19 @@ transformed parameters{
   vector<lower=0>[N] a;					      // beta-binomial alpha parameter
   vector<lower=0>[N] b;					      // beta-binomial beta parameter
 
-  // ordered beta from (unordered) beta_raw
-  beta[1] = beta_init;
-  for (r in 2:R) {
-    beta[r] = beta[r-1] + raw_beta[r];
+  // ordered beta from (unordered) beta_raw, with fixed cut point
+  for (q in 1:Q) {
+    for (r in 1:R) {
+      if (fixed_cutp[q, r] == 1) {
+        beta[r, q] = .5;
+      } else {
+        if (r == 1) {
+          beta[r, q] = beta_init[q];
+        } else {
+          beta[r, q] = beta[r-1, q] + raw_beta[r, q];
+        }
+      }
+    }
   }
 
   delta = sd_delta * delta_raw;    // parameter expansion for delta

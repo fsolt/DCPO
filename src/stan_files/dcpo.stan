@@ -59,7 +59,7 @@ transformed parameters{
       }
     }
     // delta, with mean zero for each question
-    raw_delta[q] = sd_delta * raw_delta_N01[q];
+    raw_delta[q] = sd_delta * raw_delta_N01[q]; // implies raw_delta ~ normal(0, sd_delta)
     mean_raw_delta[q] = mean(raw_delta[q]);
     for (k in 1:K) {
       delta[q, k] = raw_delta[q, k] - mean_raw_delta[q];
@@ -73,19 +73,20 @@ transformed parameters{
 
   // later year values for raw_theta, theta, and sigma
   for (t in 2:T) {
-	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model
+	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
 	  theta[t] = inv_logit(raw_theta[t]); // scale to [0, 1]
-	  sigma[t] = square(raw_sigma[t-1] + sd_sigma_evolve * raw_sigma[t]); // transition model
+	  sigma[t] = sigma[t-1] + sd_sigma_evolve * square(raw_sigma[t]); // transition model
   }
 
   for (n in 1:N) {                    // N-vector expansion
-  	raw_theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
-  	sigma_tt_kk[n] = sigma[tt[n], kk[n]];
   	beta_rr_qq[n] = beta[rr[n], qq[n]];
   	delta_qq_kk[n] = delta[qq[n], kk[n]];
+  	raw_theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
+  	sigma_tt_kk[n] = sigma[tt[n], kk[n]];
   }
 
-  eta = inv_logit((raw_theta_tt_kk - beta_rr_qq + delta_qq_kk) ./ sqrt(sigma_tt_kk + square(alpha[qq])));  // fitted values model
+  // fitted values model
+  eta = inv_logit((raw_theta_tt_kk - beta_rr_qq + delta_qq_kk) ./ sqrt(sigma_tt_kk + square(alpha[qq])));
   a = phi * eta;
   b = phi * (1 - eta);
 }
@@ -93,20 +94,21 @@ transformed parameters{
 model{
   y_r ~ beta_binomial(n_r, a, b); 		// response model
   phi ~ gamma(4, 0.1);
-  sd_theta_evolve ~ std_normal();
-  sd_delta ~ std_normal();
-  theta_init ~ std_normal();
-  for (q in 1:Q) {
-    raw_delta_N01[q] ~ std_normal();
-  }
-  for (t in 1:T) {
-    raw_theta_N01[t] ~ std_normal();
-  }
+
+  alpha ~ std_normal();
   beta_init ~ std_normal();
   for (r in 1:R) {
     raw_beta[r] ~ std_normal();
   }
-  alpha ~ std_normal();
+  for (q in 1:Q) {
+    raw_delta_N01[q] ~ std_normal();
+  }
+  sd_delta ~ std_normal();
+  theta_init ~ std_normal();
+  for (t in 1:T) {
+    raw_theta_N01[t] ~ std_normal();
+  }
+  sd_theta_evolve ~ std_normal();
 }
 
 generated quantities {

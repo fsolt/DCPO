@@ -22,8 +22,8 @@ parameters{
   row_vector[K] raw_theta_N01[T];     // public opinion, before transition model, std normal scale
   real<lower=0> sd_theta_evolve;      // public opinion evolution
   row_vector[K] theta_init;           // initial public opinion, for first year
+  row_vector<lower=0, upper=.25>[K] sigma[T]; // public opinion population variance
   real<lower=0> phi;                  // beta-binomial dispersion parameter
-  row_vector<lower=0, upper=.25>[K] raw_sigma[T]; // opinion variance, before transition model
 }
 
 transformed parameters{
@@ -36,7 +36,6 @@ transformed parameters{
   row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
   row_vector[K] theta[T]; 	          // public opinion, after transition model, on [0, 1] scale
   vector[N] raw_theta_tt_kk;				  // N-vector for raw public opinion values
-  row_vector[K] sigma[T];             // opinion variance
   vector[N] sigma_tt_kk;				      // N-vector for opinion variance values
   vector<lower=0,upper=1>[N] eta;     // fitted values, on logit scale
   vector<lower=0>[N] a;					      // beta-binomial alpha parameter
@@ -64,16 +63,14 @@ transformed parameters{
     }
   }
 
-  // first year values for raw_theta, theta, and sigma
+  // first year values for raw_theta and theta
   raw_theta[1] = theta_init;
   theta[1] = inv_logit(theta_init); // scale from [-Inf, Inf] to [0, 1]
-  sigma[1] = .25 * raw_sigma[1];    // scale from [0, 1] to [0, .25]
 
-  // later year values for raw_theta, theta, and sigma
+  // later year values for raw_theta and theta
   for (t in 2:T) {
 	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
 	  theta[t] = inv_logit(raw_theta[t]); // scale from [-Inf, Inf] to [0, 1]
-	  sigma[t] = .25 * raw_sigma[t];      // scale from [0, 1] to [0, .25]
   }
 
   for (n in 1:N) {                      // N-vector expansion
@@ -105,7 +102,6 @@ model{
   theta_init ~ std_normal();
   for (t in 1:T) {
     raw_theta_N01[t] ~ std_normal();
-    raw_sigma[t] ~ beta(1, 2);
   }
   sd_theta_evolve ~ std_normal();
 }

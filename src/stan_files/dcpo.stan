@@ -22,8 +22,10 @@ parameters{
   row_vector[K] raw_theta_N01[T];     // public opinion, before transition model, std normal scale
   real<lower=0> sd_theta_evolve;      // public opinion evolution
   row_vector[K] theta_init;           // initial public opinion, for first year
-  row_vector<lower=0, upper=.25>[K] sigma[T]; // public opinion population variance
-  real<lower=0> phi;                  // beta-binomial dispersion parameter
+  row_vector[K] raw_sigma_N01[T];         // opinion variance, before transition model
+  real<lower=0> sd_sigma_evolve;      // opinion variance evolution
+  row_vector[K] sigma_init;           // initial opinion variance, for first year
+  real<lower=0> phi;                  // response model beta-binomial dispersion parameter
 }
 
 transformed parameters{
@@ -36,10 +38,12 @@ transformed parameters{
   row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
   row_vector[K] theta[T]; 	          // public opinion, after transition model, on [0, 1] scale
   vector[N] raw_theta_tt_kk;				  // N-vector for raw public opinion values
+  row_vector[K] raw_sigma[T];         // public opinion variance, after transition model
+  row_vector[K] sigma[T];             // public opinion variance, after transition model, on [0, .25] scale
   vector[N] sigma_tt_kk;				      // N-vector for opinion variance values
   vector<lower=0,upper=1>[N] eta;     // fitted values, on logit scale
-  vector<lower=0>[N] a;					      // beta-binomial alpha parameter
-  vector<lower=0>[N] b;					      // beta-binomial beta parameter
+  vector<lower=0>[N] a;					      // response model beta-binomial alpha parameter
+  vector<lower=0>[N] b;					      // response model beta-binomial beta parameter
 
   // difficulty
   for (q in 1:Q) {
@@ -63,17 +67,21 @@ transformed parameters{
     }
   }
 
-  // first year values for raw_theta and theta
+  // first year values for raw_theta, theta, raw_sigma, and sigma
   raw_theta[1] = theta_init;
-  theta[1] = inv_logit(theta_init); // scale from [-Inf, Inf] to [0, 1]
+  theta[1] = inv_logit(theta_init);
+  raw_sigma[1] = sigma_init;
+  sigma[1] = inv_logit(sigma_init) * .25;
 
-  // later year values for raw_theta and theta
+  // later year values for raw_theta, theta, raw_sigma, and sigma
   for (t in 2:T) {
 	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
-	  theta[t] = inv_logit(raw_theta[t]); // scale from [-Inf, Inf] to [0, 1]
+	  theta[t] = inv_logit(raw_theta[t]);       // scale to [0, 1]
+	  raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
+	  sigma[t] = inv_logit(raw_sigma[t]) * .25; // scale to [0, .25]
   }
 
-  for (n in 1:N) {                      // N-vector expansion
+  for (n in 1:N) {                            // N-vector expansion
   	beta_rr_qq[n] = beta[rr[n], qq[n]];
   	delta_qq_kk[n] = delta[qq[n], kk[n]];
   	raw_theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
@@ -100,10 +108,13 @@ model{
   }
   sd_delta ~ std_normal();
   theta_init ~ std_normal();
+  sigma_init ~ std_normal();
   for (t in 1:T) {
     raw_theta_N01[t] ~ std_normal();
+    raw_sigma_N01[t] ~ std_normal();
   }
   sd_theta_evolve ~ std_normal();
+  sd_sigma_evolve ~ std_normal();
 }
 
 generated quantities {

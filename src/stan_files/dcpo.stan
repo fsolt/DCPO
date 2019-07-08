@@ -11,6 +11,7 @@ data{
   int<lower=1> y_r[N];                // vector of survey responses, cumulative count
   int<lower=1> n_r[N];                // vector of sample sizes
   int fixed_cutp[Q, R];               // indicates single category with difficulty fixed to .5
+  vector<lower=0, upper=1>[K] use_delta[Q]; // indicates multiple years observed of question q in country k
 }
 
 parameters{
@@ -60,7 +61,7 @@ transformed parameters{
       }
     }
     // delta, with mean zero for each question
-    raw_delta[q] = sd_delta * raw_delta_N01[q]; // implies raw_delta ~ normal(0, sd_delta)
+    raw_delta[q] = sd_delta * raw_delta_N01[q] .* use_delta[q]; // implies raw_delta ~ normal(0, sd_delta), but only if use_delta == 1
     mean_raw_delta[q] = mean(raw_delta[q]);
     for (k in 1:K) {
       delta[q, k] = raw_delta[q, k] - mean_raw_delta[q];

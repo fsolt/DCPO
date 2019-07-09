@@ -23,7 +23,7 @@ parameters{
   row_vector[K] raw_theta_N01[T];     // public opinion, before transition model, std normal scale
   real<lower=0> sd_theta_evolve;      // public opinion evolution
   row_vector[K] theta_init;           // initial public opinion, for first year
-  row_vector[K] raw_sigma_N01[T];         // opinion variance, before transition model
+  row_vector[K] raw_sigma_N01[T];     // opinion variance, before transition model
   real<lower=0> sd_sigma_evolve;      // opinion variance evolution
   row_vector[K] sigma_init;           // initial opinion variance, for first year
   real<lower=0> phi;                  // response model beta-binomial dispersion parameter

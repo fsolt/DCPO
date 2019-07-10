@@ -1,6 +1,6 @@
 #' DCPO: Dynamic Comparative Public Opinion
 #'
-#' @description DCPO estimates dynamic comparative public opinion
+#' @description DCPO estimates dynamic comparative public opinion as a latent variable from survey data
 #'
 #' @docType package
 #' @name DCPO-package

@@ -14,27 +14,7 @@ Depends:
 Imports: 
   rstan (>= 2.18.1), 
   rstantools (>= 1.5.0), 
-  readr, 
-  reshape2, 
-  dplyr, 
-  beepr, 
-  countrycode, 
-  rio, 
-  labelled, 
-  stringr,
-  bayesplot,
-  forcats,
-  foreign,
-  haven,
-  janitor,
-  lubridate,
-  purrr,
-  rvest,
-  RSelenium,
-  gesis,
-  icpsrdata,
-  pewdata,
-  ropercenter
+  beepr
 LinkingTo: 
   StanHeaders (>= 2.18.0),
   rstan (>= 2.18.1),

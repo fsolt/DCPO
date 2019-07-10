@@ -70,14 +70,14 @@ transformed parameters{
 
   // first year values for raw_theta, theta, raw_sigma, and sigma
   raw_theta[1] = theta_init;
-  theta[1] = inv_logit(theta_init);
+  theta[1] = inv_logit(theta_init - .5);
   raw_sigma[1] = sigma_init;
   sigma[1] = inv_logit(sigma_init) * .25;
 
   // later year values for raw_theta, theta, raw_sigma, and sigma
   for (t in 2:T) {
 	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
-	  theta[t] = inv_logit(raw_theta[t]);       // scale to [0, 1]
+	  theta[t] = inv_logit(raw_theta[t] - .5);  // scale to [0, 1]
 	  raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
 	  sigma[t] = inv_logit(raw_sigma[t]) * .25; // scale to [0, .25]
   }

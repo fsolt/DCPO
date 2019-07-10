@@ -23,10 +23,7 @@ dcpo <- function(x,
                     data = dcpo_data,
                     ...)
   if (!length(stan_args$control)) {
-    stan_args$control <- list(max_treedepth = 20)
-  }
-  if (!length(stan_args$init_r)) {
-    stan_args$init_r <- 1L
+    stan_args$control <- list(max_treedepth = 14)
   }
   if (!length(stan_args$seed)) {
     stan_args$seed <- 324

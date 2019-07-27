@@ -3,7 +3,7 @@ Version: 0.1.0.9000
 Title: Dynamic Comparative Public Opinion
 Description: Estimates latent variables from public opinion data in cross-national surveys.
 Authors@R: person("Frederick", "Solt", email = "frederick-solt@uiowa.edu", role = c("aut",  "cre"))
-License: GPL (>=3)
+License: GPL (>=3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
@@ -13,7 +13,7 @@ Depends:
   methods
 Imports: 
   rstan (>= 2.18.1), 
-  rstantools (>= 1.5.0), 
+  rstantools (>= 2.0.0.9000), 
   beepr
 LinkingTo: 
   StanHeaders (>= 2.18.0),

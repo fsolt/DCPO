@@ -35,7 +35,10 @@
 #' @return a stanfit object
 #'
 #' @import rstan
+#' @import dplyr '%>%' group_by mutate ungroup arrange summarize filter mutate_at select
 #' @importFrom forcats as_factor
+#' @importFrom janitor clean_names
+#' @importFrom tidyr spread
 #' @importFrom beepr beep
 #'
 #' @export

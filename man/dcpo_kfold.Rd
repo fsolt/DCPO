@@ -44,7 +44,7 @@ demsup_data <- format_dcpo(demsup \%>\% with_min_yrs(3),
 demsup_xvtest_25pct <- dcpo_kfold(demsup_data,
                            number_of_folds = 4)
 
-# k-fold cross-validation with 10 folds
+# k-fold cross-validation with 10 folds (demsup_kfold_10 will be a list of stanfit objects)
 demsup_kfold_10 <- purrr::map(1:10, function(x) {
                               dcpo_kfold(demsup_data,
                                          fold_number = x) # number_of_folds = 10 is the default

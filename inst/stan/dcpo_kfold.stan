@@ -115,9 +115,9 @@ transformed parameters{
   b = phi * (1 - eta);
 
   // fitted values model, test set
-  eta = inv_logit((raw_theta_tt_kk_test - beta_rr_qq_test + delta_qq_kk_test) ./ sqrt(sigma_tt_kk_test + square(alpha[qq])));
-  a = phi * eta;
-  b = phi * (1 - eta);
+  eta_test = inv_logit((raw_theta_tt_kk_test - beta_rr_qq_test + delta_qq_kk_test) ./ sqrt(sigma_tt_kk_test + square(alpha[qq_test])));
+  a_test = phi * eta_test;
+  b_test = phi * (1 - eta_test);
 }
 
 model{

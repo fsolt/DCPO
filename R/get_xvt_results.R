@@ -25,7 +25,7 @@
 #'                                          iter = 150)
 #'                                          })
 #'
-#' get_svt_results(dcpo_demsup_kfold)
+#' get_xvt_results(dcpo_demsup_kfold)
 #'
 #' }
 #' @return a stanfit object

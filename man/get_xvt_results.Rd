@@ -37,7 +37,7 @@ dcpo_demsup_kfold <- purrr::map(1:10, function(x) {
                                          iter = 150)
                                          })
 
-get_svt_results(dcpo_demsup_kfold)
+get_xvt_results(dcpo_demsup_kfold)
 
 }
 }

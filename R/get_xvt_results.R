@@ -50,7 +50,7 @@ get_xvt_results <- function(dcpo_xvt_output, ci = 80) {
    xvt_results <- xvt(dcpo_xvt_output, ci)
  } else {
    xvt_results <- purrr::map_df(dcpo_xvt_output, function(x) {
-     xvt(dcpo_xvt_output = x, ci = ci)
+     xvt(dcpo_xvt_output = x, ci)
      })
 
    mean_results <- xvt_results %>%
@@ -71,7 +71,7 @@ get_xvt_results <- function(dcpo_xvt_output, ci = 80) {
   return(xvt_results)
 }
 
-xvt <- function(dcpo_xvt_output = dcpo_xvt_output, ci = ci) {
+xvt <- function(dcpo_xvt_output, ci) {
   test_data <- dcpo_xvt_output %>%
     dplyr::first() %>%
     dplyr::nth(-2) %>%

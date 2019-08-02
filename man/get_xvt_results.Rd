@@ -22,11 +22,14 @@ a stanfit object
 
 demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 
-demsup_data <- format_dcpo(demsup \%>\% with_min_yrs(3))
+demsup_data <- format_dcpo(demsup \%>\% with_min_yrs(3),
+                           scale_q = "church_21",
+                           scale_cp = 2)
 
 # Single cross-validation test with 25\% test set
 dcpo_demsup_xvtest <- dcpo_xvt(demsup_data,
-                           number_of_folds = 4)
+                           number_of_folds = 4,
+                           iter = 150)
 
 get_xvt_results(dcpo_demsup_xvtest)
 

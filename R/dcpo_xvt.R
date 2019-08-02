@@ -24,7 +24,8 @@
 #'
 #' # Single cross-validation test with 25% test set
 #' demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
-#'                            number_of_folds = 4)
+#'                            number_of_folds = 4,
+#'                            iter = 150)
 #'
 #' # k-fold cross-validation with 10 folds (demsup_kfold_10 will be a list of stanfit objects)
 #' demsup_kfold_10 <- purrr::map(1:10, function(x) {

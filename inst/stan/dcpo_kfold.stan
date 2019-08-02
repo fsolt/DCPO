@@ -103,10 +103,10 @@ transformed parameters{
   }
 
   for (n in 1:N_test) {                       // N-vector expansion, test set
-  	beta_rr_qq_test[n] = beta[rr[n], qq[n]];
-  	delta_qq_kk_test[n] = delta[qq[n], kk[n]];
-  	raw_theta_tt_kk_test[n] = raw_theta[tt[n], kk[n]];
-  	sigma_tt_kk_test[n] = sigma[tt[n], kk[n]];
+  	beta_rr_qq_test[n] = beta[rr_test[n], qq_test[n]];
+  	delta_qq_kk_test[n] = delta[qq_test[n], kk_test[n]];
+  	raw_theta_tt_kk_test[n] = raw_theta[tt_test[n], kk_test[n]];
+  	sigma_tt_kk_test[n] = sigma[tt_test[n], kk_test[n]];
   }
 
   // fitted values model

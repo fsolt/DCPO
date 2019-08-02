@@ -10,11 +10,14 @@
 #'
 #' demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 #'
-#' demsup_data <- format_dcpo(demsup %>% with_min_yrs(3))
+#' demsup_data <- format_dcpo(demsup %>% with_min_yrs(3),
+#'                            scale_q = "church_21",
+#'                            scale_cp = 2)
 #'
 #' # Single cross-validation test with 25% test set
 #' dcpo_demsup_xvtest <- dcpo_xvt(demsup_data,
-#'                            number_of_folds = 4)
+#'                            number_of_folds = 4,
+#'                            iter = 150)
 #'
 #' get_xvt_results(dcpo_demsup_xvtest)
 #'
@@ -86,13 +89,13 @@ xvt <- function(dcpo_xvt_output = dcpo_xvt_output, ci = ci) {
     dplyr::group_by(country) %>%
     dplyr::mutate(country_mean = mean(y_r/n_r)) %>%
     dplyr::ungroup()
-  country_mean_mae <- mean(abs((country_mean$x/country_mean$n_r - country_mean$country_mean))) %>%
+  country_mean_mae <- mean(abs((country_mean$y_r/country_mean$n_r - country_mean$country_mean))) %>%
     round(3)
 
   improv_vs_cmmae <- round((country_mean_mae - model_mae)/country_mean_mae * 100, 1)
 
-  coverage <- (mean(test_data$x >= apply(x_test_all, 2, quantile, (1-ci/100)/2) &
-                      test_data$x <= apply(x_test_all, 2, quantile, 1-(1-ci/100)/2)) * 100) %>%
+  coverage <- (mean(test_data$y_r >= apply(y_r_test_all, 2, quantile, (1-ci/100)/2) &
+                      test_data$y_r <= apply(y_r_test_all, 2, quantile, 1-(1-ci/100)/2)) * 100) %>%
     round(1)
 
   xvt_results <- tibble::tibble(model = c(paste0("Fold ", dcpo_xvt_output$xvt_args$fold_number, " of ", dcpo_xvt_output$xvt_args$number_of_folds, " (", dcpo_xvt_output$xvt_args$fold_seed,")"), "country means"),

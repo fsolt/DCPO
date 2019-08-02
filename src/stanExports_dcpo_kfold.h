@@ -1017,22 +1017,22 @@ public:
                 current_statement_begin__ = 106;
                 stan::model::assign(beta_rr_qq_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(beta,get_base1(rr,n,"rr",1),"beta",1),get_base1(qq,n,"qq",1),"beta",2), 
+                            get_base1(get_base1(beta,get_base1(rr_test,n,"rr_test",1),"beta",1),get_base1(qq_test,n,"qq_test",1),"beta",2), 
                             "assigning variable beta_rr_qq_test");
                 current_statement_begin__ = 107;
                 stan::model::assign(delta_qq_kk_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(delta,get_base1(qq,n,"qq",1),"delta",1),get_base1(kk,n,"kk",1),"delta",2), 
+                            get_base1(get_base1(delta,get_base1(qq_test,n,"qq_test",1),"delta",1),get_base1(kk_test,n,"kk_test",1),"delta",2), 
                             "assigning variable delta_qq_kk_test");
                 current_statement_begin__ = 108;
                 stan::model::assign(raw_theta_tt_kk_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(raw_theta,get_base1(tt,n,"tt",1),"raw_theta",1),get_base1(kk,n,"kk",1),"raw_theta",2), 
+                            get_base1(get_base1(raw_theta,get_base1(tt_test,n,"tt_test",1),"raw_theta",1),get_base1(kk_test,n,"kk_test",1),"raw_theta",2), 
                             "assigning variable raw_theta_tt_kk_test");
                 current_statement_begin__ = 109;
                 stan::model::assign(sigma_tt_kk_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(sigma,get_base1(tt,n,"tt",1),"sigma",1),get_base1(kk,n,"kk",1),"sigma",2), 
+                            get_base1(get_base1(sigma,get_base1(tt_test,n,"tt_test",1),"sigma",1),get_base1(kk_test,n,"kk_test",1),"sigma",2), 
                             "assigning variable sigma_tt_kk_test");
             }
             current_statement_begin__ = 113;
@@ -1838,22 +1838,22 @@ public:
                 current_statement_begin__ = 106;
                 stan::model::assign(beta_rr_qq_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(beta,get_base1(rr,n,"rr",1),"beta",1),get_base1(qq,n,"qq",1),"beta",2), 
+                            get_base1(get_base1(beta,get_base1(rr_test,n,"rr_test",1),"beta",1),get_base1(qq_test,n,"qq_test",1),"beta",2), 
                             "assigning variable beta_rr_qq_test");
                 current_statement_begin__ = 107;
                 stan::model::assign(delta_qq_kk_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(delta,get_base1(qq,n,"qq",1),"delta",1),get_base1(kk,n,"kk",1),"delta",2), 
+                            get_base1(get_base1(delta,get_base1(qq_test,n,"qq_test",1),"delta",1),get_base1(kk_test,n,"kk_test",1),"delta",2), 
                             "assigning variable delta_qq_kk_test");
                 current_statement_begin__ = 108;
                 stan::model::assign(raw_theta_tt_kk_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(raw_theta,get_base1(tt,n,"tt",1),"raw_theta",1),get_base1(kk,n,"kk",1),"raw_theta",2), 
+                            get_base1(get_base1(raw_theta,get_base1(tt_test,n,"tt_test",1),"raw_theta",1),get_base1(kk_test,n,"kk_test",1),"raw_theta",2), 
                             "assigning variable raw_theta_tt_kk_test");
                 current_statement_begin__ = 109;
                 stan::model::assign(sigma_tt_kk_test, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(sigma,get_base1(tt,n,"tt",1),"sigma",1),get_base1(kk,n,"kk",1),"sigma",2), 
+                            get_base1(get_base1(sigma,get_base1(tt_test,n,"tt_test",1),"sigma",1),get_base1(kk_test,n,"kk_test",1),"sigma",2), 
                             "assigning variable sigma_tt_kk_test");
             }
             current_statement_begin__ = 113;

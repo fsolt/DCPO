@@ -37,6 +37,7 @@
 #' @importFrom dplyr mutate group_by summarize_if ungroup select mutate_at bind_rows first nth filter
 #' @importFrom purrr map_df
 #' @importFrom tibble tibble rownames_to_column
+#' @importFrom stats quantile runif sd
 #'
 #' @export
 get_xvt_results <- function(dcpo_xvt_output, ci = 80) {

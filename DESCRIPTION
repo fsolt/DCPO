@@ -13,8 +13,14 @@ Depends:
   methods
 Imports: 
   rstan (>= 2.18.1), 
-  rstantools (>= 2.0.0.9000), 
-  beepr
+  rstantools (>= 2.0.0), 
+  beepr,
+  dplyr,
+  forcats,
+  janitor,
+  purrr,
+  tibble,
+  tidyr
 LinkingTo: 
   StanHeaders (>= 2.18.0),
   rstan (>= 2.18.1),

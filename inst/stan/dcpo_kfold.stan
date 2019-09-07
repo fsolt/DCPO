@@ -83,16 +83,16 @@ transformed parameters{
 
   // first year values for raw_theta, theta, raw_sigma, and sigma
   raw_theta[1] = theta_init;
-  theta[1] = inv_logit(theta_init - .5);
+  theta[1] = Phi_approx(theta_init - .5);
   raw_sigma[1] = sigma_init;
-  sigma[1] = inv_logit(sigma_init) * .25;
+  sigma[1] = Phi_approx(sigma_init) * .25;
 
   // later year values for raw_theta, theta, raw_sigma, and sigma
   for (t in 2:T) {
 	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
-	  theta[t] = inv_logit(raw_theta[t] - .5);  // scale to [0, 1]
+	  theta[t] = Phi_approx(raw_theta[t] - .5);  // scale to [0, 1]
 	  raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
-	  sigma[t] = inv_logit(raw_sigma[t]) * .25; // scale to [0, .25]
+	  sigma[t] = Phi_approx(raw_sigma[t]) * .25; // scale to [0, .25]
   }
 
   for (n in 1:N) {                            // N-vector expansion
@@ -110,12 +110,12 @@ transformed parameters{
   }
 
   // fitted values model
-  eta = inv_logit((raw_theta_tt_kk - beta_rr_qq + delta_qq_kk) ./ sqrt(sigma_tt_kk + square(alpha[qq])));
+  eta = inv_logit((raw_theta_tt_kk - (beta_rr_qq + delta_qq_kk)) ./ sqrt(sigma_tt_kk + square(alpha[qq])));
   a = phi * eta;
   b = phi * (1 - eta);
 
   // fitted values model, test set
-  eta_test = inv_logit((raw_theta_tt_kk_test - beta_rr_qq_test + delta_qq_kk_test) ./ sqrt(sigma_tt_kk_test + square(alpha[qq_test])));
+  eta_test = inv_logit((raw_theta_tt_kk_test - (beta_rr_qq_test + delta_qq_kk_test)) ./ sqrt(sigma_tt_kk_test + square(alpha[qq_test])));
   a_test = phi * eta_test;
   b_test = phi * (1 - eta_test);
 }

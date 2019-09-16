@@ -298,13 +298,13 @@ public:
             validate_non_negative_index("theta_init", "K", K);
             num_params_r__ += K;
             current_statement_begin__ = 26;
-            validate_non_negative_index("raw_sigma2_N01", "K", K);
-            validate_non_negative_index("raw_sigma2_N01", "T", T);
+            validate_non_negative_index("raw_sigma_N01", "K", K);
+            validate_non_negative_index("raw_sigma_N01", "T", T);
             num_params_r__ += (K * T);
             current_statement_begin__ = 27;
             num_params_r__ += 1;
             current_statement_begin__ = 28;
-            validate_non_negative_index("sigma2_init", "K", K);
+            validate_non_negative_index("sigma_init", "K", K);
             num_params_r__ += K;
             current_statement_begin__ = 29;
             num_params_r__ += 1;
@@ -487,60 +487,60 @@ public:
         }
 
         current_statement_begin__ = 26;
-        if (!(context__.contains_r("raw_sigma2_N01")))
-            stan::lang::rethrow_located(std::runtime_error(std::string("Variable raw_sigma2_N01 missing")), current_statement_begin__, prog_reader__());
-        vals_r__ = context__.vals_r("raw_sigma2_N01");
+        if (!(context__.contains_r("raw_sigma_N01")))
+            stan::lang::rethrow_located(std::runtime_error(std::string("Variable raw_sigma_N01 missing")), current_statement_begin__, prog_reader__());
+        vals_r__ = context__.vals_r("raw_sigma_N01");
         pos__ = 0U;
-        validate_non_negative_index("raw_sigma2_N01", "K", K);
-        validate_non_negative_index("raw_sigma2_N01", "T", T);
-        context__.validate_dims("parameter initialization", "raw_sigma2_N01", "row_vector_d", context__.to_vec(T,K));
-        std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > raw_sigma2_N01(T, Eigen::Matrix<double, 1, Eigen::Dynamic>(K));
-        size_t raw_sigma2_N01_j_1_max__ = K;
-        size_t raw_sigma2_N01_k_0_max__ = T;
-        for (size_t j_1__ = 0; j_1__ < raw_sigma2_N01_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < raw_sigma2_N01_k_0_max__; ++k_0__) {
-                raw_sigma2_N01[k_0__](j_1__) = vals_r__[pos__++];
+        validate_non_negative_index("raw_sigma_N01", "K", K);
+        validate_non_negative_index("raw_sigma_N01", "T", T);
+        context__.validate_dims("parameter initialization", "raw_sigma_N01", "row_vector_d", context__.to_vec(T,K));
+        std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > raw_sigma_N01(T, Eigen::Matrix<double, 1, Eigen::Dynamic>(K));
+        size_t raw_sigma_N01_j_1_max__ = K;
+        size_t raw_sigma_N01_k_0_max__ = T;
+        for (size_t j_1__ = 0; j_1__ < raw_sigma_N01_j_1_max__; ++j_1__) {
+            for (size_t k_0__ = 0; k_0__ < raw_sigma_N01_k_0_max__; ++k_0__) {
+                raw_sigma_N01[k_0__](j_1__) = vals_r__[pos__++];
             }
         }
-        size_t raw_sigma2_N01_i_0_max__ = T;
-        for (size_t i_0__ = 0; i_0__ < raw_sigma2_N01_i_0_max__; ++i_0__) {
+        size_t raw_sigma_N01_i_0_max__ = T;
+        for (size_t i_0__ = 0; i_0__ < raw_sigma_N01_i_0_max__; ++i_0__) {
             try {
-                writer__.row_vector_unconstrain(raw_sigma2_N01[i_0__]);
+                writer__.row_vector_unconstrain(raw_sigma_N01[i_0__]);
             } catch (const std::exception& e) {
-                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable raw_sigma2_N01: ") + e.what()), current_statement_begin__, prog_reader__());
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable raw_sigma_N01: ") + e.what()), current_statement_begin__, prog_reader__());
             }
         }
 
         current_statement_begin__ = 27;
-        if (!(context__.contains_r("sd_sigma2_evolve")))
-            stan::lang::rethrow_located(std::runtime_error(std::string("Variable sd_sigma2_evolve missing")), current_statement_begin__, prog_reader__());
-        vals_r__ = context__.vals_r("sd_sigma2_evolve");
+        if (!(context__.contains_r("sd_sigma_evolve")))
+            stan::lang::rethrow_located(std::runtime_error(std::string("Variable sd_sigma_evolve missing")), current_statement_begin__, prog_reader__());
+        vals_r__ = context__.vals_r("sd_sigma_evolve");
         pos__ = 0U;
-        context__.validate_dims("parameter initialization", "sd_sigma2_evolve", "double", context__.to_vec());
-        double sd_sigma2_evolve(0);
-        sd_sigma2_evolve = vals_r__[pos__++];
+        context__.validate_dims("parameter initialization", "sd_sigma_evolve", "double", context__.to_vec());
+        double sd_sigma_evolve(0);
+        sd_sigma_evolve = vals_r__[pos__++];
         try {
-            writer__.scalar_lb_unconstrain(0, sd_sigma2_evolve);
+            writer__.scalar_lb_unconstrain(0, sd_sigma_evolve);
         } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sd_sigma2_evolve: ") + e.what()), current_statement_begin__, prog_reader__());
+            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sd_sigma_evolve: ") + e.what()), current_statement_begin__, prog_reader__());
         }
 
         current_statement_begin__ = 28;
-        if (!(context__.contains_r("sigma2_init")))
-            stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma2_init missing")), current_statement_begin__, prog_reader__());
-        vals_r__ = context__.vals_r("sigma2_init");
+        if (!(context__.contains_r("sigma_init")))
+            stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma_init missing")), current_statement_begin__, prog_reader__());
+        vals_r__ = context__.vals_r("sigma_init");
         pos__ = 0U;
-        validate_non_negative_index("sigma2_init", "K", K);
-        context__.validate_dims("parameter initialization", "sigma2_init", "row_vector_d", context__.to_vec(K));
-        Eigen::Matrix<double, 1, Eigen::Dynamic> sigma2_init(K);
-        size_t sigma2_init_j_1_max__ = K;
-        for (size_t j_1__ = 0; j_1__ < sigma2_init_j_1_max__; ++j_1__) {
-            sigma2_init(j_1__) = vals_r__[pos__++];
+        validate_non_negative_index("sigma_init", "K", K);
+        context__.validate_dims("parameter initialization", "sigma_init", "row_vector_d", context__.to_vec(K));
+        Eigen::Matrix<double, 1, Eigen::Dynamic> sigma_init(K);
+        size_t sigma_init_j_1_max__ = K;
+        for (size_t j_1__ = 0; j_1__ < sigma_init_j_1_max__; ++j_1__) {
+            sigma_init(j_1__) = vals_r__[pos__++];
         }
         try {
-            writer__.row_vector_unconstrain(sigma2_init);
+            writer__.row_vector_unconstrain(sigma_init);
         } catch (const std::exception& e) {
-            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma2_init: ") + e.what()), current_statement_begin__, prog_reader__());
+            stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_init: ") + e.what()), current_statement_begin__, prog_reader__());
         }
 
         current_statement_begin__ = 29;
@@ -663,31 +663,31 @@ public:
                 theta_init = in__.row_vector_constrain(K);
 
             current_statement_begin__ = 26;
-            std::vector<Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> > raw_sigma2_N01;
-            size_t raw_sigma2_N01_d_0_max__ = T;
-            raw_sigma2_N01.reserve(raw_sigma2_N01_d_0_max__);
-            for (size_t d_0__ = 0; d_0__ < raw_sigma2_N01_d_0_max__; ++d_0__) {
+            std::vector<Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> > raw_sigma_N01;
+            size_t raw_sigma_N01_d_0_max__ = T;
+            raw_sigma_N01.reserve(raw_sigma_N01_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < raw_sigma_N01_d_0_max__; ++d_0__) {
                 if (jacobian__)
-                    raw_sigma2_N01.push_back(in__.row_vector_constrain(K, lp__));
+                    raw_sigma_N01.push_back(in__.row_vector_constrain(K, lp__));
                 else
-                    raw_sigma2_N01.push_back(in__.row_vector_constrain(K));
+                    raw_sigma_N01.push_back(in__.row_vector_constrain(K));
             }
 
             current_statement_begin__ = 27;
-            local_scalar_t__ sd_sigma2_evolve;
-            (void) sd_sigma2_evolve;  // dummy to suppress unused var warning
+            local_scalar_t__ sd_sigma_evolve;
+            (void) sd_sigma_evolve;  // dummy to suppress unused var warning
             if (jacobian__)
-                sd_sigma2_evolve = in__.scalar_lb_constrain(0, lp__);
+                sd_sigma_evolve = in__.scalar_lb_constrain(0, lp__);
             else
-                sd_sigma2_evolve = in__.scalar_lb_constrain(0);
+                sd_sigma_evolve = in__.scalar_lb_constrain(0);
 
             current_statement_begin__ = 28;
-            Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> sigma2_init;
-            (void) sigma2_init;  // dummy to suppress unused var warning
+            Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> sigma_init;
+            (void) sigma_init;  // dummy to suppress unused var warning
             if (jacobian__)
-                sigma2_init = in__.row_vector_constrain(K, lp__);
+                sigma_init = in__.row_vector_constrain(K, lp__);
             else
-                sigma2_init = in__.row_vector_constrain(K);
+                sigma_init = in__.row_vector_constrain(K);
 
             current_statement_begin__ = 29;
             local_scalar_t__ phi;
@@ -758,24 +758,24 @@ public:
             stan::math::fill(raw_theta_tt_kk, DUMMY_VAR__);
 
             current_statement_begin__ = 42;
-            validate_non_negative_index("raw_sigma2", "K", K);
-            validate_non_negative_index("raw_sigma2", "T", T);
-            std::vector<Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> > raw_sigma2(T, Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic>(K));
-            stan::math::initialize(raw_sigma2, DUMMY_VAR__);
-            stan::math::fill(raw_sigma2, DUMMY_VAR__);
+            validate_non_negative_index("raw_sigma", "K", K);
+            validate_non_negative_index("raw_sigma", "T", T);
+            std::vector<Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> > raw_sigma(T, Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic>(K));
+            stan::math::initialize(raw_sigma, DUMMY_VAR__);
+            stan::math::fill(raw_sigma, DUMMY_VAR__);
 
             current_statement_begin__ = 43;
-            validate_non_negative_index("sigma2", "K", K);
-            validate_non_negative_index("sigma2", "T", T);
-            std::vector<Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> > sigma2(T, Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic>(K));
-            stan::math::initialize(sigma2, DUMMY_VAR__);
-            stan::math::fill(sigma2, DUMMY_VAR__);
+            validate_non_negative_index("sigma", "K", K);
+            validate_non_negative_index("sigma", "T", T);
+            std::vector<Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> > sigma(T, Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic>(K));
+            stan::math::initialize(sigma, DUMMY_VAR__);
+            stan::math::fill(sigma, DUMMY_VAR__);
 
             current_statement_begin__ = 44;
-            validate_non_negative_index("sigma2_tt_kk", "N", N);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sigma2_tt_kk(N);
-            stan::math::initialize(sigma2_tt_kk, DUMMY_VAR__);
-            stan::math::fill(sigma2_tt_kk, DUMMY_VAR__);
+            validate_non_negative_index("sigma_tt_kk", "N", N);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sigma_tt_kk(N);
+            stan::math::initialize(sigma_tt_kk, DUMMY_VAR__);
+            stan::math::fill(sigma_tt_kk, DUMMY_VAR__);
 
             current_statement_begin__ = 45;
             validate_non_negative_index("eta", "N", N);
@@ -861,15 +861,15 @@ public:
                         Phi_approx(subtract(theta_init, .5)), 
                         "assigning variable theta");
             current_statement_begin__ = 74;
-            stan::model::assign(raw_sigma2, 
+            stan::model::assign(raw_sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        sigma2_init, 
-                        "assigning variable raw_sigma2");
+                        sigma_init, 
+                        "assigning variable raw_sigma");
             current_statement_begin__ = 75;
-            stan::model::assign(sigma2, 
+            stan::model::assign(sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        multiply(Phi_approx(sigma2_init), .25), 
-                        "assigning variable sigma2");
+                        multiply(Phi_approx(sigma_init), .5), 
+                        "assigning variable sigma");
             current_statement_begin__ = 78;
             for (int t = 2; t <= T; ++t) {
 
@@ -884,15 +884,15 @@ public:
                             Phi_approx(subtract(get_base1(raw_theta, t, "raw_theta", 1), .5)), 
                             "assigning variable theta");
                 current_statement_begin__ = 81;
-                stan::model::assign(raw_sigma2, 
+                stan::model::assign(raw_sigma, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            add(get_base1(raw_sigma2, (t - 1), "raw_sigma2", 1), multiply(sd_sigma2_evolve, get_base1(raw_sigma2_N01, t, "raw_sigma2_N01", 1))), 
-                            "assigning variable raw_sigma2");
+                            add(get_base1(raw_sigma, (t - 1), "raw_sigma", 1), multiply(sd_sigma_evolve, get_base1(raw_sigma_N01, t, "raw_sigma_N01", 1))), 
+                            "assigning variable raw_sigma");
                 current_statement_begin__ = 82;
-                stan::model::assign(sigma2, 
+                stan::model::assign(sigma, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            multiply(Phi_approx(get_base1(raw_sigma2, t, "raw_sigma2", 1)), .25), 
-                            "assigning variable sigma2");
+                            multiply(Phi_approx(get_base1(raw_sigma, t, "raw_sigma", 1)), .5), 
+                            "assigning variable sigma");
             }
             current_statement_begin__ = 85;
             for (int n = 1; n <= N; ++n) {
@@ -913,13 +913,13 @@ public:
                             get_base1(get_base1(raw_theta, get_base1(tt, n, "tt", 1), "raw_theta", 1), get_base1(kk, n, "kk", 1), "raw_theta", 2), 
                             "assigning variable raw_theta_tt_kk");
                 current_statement_begin__ = 89;
-                stan::model::assign(sigma2_tt_kk, 
+                stan::model::assign(sigma_tt_kk, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(sigma2, get_base1(tt, n, "tt", 1), "sigma2", 1), get_base1(kk, n, "kk", 1), "sigma2", 2), 
-                            "assigning variable sigma2_tt_kk");
+                            get_base1(get_base1(sigma, get_base1(tt, n, "tt", 1), "sigma", 1), get_base1(kk, n, "kk", 1), "sigma", 2), 
+                            "assigning variable sigma_tt_kk");
             }
             current_statement_begin__ = 93;
-            stan::math::assign(eta, inv_logit(elt_divide(subtract(raw_theta_tt_kk, add(beta_rr_qq, delta_qq_kk)), stan::math::sqrt(add(multiply(1.7, sigma2_tt_kk), square(stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_multi(qq), stan::model::nil_index_list()), "alpha")))))));
+            stan::math::assign(eta, inv_logit(elt_divide(subtract(raw_theta_tt_kk, add(beta_rr_qq, delta_qq_kk)), stan::math::sqrt(add(square(multiply(1.7, sigma_tt_kk)), square(stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_multi(qq), stan::model::nil_index_list()), "alpha")))))));
             current_statement_begin__ = 94;
             stan::math::assign(a, multiply(phi, eta));
             current_statement_begin__ = 95;
@@ -1026,36 +1026,36 @@ public:
                 }
             }
             current_statement_begin__ = 42;
-            size_t raw_sigma2_k_0_max__ = T;
-            size_t raw_sigma2_j_1_max__ = K;
-            for (size_t k_0__ = 0; k_0__ < raw_sigma2_k_0_max__; ++k_0__) {
-                for (size_t j_1__ = 0; j_1__ < raw_sigma2_j_1_max__; ++j_1__) {
-                    if (stan::math::is_uninitialized(raw_sigma2[k_0__](j_1__))) {
+            size_t raw_sigma_k_0_max__ = T;
+            size_t raw_sigma_j_1_max__ = K;
+            for (size_t k_0__ = 0; k_0__ < raw_sigma_k_0_max__; ++k_0__) {
+                for (size_t j_1__ = 0; j_1__ < raw_sigma_j_1_max__; ++j_1__) {
+                    if (stan::math::is_uninitialized(raw_sigma[k_0__](j_1__))) {
                         std::stringstream msg__;
-                        msg__ << "Undefined transformed parameter: raw_sigma2" << "[" << k_0__ << "]" << "(" << j_1__ << ")";
-                        stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable raw_sigma2: ") + msg__.str()), current_statement_begin__, prog_reader__());
+                        msg__ << "Undefined transformed parameter: raw_sigma" << "[" << k_0__ << "]" << "(" << j_1__ << ")";
+                        stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable raw_sigma: ") + msg__.str()), current_statement_begin__, prog_reader__());
                     }
                 }
             }
             current_statement_begin__ = 43;
-            size_t sigma2_k_0_max__ = T;
-            size_t sigma2_j_1_max__ = K;
-            for (size_t k_0__ = 0; k_0__ < sigma2_k_0_max__; ++k_0__) {
-                for (size_t j_1__ = 0; j_1__ < sigma2_j_1_max__; ++j_1__) {
-                    if (stan::math::is_uninitialized(sigma2[k_0__](j_1__))) {
+            size_t sigma_k_0_max__ = T;
+            size_t sigma_j_1_max__ = K;
+            for (size_t k_0__ = 0; k_0__ < sigma_k_0_max__; ++k_0__) {
+                for (size_t j_1__ = 0; j_1__ < sigma_j_1_max__; ++j_1__) {
+                    if (stan::math::is_uninitialized(sigma[k_0__](j_1__))) {
                         std::stringstream msg__;
-                        msg__ << "Undefined transformed parameter: sigma2" << "[" << k_0__ << "]" << "(" << j_1__ << ")";
-                        stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable sigma2: ") + msg__.str()), current_statement_begin__, prog_reader__());
+                        msg__ << "Undefined transformed parameter: sigma" << "[" << k_0__ << "]" << "(" << j_1__ << ")";
+                        stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable sigma: ") + msg__.str()), current_statement_begin__, prog_reader__());
                     }
                 }
             }
             current_statement_begin__ = 44;
-            size_t sigma2_tt_kk_j_1_max__ = N;
-            for (size_t j_1__ = 0; j_1__ < sigma2_tt_kk_j_1_max__; ++j_1__) {
-                if (stan::math::is_uninitialized(sigma2_tt_kk(j_1__))) {
+            size_t sigma_tt_kk_j_1_max__ = N;
+            for (size_t j_1__ = 0; j_1__ < sigma_tt_kk_j_1_max__; ++j_1__) {
+                if (stan::math::is_uninitialized(sigma_tt_kk(j_1__))) {
                     std::stringstream msg__;
-                    msg__ << "Undefined transformed parameter: sigma2_tt_kk" << "(" << j_1__ << ")";
-                    stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable sigma2_tt_kk: ") + msg__.str()), current_statement_begin__, prog_reader__());
+                    msg__ << "Undefined transformed parameter: sigma_tt_kk" << "(" << j_1__ << ")";
+                    stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable sigma_tt_kk: ") + msg__.str()), current_statement_begin__, prog_reader__());
                 }
             }
             current_statement_begin__ = 45;
@@ -1120,19 +1120,19 @@ public:
             current_statement_begin__ = 111;
             lp_accum__.add(std_normal_log<propto__>(theta_init));
             current_statement_begin__ = 112;
-            lp_accum__.add(std_normal_log<propto__>(sigma2_init));
+            lp_accum__.add(std_normal_log<propto__>(sigma_init));
             current_statement_begin__ = 113;
             for (int t = 1; t <= T; ++t) {
 
                 current_statement_begin__ = 114;
                 lp_accum__.add(std_normal_log<propto__>(get_base1(raw_theta_N01, t, "raw_theta_N01", 1)));
                 current_statement_begin__ = 115;
-                lp_accum__.add(std_normal_log<propto__>(get_base1(raw_sigma2_N01, t, "raw_sigma2_N01", 1)));
+                lp_accum__.add(std_normal_log<propto__>(get_base1(raw_sigma_N01, t, "raw_sigma_N01", 1)));
             }
             current_statement_begin__ = 117;
             lp_accum__.add(std_normal_log<propto__>(sd_theta_evolve));
             current_statement_begin__ = 118;
-            lp_accum__.add(std_normal_log<propto__>(sd_sigma2_evolve));
+            lp_accum__.add(std_normal_log<propto__>(sd_sigma_evolve));
 
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -1167,9 +1167,9 @@ public:
         names__.push_back("raw_theta_N01");
         names__.push_back("sd_theta_evolve");
         names__.push_back("theta_init");
-        names__.push_back("raw_sigma2_N01");
-        names__.push_back("sd_sigma2_evolve");
-        names__.push_back("sigma2_init");
+        names__.push_back("raw_sigma_N01");
+        names__.push_back("sd_sigma_evolve");
+        names__.push_back("sigma_init");
         names__.push_back("phi");
         names__.push_back("beta");
         names__.push_back("beta_rr_qq");
@@ -1180,9 +1180,9 @@ public:
         names__.push_back("raw_theta");
         names__.push_back("theta");
         names__.push_back("raw_theta_tt_kk");
-        names__.push_back("raw_sigma2");
-        names__.push_back("sigma2");
-        names__.push_back("sigma2_tt_kk");
+        names__.push_back("raw_sigma");
+        names__.push_back("sigma");
+        names__.push_back("sigma_tt_kk");
         names__.push_back("eta");
         names__.push_back("a");
         names__.push_back("b");
@@ -1372,27 +1372,27 @@ public:
             vars__.push_back(theta_init(j_1__));
         }
 
-        std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > raw_sigma2_N01;
-        size_t raw_sigma2_N01_d_0_max__ = T;
-        raw_sigma2_N01.reserve(raw_sigma2_N01_d_0_max__);
-        for (size_t d_0__ = 0; d_0__ < raw_sigma2_N01_d_0_max__; ++d_0__) {
-            raw_sigma2_N01.push_back(in__.row_vector_constrain(K));
+        std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > raw_sigma_N01;
+        size_t raw_sigma_N01_d_0_max__ = T;
+        raw_sigma_N01.reserve(raw_sigma_N01_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < raw_sigma_N01_d_0_max__; ++d_0__) {
+            raw_sigma_N01.push_back(in__.row_vector_constrain(K));
         }
-        size_t raw_sigma2_N01_j_1_max__ = K;
-        size_t raw_sigma2_N01_k_0_max__ = T;
-        for (size_t j_1__ = 0; j_1__ < raw_sigma2_N01_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < raw_sigma2_N01_k_0_max__; ++k_0__) {
-                vars__.push_back(raw_sigma2_N01[k_0__](j_1__));
+        size_t raw_sigma_N01_j_1_max__ = K;
+        size_t raw_sigma_N01_k_0_max__ = T;
+        for (size_t j_1__ = 0; j_1__ < raw_sigma_N01_j_1_max__; ++j_1__) {
+            for (size_t k_0__ = 0; k_0__ < raw_sigma_N01_k_0_max__; ++k_0__) {
+                vars__.push_back(raw_sigma_N01[k_0__](j_1__));
             }
         }
 
-        double sd_sigma2_evolve = in__.scalar_lb_constrain(0);
-        vars__.push_back(sd_sigma2_evolve);
+        double sd_sigma_evolve = in__.scalar_lb_constrain(0);
+        vars__.push_back(sd_sigma_evolve);
 
-        Eigen::Matrix<double, 1, Eigen::Dynamic> sigma2_init = in__.row_vector_constrain(K);
-        size_t sigma2_init_j_1_max__ = K;
-        for (size_t j_1__ = 0; j_1__ < sigma2_init_j_1_max__; ++j_1__) {
-            vars__.push_back(sigma2_init(j_1__));
+        Eigen::Matrix<double, 1, Eigen::Dynamic> sigma_init = in__.row_vector_constrain(K);
+        size_t sigma_init_j_1_max__ = K;
+        for (size_t j_1__ = 0; j_1__ < sigma_init_j_1_max__; ++j_1__) {
+            vars__.push_back(sigma_init(j_1__));
         }
 
         double phi = in__.scalar_lb_constrain(0);
@@ -1469,24 +1469,24 @@ public:
             stan::math::fill(raw_theta_tt_kk, DUMMY_VAR__);
 
             current_statement_begin__ = 42;
-            validate_non_negative_index("raw_sigma2", "K", K);
-            validate_non_negative_index("raw_sigma2", "T", T);
-            std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > raw_sigma2(T, Eigen::Matrix<double, 1, Eigen::Dynamic>(K));
-            stan::math::initialize(raw_sigma2, DUMMY_VAR__);
-            stan::math::fill(raw_sigma2, DUMMY_VAR__);
+            validate_non_negative_index("raw_sigma", "K", K);
+            validate_non_negative_index("raw_sigma", "T", T);
+            std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > raw_sigma(T, Eigen::Matrix<double, 1, Eigen::Dynamic>(K));
+            stan::math::initialize(raw_sigma, DUMMY_VAR__);
+            stan::math::fill(raw_sigma, DUMMY_VAR__);
 
             current_statement_begin__ = 43;
-            validate_non_negative_index("sigma2", "K", K);
-            validate_non_negative_index("sigma2", "T", T);
-            std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > sigma2(T, Eigen::Matrix<double, 1, Eigen::Dynamic>(K));
-            stan::math::initialize(sigma2, DUMMY_VAR__);
-            stan::math::fill(sigma2, DUMMY_VAR__);
+            validate_non_negative_index("sigma", "K", K);
+            validate_non_negative_index("sigma", "T", T);
+            std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic> > sigma(T, Eigen::Matrix<double, 1, Eigen::Dynamic>(K));
+            stan::math::initialize(sigma, DUMMY_VAR__);
+            stan::math::fill(sigma, DUMMY_VAR__);
 
             current_statement_begin__ = 44;
-            validate_non_negative_index("sigma2_tt_kk", "N", N);
-            Eigen::Matrix<double, Eigen::Dynamic, 1> sigma2_tt_kk(N);
-            stan::math::initialize(sigma2_tt_kk, DUMMY_VAR__);
-            stan::math::fill(sigma2_tt_kk, DUMMY_VAR__);
+            validate_non_negative_index("sigma_tt_kk", "N", N);
+            Eigen::Matrix<double, Eigen::Dynamic, 1> sigma_tt_kk(N);
+            stan::math::initialize(sigma_tt_kk, DUMMY_VAR__);
+            stan::math::fill(sigma_tt_kk, DUMMY_VAR__);
 
             current_statement_begin__ = 45;
             validate_non_negative_index("eta", "N", N);
@@ -1572,15 +1572,15 @@ public:
                         Phi_approx(subtract(theta_init, .5)), 
                         "assigning variable theta");
             current_statement_begin__ = 74;
-            stan::model::assign(raw_sigma2, 
+            stan::model::assign(raw_sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        sigma2_init, 
-                        "assigning variable raw_sigma2");
+                        sigma_init, 
+                        "assigning variable raw_sigma");
             current_statement_begin__ = 75;
-            stan::model::assign(sigma2, 
+            stan::model::assign(sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        multiply(Phi_approx(sigma2_init), .25), 
-                        "assigning variable sigma2");
+                        multiply(Phi_approx(sigma_init), .5), 
+                        "assigning variable sigma");
             current_statement_begin__ = 78;
             for (int t = 2; t <= T; ++t) {
 
@@ -1595,15 +1595,15 @@ public:
                             Phi_approx(subtract(get_base1(raw_theta, t, "raw_theta", 1), .5)), 
                             "assigning variable theta");
                 current_statement_begin__ = 81;
-                stan::model::assign(raw_sigma2, 
+                stan::model::assign(raw_sigma, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            add(get_base1(raw_sigma2, (t - 1), "raw_sigma2", 1), multiply(sd_sigma2_evolve, get_base1(raw_sigma2_N01, t, "raw_sigma2_N01", 1))), 
-                            "assigning variable raw_sigma2");
+                            add(get_base1(raw_sigma, (t - 1), "raw_sigma", 1), multiply(sd_sigma_evolve, get_base1(raw_sigma_N01, t, "raw_sigma_N01", 1))), 
+                            "assigning variable raw_sigma");
                 current_statement_begin__ = 82;
-                stan::model::assign(sigma2, 
+                stan::model::assign(sigma, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            multiply(Phi_approx(get_base1(raw_sigma2, t, "raw_sigma2", 1)), .25), 
-                            "assigning variable sigma2");
+                            multiply(Phi_approx(get_base1(raw_sigma, t, "raw_sigma", 1)), .5), 
+                            "assigning variable sigma");
             }
             current_statement_begin__ = 85;
             for (int n = 1; n <= N; ++n) {
@@ -1624,13 +1624,13 @@ public:
                             get_base1(get_base1(raw_theta, get_base1(tt, n, "tt", 1), "raw_theta", 1), get_base1(kk, n, "kk", 1), "raw_theta", 2), 
                             "assigning variable raw_theta_tt_kk");
                 current_statement_begin__ = 89;
-                stan::model::assign(sigma2_tt_kk, 
+                stan::model::assign(sigma_tt_kk, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
-                            get_base1(get_base1(sigma2, get_base1(tt, n, "tt", 1), "sigma2", 1), get_base1(kk, n, "kk", 1), "sigma2", 2), 
-                            "assigning variable sigma2_tt_kk");
+                            get_base1(get_base1(sigma, get_base1(tt, n, "tt", 1), "sigma", 1), get_base1(kk, n, "kk", 1), "sigma", 2), 
+                            "assigning variable sigma_tt_kk");
             }
             current_statement_begin__ = 93;
-            stan::math::assign(eta, inv_logit(elt_divide(subtract(raw_theta_tt_kk, add(beta_rr_qq, delta_qq_kk)), stan::math::sqrt(add(multiply(1.7, sigma2_tt_kk), square(stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_multi(qq), stan::model::nil_index_list()), "alpha")))))));
+            stan::math::assign(eta, inv_logit(elt_divide(subtract(raw_theta_tt_kk, add(beta_rr_qq, delta_qq_kk)), stan::math::sqrt(add(square(multiply(1.7, sigma_tt_kk)), square(stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_multi(qq), stan::model::nil_index_list()), "alpha")))))));
             current_statement_begin__ = 94;
             stan::math::assign(a, multiply(phi, eta));
             current_statement_begin__ = 95;
@@ -1704,23 +1704,23 @@ public:
                 for (size_t j_1__ = 0; j_1__ < raw_theta_tt_kk_j_1_max__; ++j_1__) {
                     vars__.push_back(raw_theta_tt_kk(j_1__));
                 }
-                size_t raw_sigma2_j_1_max__ = K;
-                size_t raw_sigma2_k_0_max__ = T;
-                for (size_t j_1__ = 0; j_1__ < raw_sigma2_j_1_max__; ++j_1__) {
-                    for (size_t k_0__ = 0; k_0__ < raw_sigma2_k_0_max__; ++k_0__) {
-                        vars__.push_back(raw_sigma2[k_0__](j_1__));
+                size_t raw_sigma_j_1_max__ = K;
+                size_t raw_sigma_k_0_max__ = T;
+                for (size_t j_1__ = 0; j_1__ < raw_sigma_j_1_max__; ++j_1__) {
+                    for (size_t k_0__ = 0; k_0__ < raw_sigma_k_0_max__; ++k_0__) {
+                        vars__.push_back(raw_sigma[k_0__](j_1__));
                     }
                 }
-                size_t sigma2_j_1_max__ = K;
-                size_t sigma2_k_0_max__ = T;
-                for (size_t j_1__ = 0; j_1__ < sigma2_j_1_max__; ++j_1__) {
-                    for (size_t k_0__ = 0; k_0__ < sigma2_k_0_max__; ++k_0__) {
-                        vars__.push_back(sigma2[k_0__](j_1__));
+                size_t sigma_j_1_max__ = K;
+                size_t sigma_k_0_max__ = T;
+                for (size_t j_1__ = 0; j_1__ < sigma_j_1_max__; ++j_1__) {
+                    for (size_t k_0__ = 0; k_0__ < sigma_k_0_max__; ++k_0__) {
+                        vars__.push_back(sigma[k_0__](j_1__));
                     }
                 }
-                size_t sigma2_tt_kk_j_1_max__ = N;
-                for (size_t j_1__ = 0; j_1__ < sigma2_tt_kk_j_1_max__; ++j_1__) {
-                    vars__.push_back(sigma2_tt_kk(j_1__));
+                size_t sigma_tt_kk_j_1_max__ = N;
+                for (size_t j_1__ = 0; j_1__ < sigma_tt_kk_j_1_max__; ++j_1__) {
+                    vars__.push_back(sigma_tt_kk(j_1__));
                 }
                 size_t eta_j_1_max__ = N;
                 for (size_t j_1__ = 0; j_1__ < eta_j_1_max__; ++j_1__) {
@@ -1863,22 +1863,22 @@ public:
             param_name_stream__ << "theta_init" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t raw_sigma2_N01_j_1_max__ = K;
-        size_t raw_sigma2_N01_k_0_max__ = T;
-        for (size_t j_1__ = 0; j_1__ < raw_sigma2_N01_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < raw_sigma2_N01_k_0_max__; ++k_0__) {
+        size_t raw_sigma_N01_j_1_max__ = K;
+        size_t raw_sigma_N01_k_0_max__ = T;
+        for (size_t j_1__ = 0; j_1__ < raw_sigma_N01_j_1_max__; ++j_1__) {
+            for (size_t k_0__ = 0; k_0__ < raw_sigma_N01_k_0_max__; ++k_0__) {
                 param_name_stream__.str(std::string());
-                param_name_stream__ << "raw_sigma2_N01" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
+                param_name_stream__ << "raw_sigma_N01" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
         }
         param_name_stream__.str(std::string());
-        param_name_stream__ << "sd_sigma2_evolve";
+        param_name_stream__ << "sd_sigma_evolve";
         param_names__.push_back(param_name_stream__.str());
-        size_t sigma2_init_j_1_max__ = K;
-        for (size_t j_1__ = 0; j_1__ < sigma2_init_j_1_max__; ++j_1__) {
+        size_t sigma_init_j_1_max__ = K;
+        for (size_t j_1__ = 0; j_1__ < sigma_init_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "sigma2_init" << '.' << j_1__ + 1;
+            param_name_stream__ << "sigma_init" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
         param_name_stream__.str(std::string());
@@ -1957,28 +1957,28 @@ public:
                 param_name_stream__ << "raw_theta_tt_kk" << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
-            size_t raw_sigma2_j_1_max__ = K;
-            size_t raw_sigma2_k_0_max__ = T;
-            for (size_t j_1__ = 0; j_1__ < raw_sigma2_j_1_max__; ++j_1__) {
-                for (size_t k_0__ = 0; k_0__ < raw_sigma2_k_0_max__; ++k_0__) {
+            size_t raw_sigma_j_1_max__ = K;
+            size_t raw_sigma_k_0_max__ = T;
+            for (size_t j_1__ = 0; j_1__ < raw_sigma_j_1_max__; ++j_1__) {
+                for (size_t k_0__ = 0; k_0__ < raw_sigma_k_0_max__; ++k_0__) {
                     param_name_stream__.str(std::string());
-                    param_name_stream__ << "raw_sigma2" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
+                    param_name_stream__ << "raw_sigma" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                     param_names__.push_back(param_name_stream__.str());
                 }
             }
-            size_t sigma2_j_1_max__ = K;
-            size_t sigma2_k_0_max__ = T;
-            for (size_t j_1__ = 0; j_1__ < sigma2_j_1_max__; ++j_1__) {
-                for (size_t k_0__ = 0; k_0__ < sigma2_k_0_max__; ++k_0__) {
+            size_t sigma_j_1_max__ = K;
+            size_t sigma_k_0_max__ = T;
+            for (size_t j_1__ = 0; j_1__ < sigma_j_1_max__; ++j_1__) {
+                for (size_t k_0__ = 0; k_0__ < sigma_k_0_max__; ++k_0__) {
                     param_name_stream__.str(std::string());
-                    param_name_stream__ << "sigma2" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
+                    param_name_stream__ << "sigma" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                     param_names__.push_back(param_name_stream__.str());
                 }
             }
-            size_t sigma2_tt_kk_j_1_max__ = N;
-            for (size_t j_1__ = 0; j_1__ < sigma2_tt_kk_j_1_max__; ++j_1__) {
+            size_t sigma_tt_kk_j_1_max__ = N;
+            for (size_t j_1__ = 0; j_1__ < sigma_tt_kk_j_1_max__; ++j_1__) {
                 param_name_stream__.str(std::string());
-                param_name_stream__ << "sigma2_tt_kk" << '.' << j_1__ + 1;
+                param_name_stream__ << "sigma_tt_kk" << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
             size_t eta_j_1_max__ = N;
@@ -2072,22 +2072,22 @@ public:
             param_name_stream__ << "theta_init" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t raw_sigma2_N01_j_1_max__ = K;
-        size_t raw_sigma2_N01_k_0_max__ = T;
-        for (size_t j_1__ = 0; j_1__ < raw_sigma2_N01_j_1_max__; ++j_1__) {
-            for (size_t k_0__ = 0; k_0__ < raw_sigma2_N01_k_0_max__; ++k_0__) {
+        size_t raw_sigma_N01_j_1_max__ = K;
+        size_t raw_sigma_N01_k_0_max__ = T;
+        for (size_t j_1__ = 0; j_1__ < raw_sigma_N01_j_1_max__; ++j_1__) {
+            for (size_t k_0__ = 0; k_0__ < raw_sigma_N01_k_0_max__; ++k_0__) {
                 param_name_stream__.str(std::string());
-                param_name_stream__ << "raw_sigma2_N01" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
+                param_name_stream__ << "raw_sigma_N01" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
         }
         param_name_stream__.str(std::string());
-        param_name_stream__ << "sd_sigma2_evolve";
+        param_name_stream__ << "sd_sigma_evolve";
         param_names__.push_back(param_name_stream__.str());
-        size_t sigma2_init_j_1_max__ = K;
-        for (size_t j_1__ = 0; j_1__ < sigma2_init_j_1_max__; ++j_1__) {
+        size_t sigma_init_j_1_max__ = K;
+        for (size_t j_1__ = 0; j_1__ < sigma_init_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "sigma2_init" << '.' << j_1__ + 1;
+            param_name_stream__ << "sigma_init" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
         param_name_stream__.str(std::string());
@@ -2166,28 +2166,28 @@ public:
                 param_name_stream__ << "raw_theta_tt_kk" << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
-            size_t raw_sigma2_j_1_max__ = K;
-            size_t raw_sigma2_k_0_max__ = T;
-            for (size_t j_1__ = 0; j_1__ < raw_sigma2_j_1_max__; ++j_1__) {
-                for (size_t k_0__ = 0; k_0__ < raw_sigma2_k_0_max__; ++k_0__) {
+            size_t raw_sigma_j_1_max__ = K;
+            size_t raw_sigma_k_0_max__ = T;
+            for (size_t j_1__ = 0; j_1__ < raw_sigma_j_1_max__; ++j_1__) {
+                for (size_t k_0__ = 0; k_0__ < raw_sigma_k_0_max__; ++k_0__) {
                     param_name_stream__.str(std::string());
-                    param_name_stream__ << "raw_sigma2" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
+                    param_name_stream__ << "raw_sigma" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                     param_names__.push_back(param_name_stream__.str());
                 }
             }
-            size_t sigma2_j_1_max__ = K;
-            size_t sigma2_k_0_max__ = T;
-            for (size_t j_1__ = 0; j_1__ < sigma2_j_1_max__; ++j_1__) {
-                for (size_t k_0__ = 0; k_0__ < sigma2_k_0_max__; ++k_0__) {
+            size_t sigma_j_1_max__ = K;
+            size_t sigma_k_0_max__ = T;
+            for (size_t j_1__ = 0; j_1__ < sigma_j_1_max__; ++j_1__) {
+                for (size_t k_0__ = 0; k_0__ < sigma_k_0_max__; ++k_0__) {
                     param_name_stream__.str(std::string());
-                    param_name_stream__ << "sigma2" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
+                    param_name_stream__ << "sigma" << '.' << k_0__ + 1 << '.' << j_1__ + 1;
                     param_names__.push_back(param_name_stream__.str());
                 }
             }
-            size_t sigma2_tt_kk_j_1_max__ = N;
-            for (size_t j_1__ = 0; j_1__ < sigma2_tt_kk_j_1_max__; ++j_1__) {
+            size_t sigma_tt_kk_j_1_max__ = N;
+            for (size_t j_1__ = 0; j_1__ < sigma_tt_kk_j_1_max__; ++j_1__) {
                 param_name_stream__.str(std::string());
-                param_name_stream__ << "sigma2_tt_kk" << '.' << j_1__ + 1;
+                param_name_stream__ << "sigma_tt_kk" << '.' << j_1__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
             size_t eta_j_1_max__ = N;

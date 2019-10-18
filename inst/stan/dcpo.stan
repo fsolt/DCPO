@@ -51,7 +51,7 @@ transformed parameters{
     // ordered beta from (unordered) beta_raw, with fixed cut point
     for (r in 1:R) {
       if (fixed_cutp[q, r] == 1) {
-        beta[r, q] = .5;
+        beta[r, q] = 1;
       } else {
         if (r == 1) {
           beta[r, q] = beta_init[q];
@@ -70,14 +70,14 @@ transformed parameters{
 
   // first year values for raw_theta, theta, raw_sigma, and sigma
   raw_theta[1] = theta_init;
-  theta[1] = Phi_approx(theta_init - .5); // scale to [0, 1]; raw_theta = .5 -> 50% agreement when beta = .5
+  theta[1] = inv_logit(raw_theta[1] - 1); // scale to [0, 1]; raw_theta = 1 -> 50% agreement when beta = 1
   raw_sigma[1] = raw_sigma_init;
-  sigma[1] = Phi_approx(raw_sigma_init); // implies sigma ~ uniform(0, 1)
+  sigma[1] = Phi_approx(raw_sigma[1]); // implies sigma ~ uniform(0, 1)
 
   // later year values for raw_theta, theta, raw_sigma, and sigma
   for (t in 2:T) {
 	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
-	  theta[t] = Phi_approx(raw_theta[t] - .5);  // scale to [0, 1]; raw_theta = .5 -> 50% agreement when beta = .5
+	  theta[t] = inv_logit(raw_theta[t] - 1); // scale to [0, 1]; raw_theta = 1 -> 50% agreement when beta = 1
 	  raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
 	  sigma[t] = Phi_approx(raw_sigma[t]); // implies sigma ~ uniform(0, 1)
   }

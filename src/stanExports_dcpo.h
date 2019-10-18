@@ -808,7 +808,7 @@ public:
                         current_statement_begin__ = 54;
                         stan::model::assign(beta, 
                                     stan::model::cons_list(stan::model::index_uni(r), stan::model::cons_list(stan::model::index_uni(q), stan::model::nil_index_list())), 
-                                    .5, 
+                                    1, 
                                     "assigning variable beta");
                     } else {
 
@@ -858,7 +858,7 @@ public:
             current_statement_begin__ = 73;
             stan::model::assign(theta, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        Phi_approx(subtract(theta_init, .5)), 
+                        inv_logit(subtract(get_base1(raw_theta, 1, "raw_theta", 1), 1)), 
                         "assigning variable theta");
             current_statement_begin__ = 74;
             stan::model::assign(raw_sigma, 
@@ -868,7 +868,7 @@ public:
             current_statement_begin__ = 75;
             stan::model::assign(sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        Phi_approx(raw_sigma_init), 
+                        Phi_approx(get_base1(raw_sigma, 1, "raw_sigma", 1)), 
                         "assigning variable sigma");
             current_statement_begin__ = 78;
             for (int t = 2; t <= T; ++t) {
@@ -881,7 +881,7 @@ public:
                 current_statement_begin__ = 80;
                 stan::model::assign(theta, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            Phi_approx(subtract(get_base1(raw_theta, t, "raw_theta", 1), .5)), 
+                            inv_logit(subtract(get_base1(raw_theta, t, "raw_theta", 1), 1)), 
                             "assigning variable theta");
                 current_statement_begin__ = 81;
                 stan::model::assign(raw_sigma, 
@@ -1519,7 +1519,7 @@ public:
                         current_statement_begin__ = 54;
                         stan::model::assign(beta, 
                                     stan::model::cons_list(stan::model::index_uni(r), stan::model::cons_list(stan::model::index_uni(q), stan::model::nil_index_list())), 
-                                    .5, 
+                                    1, 
                                     "assigning variable beta");
                     } else {
 
@@ -1569,7 +1569,7 @@ public:
             current_statement_begin__ = 73;
             stan::model::assign(theta, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        Phi_approx(subtract(theta_init, .5)), 
+                        inv_logit(subtract(get_base1(raw_theta, 1, "raw_theta", 1), 1)), 
                         "assigning variable theta");
             current_statement_begin__ = 74;
             stan::model::assign(raw_sigma, 
@@ -1579,7 +1579,7 @@ public:
             current_statement_begin__ = 75;
             stan::model::assign(sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        Phi_approx(raw_sigma_init), 
+                        Phi_approx(get_base1(raw_sigma, 1, "raw_sigma", 1)), 
                         "assigning variable sigma");
             current_statement_begin__ = 78;
             for (int t = 2; t <= T; ++t) {
@@ -1592,7 +1592,7 @@ public:
                 current_statement_begin__ = 80;
                 stan::model::assign(theta, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            Phi_approx(subtract(get_base1(raw_theta, t, "raw_theta", 1), .5)), 
+                            inv_logit(subtract(get_base1(raw_theta, t, "raw_theta", 1), 1)), 
                             "assigning variable theta");
                 current_statement_begin__ = 81;
                 stan::model::assign(raw_sigma, 

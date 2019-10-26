@@ -868,7 +868,7 @@ public:
             current_statement_begin__ = 75;
             stan::model::assign(sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        Phi_approx(get_base1(raw_sigma, 1, "raw_sigma", 1)), 
+                        stan::math::exp(get_base1(raw_sigma, 1, "raw_sigma", 1)), 
                         "assigning variable sigma");
             current_statement_begin__ = 78;
             for (int t = 2; t <= T; ++t) {
@@ -891,7 +891,7 @@ public:
                 current_statement_begin__ = 82;
                 stan::model::assign(sigma, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            Phi_approx(get_base1(raw_sigma, t, "raw_sigma", 1)), 
+                            stan::math::exp(get_base1(raw_sigma, t, "raw_sigma", 1)), 
                             "assigning variable sigma");
             }
             current_statement_begin__ = 85;
@@ -1579,7 +1579,7 @@ public:
             current_statement_begin__ = 75;
             stan::model::assign(sigma, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
-                        Phi_approx(get_base1(raw_sigma, 1, "raw_sigma", 1)), 
+                        stan::math::exp(get_base1(raw_sigma, 1, "raw_sigma", 1)), 
                         "assigning variable sigma");
             current_statement_begin__ = 78;
             for (int t = 2; t <= T; ++t) {
@@ -1602,7 +1602,7 @@ public:
                 current_statement_begin__ = 82;
                 stan::model::assign(sigma, 
                             stan::model::cons_list(stan::model::index_uni(t), stan::model::nil_index_list()), 
-                            Phi_approx(get_base1(raw_sigma, t, "raw_sigma", 1)), 
+                            stan::math::exp(get_base1(raw_sigma, t, "raw_sigma", 1)), 
                             "assigning variable sigma");
             }
             current_statement_begin__ = 85;

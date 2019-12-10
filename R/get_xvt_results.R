@@ -91,9 +91,12 @@ xvt <- function(dcpo_xvt_output, ci) {
     dplyr::nth(-2) %>%
     dplyr::filter(test == 0) %>%
     dplyr::group_by(country) %>%
-    dplyr::mutate(country_mean = mean(y_r/n_r)) %>%
-    dplyr::ungroup()
-  country_mean_mae <- mean(abs((country_mean$y_r/country_mean$n_r - country_mean$country_mean))) %>%
+    dplyr::summarize(country_mean = mean(y_r/n_r))
+
+  cmmae_test <- test_data %>%
+    left_join(country_mean, by = "country")
+
+  country_mean_mae <- mean(abs((cmmae_test$y_r/cmmae_test$n_r - cmmae_test$country_mean))) %>%
     round(3)
 
   improv_vs_cmmae <- round((country_mean_mae - model_mae)/country_mean_mae * 100, 1)

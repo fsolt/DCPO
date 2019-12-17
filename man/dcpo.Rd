@@ -26,3 +26,16 @@ by \code{dcpo_setup}, estimates a latent variable of public opinion.  See \code{
 additional options; \code{stan} defaults reset by \code{dcpo} are \code{seed = 324, thin = 2,}
 \code{cores = min(stan_args$chains, parallel::detectCores()/2),} and \code{control <- list(adapt_delta = 0.99, stepsize = 0.005, max_treedepth = 14)}
 }
+\examples{
+\dontrun{
+
+demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
+
+demsup_data <- format_dcpo(demsup %>% with_min_yrs(3),
+                           scale_q = "church_21",
+                           scale_cp = 2)
+
+out1 <- dcpo(demsup_data)
+}
+
+}

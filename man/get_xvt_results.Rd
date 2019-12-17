@@ -15,18 +15,18 @@ get_xvt_results(dcpo_xvt_output, ci = 80)
 a stanfit object
 }
 \description{
-\code{get_xvt_results} performs a single cross-validation test for dcpo's Model 5 estimates of cross-national public opinion
+\code{get_xvt_results} performs a single cross-validation test for dcpo's estimates of cross-national public opinion
 }
 \examples{
 \dontrun{
 
 demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 
-demsup_data <- format_dcpo(demsup \%>\% with_min_yrs(3),
+demsup_data <- format_dcpo(demsup %>% with_min_yrs(3),
                            scale_q = "church_21",
                            scale_cp = 2)
 
-# Single cross-validation test with 25\% test set
+# Single cross-validation test with 25% test set
 dcpo_demsup_xvtest <- dcpo_xvt(demsup_data,
                            number_of_folds = 4,
                            iter = 150)

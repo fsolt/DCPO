@@ -32,3 +32,4 @@ VignetteBuilder: knitr
 SystemRequirements: GNU make
 NeedsCompilation: yes
 RoxygenNote: 7.0.0
+Biarch: true

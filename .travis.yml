@@ -27,7 +27,7 @@ matrix:
 
 before_install:
   - mkdir -p ~/.R/
-  - echo "CXX14 = clang++-6.0 -fPIC -flto=2" >> ~/.R/Makevars
+  - echo "CXX14 = clang++-6.0 -fPIC -g0" >> ~/.R/Makevars
   - echo "CXX14FLAGS = -mtune=native -march=native -Wno-unused-variable -Wno-unused-function -Wno-unused-local-typedefs -Wno-ignored-attributes -Wno-deprecated-declarations -Wno-attributes -O3" >> ~/.R/Makevars
 
   ##- echo "CXX14FLAGS = `R CMD config CXXFLAGS` -pedantic -g0 -fPIC" >> ~/.R/R_Makevars

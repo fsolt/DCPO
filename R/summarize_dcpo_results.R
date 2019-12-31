@@ -36,6 +36,9 @@ summarize_dcpo_results <- function(dcpo_input,
                                  dcpo_output,
                                  pars = c("theta", "sigma", "alpha", "beta", "delta"),
                                  probs = c(.1, .9)) {
+
+  question <- country <- year <- parameter <- kk <- tt <- qq <- rr <- NULL
+
   dat <- dcpo_input$data
 
   qcodes <- dat %>%
@@ -59,12 +62,12 @@ summarize_dcpo_results <- function(dcpo_input,
         as.data.frame() %>%
         tibble::rownames_to_column("parameter") %>%
         tibble::as_tibble() %>%
-        dplyr::mutate(tt = as.numeric(str_replace(parameter,
-                                                  "theta\\[(\\d+),\\d+\\]",
-                                                  "\\1")),
-                      kk = as.numeric(str_replace(parameter,
-                                                  "theta\\[\\d+,(\\d+)\\]",
-                                                  "\\1")),) %>%
+        dplyr::mutate(tt = as.numeric(gsub("theta\\[(\\d+),\\d+\\]",
+                                           "\\1",
+                                           parameter)),
+                      kk = as.numeric(gsub("theta\\[\\d+,(\\d+)\\]",
+                                           "\\1",
+                                           parameter))) %>%
         dplyr::left_join(kcodes, by = "kk") %>%
         dplyr::left_join(tcodes, by = "tt") %>%
         dplyr::arrange(kk, tt)
@@ -74,12 +77,12 @@ summarize_dcpo_results <- function(dcpo_input,
         as.data.frame() %>%
         tibble::rownames_to_column("parameter") %>%
         tibble::as_tibble() %>%
-        dplyr::mutate(tt = as.numeric(str_replace(parameter,
-                                                  "sigma\\[(\\d+),\\d+\\]",
-                                                  "\\1")),
-                      kk = as.numeric(str_replace(parameter,
-                                                  "sigma\\[\\d+,(\\d+)\\]",
-                                                  "\\1")),) %>%
+        dplyr::mutate(tt = as.numeric(gsub("sigma\\[(\\d+),\\d+\\]",
+                                           "\\1",
+                                           parameter)),
+                      kk = as.numeric(gsub("sigma\\[\\d+,(\\d+)\\]",
+                                           "\\1",
+                                           parameter))) %>%
         dplyr::left_join(kcodes, by = "kk") %>%
         dplyr::left_join(tcodes, by = "tt") %>%
         dplyr::arrange(kk, tt)
@@ -89,9 +92,9 @@ summarize_dcpo_results <- function(dcpo_input,
         as.data.frame() %>%
         tibble::rownames_to_column("parameter") %>%
         tibble::as_tibble() %>%
-        dplyr::mutate(qq = as.numeric(str_replace(parameter,
-                                                  "alpha\\[(\\d+)]",
-                                                  "\\1"))) %>%
+        dplyr::mutate(qq = as.numeric(gsub("alpha\\[(\\d+)]",
+                                           "\\1",
+                                           parameter))) %>%
         dplyr::left_join(qcodes, by = "qq") %>%
         dplyr::arrange(qq)
     } else if (par == "beta") {
@@ -100,12 +103,12 @@ summarize_dcpo_results <- function(dcpo_input,
         as.data.frame() %>%
         tibble::rownames_to_column("parameter") %>%
         tibble::as_tibble() %>%
-        dplyr::mutate(rr = as.numeric(str_replace(parameter,
-                                                  "beta\\[(\\d+),\\d+\\]",
-                                                  "\\1")),
-                      qq = as.numeric(str_replace(parameter,
-                                                  "beta\\[\\d+,(\\d+)\\]",
-                                                  "\\1")),)%>%
+        dplyr::mutate(rr = as.numeric(gsub("beta\\[(\\d+),\\d+\\]",
+                                           "\\1",
+                                           parameter)),
+                      qq = as.numeric(gsub("beta\\[(\\d+),\\d+\\]",
+                                           "\\1",
+                                           parameter)))%>%
         dplyr::left_join(qcodes, by = "qq") %>%
         dplyr::arrange(qq, rr)
     } else if (par == "delta") {
@@ -114,12 +117,12 @@ summarize_dcpo_results <- function(dcpo_input,
         as.data.frame() %>%
         tibble::rownames_to_column("parameter") %>%
         tibble::as_tibble() %>%
-        dplyr::mutate(qq = as.numeric(str_replace(parameter,
-                                                  "delta\\[(\\d+),\\d+\\]",
-                                                  "\\1")),
-                      kk = as.numeric(str_replace(parameter,
-                                                  "delta\\[\\d+,(\\d+)\\]",
-                                                  "\\1")),)%>%
+        dplyr::mutate(qq = as.numeric(gsub("delta\\[(\\d+),\\d+\\]",
+                                           "\\1",
+                                           parameter)),
+                      kk = as.numeric(gsub("delta\\[\\d+,(\\d+)\\]",
+                                           "\\1",
+                                           parameter)))%>%
         dplyr::left_join(qcodes, by = "qq") %>%
         dplyr::left_join(kcodes, by = "kk") %>%
         dplyr::arrange(qq)

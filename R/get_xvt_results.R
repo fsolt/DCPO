@@ -34,13 +34,16 @@
 #' @return a stanfit object
 #'
 #' @import rstan
-#' @importFrom dplyr mutate group_by summarize_if ungroup select mutate_at bind_rows first nth filter
+#' @importFrom dplyr mutate group_by summarize_if ungroup select mutate_at bind_rows first nth filter vars contains left_join
 #' @importFrom purrr map_df
 #' @importFrom tibble tibble rownames_to_column
 #' @importFrom stats quantile runif sd
 #'
 #' @export
 get_xvt_results <- function(dcpo_xvt_output, ci = 80) {
+
+  model <- country_name <- mae <- country_means <- improv_over_cmmae <- NULL
+
   kfc <- assess_kfold_convergence(dcpo_xvt_output)
   if (nrow(kfc) > 0) {
     cat("These estimates have not yet fully converged. Increase the number of iterations.\n")
@@ -73,6 +76,8 @@ get_xvt_results <- function(dcpo_xvt_output, ci = 80) {
 }
 
 xvt <- function(dcpo_xvt_output, ci) {
+  test <- country <- y_r <- n_r <- NULL
+
   test_data <- dcpo_xvt_output %>%
     dplyr::first() %>%
     dplyr::nth(-2) %>%
@@ -94,7 +99,7 @@ xvt <- function(dcpo_xvt_output, ci) {
     dplyr::summarize(country_mean = mean(y_r/n_r))
 
   cmmae_test <- test_data %>%
-    left_join(country_mean, by = "country")
+    dplyr::left_join(country_mean, by = "country")
 
   country_mean_mae <- mean(abs((cmmae_test$y_r/cmmae_test$n_r - cmmae_test$country_mean))) %>%
     round(3)
@@ -115,6 +120,7 @@ xvt <- function(dcpo_xvt_output, ci) {
 }
 
 assess_kfold_convergence <- function(dcpo_xvt_output) {
+  parameter <- mean <- se_mean <- sd <- `2.5%` <- `50%` <- `97.5%` <- n_eff <- Rhat <- fold <- NULL
   if (length(names(dcpo_xvt_output)[3]) > 0) {
     kfc <- dcpo_xvt_output %>%
       dplyr::nth(2) %>%

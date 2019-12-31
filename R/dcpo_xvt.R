@@ -37,7 +37,7 @@
 #' @return a stanfit object
 #'
 #' @import rstan
-#' @importFrom dplyr '%>%' group_by mutate ungroup arrange summarize filter mutate_at select
+#' @importFrom dplyr '%>%' group_by mutate ungroup arrange summarize filter mutate_at select mutate_all n_distinct vars matches pull
 #' @importFrom forcats as_factor
 #' @importFrom janitor clean_names
 #' @importFrom tidyr spread
@@ -51,6 +51,8 @@ dcpo_xvt <- function(dcpo_input,
                        fold_seed = 324,
                        chime = TRUE,
                        ...) {
+
+  country <- year <- question <- fold <- test <- kk <- tt <- qq <- rr <- n_r <- y_r <- n <- years <- countries <- `.` <- NULL
 
   set.seed(fold_seed)
 

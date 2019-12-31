@@ -1,5 +1,5 @@
 Package: DCPO
-Version: 0.5.0.0
+Version: 0.5.0
 Title: Dynamic Comparative Public Opinion
 Description: Estimates latent variables of public opinion cross-nationally and over time from survey data.
 Authors@R: person("Frederick", "Solt", email = "frederick-solt@uiowa.edu", role = c("aut",  "cre"))

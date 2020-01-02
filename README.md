@@ -1,4 +1,4 @@
-[![CRAN version](http://www.r-pkg.org/badges/version/DCPO)](https://cran.r-project.org/web/packages/DCPO/index.html) ![](http://cranlogs.r-pkg.org/badges/grand-total/DCPO) [![Travis-CI Build Status](https://travis-ci.org/fsolt/DCPO.svg?branch=master)](https://travis-ci.org/fsolt/DCPO)
+[![CRAN version](http://www.r-pkg.org/badges/version/DCPO)](https://CRAN.R-project.org/package=DCPO) ![](http://cranlogs.r-pkg.org/badges/grand-total/DCPO) [![Travis-CI Build Status](https://travis-ci.org/fsolt/DCPO.svg?branch=master)](https://travis-ci.org/fsolt/DCPO)
 
 ------------------------------------------------------------------------
 DCPO

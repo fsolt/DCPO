@@ -8,3 +8,4 @@ cleanup*
 R/get_surveys.R
 ^data-raw$
 ^\.travis\.yml$
+^CRAN-RELEASE$

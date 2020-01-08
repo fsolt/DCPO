@@ -6,7 +6,12 @@
 ## R CMD check results
 There were no ERRORs or WARNINGs.
 
-There was 1 NOTE:
+There were NOTES:
 
 ❯ checking for GNU extensions in Makefiles ... NOTE
   GNU make is a SystemRequirements.
+  
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: ‘Frederick Solt <frederick-solt@uiowa.edu>’
+
+New submission

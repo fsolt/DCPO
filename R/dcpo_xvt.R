@@ -14,7 +14,7 @@
 #' a complete k-fold cross-validation, call it repeatedly, changing only the fold_number argument.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'
 #' demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 #'

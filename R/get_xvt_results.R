@@ -6,7 +6,7 @@
 #' @param ci an integer indicating the desired width of credible interval for coverage testing; 80 is the default.
 #
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'
 #' demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 #'

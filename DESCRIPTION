@@ -1,9 +1,10 @@
 Package: DCPO
 Version: 0.5.0
 Title: Dynamic Comparative Public Opinion
-Description: Estimates latent variables of public opinion cross-nationally and over time from survey data.
+Description: Estimates latent variables of public opinion cross-nationally and over time from sparse and incomparable survey data.  'DCPO' uses a population-level graded response model with country-specific item bias terms. Sampling is conducted with 'Stan'.  References: Solt (2020) <doi:10.31235/osf.io/d5n9p>.
 Authors@R: c(
-    person("Frederick", "Solt", email = "frederick-solt@uiowa.edu", role = c("aut", "cre")))
+    person("Frederick", "Solt", email = "frederick-solt@uiowa.edu", role = c("aut", "cre")),
+    person("Trustees of", "Columbia University", role = "cph"))
 License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true

@@ -15,3 +15,7 @@ There were NOTES:
 Maintainer: ‘Frederick Solt <frederick-solt@uiowa.edu>’
 
 New submission
+
+
+## Copyright
+The copyright held by the Trustees of Columbia University in make_cc.R, licensed under GPL >= 3, is indicated via the ‘cph’ role in the ‘Authors@R’ field of the DESCRIPTION file.

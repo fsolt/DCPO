@@ -46,8 +46,8 @@ get_xvt_results <- function(dcpo_xvt_output, ci = 80) {
 
   kfc <- assess_kfold_convergence(dcpo_xvt_output)
   if (nrow(kfc) > 0) {
-    cat("These estimates have not yet fully converged. Increase the number of iterations.\n")
-    print(kfc)
+    warning("These estimates have not yet fully converged. Increase the number of iterations.\n")
+    warning(kfc)
   }
 
  if (length(names(dcpo_xvt_output)[3]) > 0) {

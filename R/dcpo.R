@@ -14,6 +14,7 @@
 #'
 #'@examples
 #' \donttest{
+#' library(tidyverse)
 #'
 #' demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 #'

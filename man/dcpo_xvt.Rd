@@ -39,6 +39,7 @@ a complete k-fold cross-validation, call it repeatedly, changing only the fold_n
 }
 \examples{
 \donttest{
+library(tidyverse)
 
 demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 

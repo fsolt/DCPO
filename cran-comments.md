@@ -24,4 +24,4 @@ Revised Description field of DESCRIPTION file to cite reference describing the m
 
 ## Second resubmission
 Employed warning() rather than cat() and print() in lines 49 and 50 of get_xvt_results.R
-In dcpo_xvt.R, dcpo_input_fold$T was renamed dcpo_input_fold$Time at line 99 to avoid any risk of confusion with TRUE
+In dcpo_xvt.R at line 99, used dcpo_input_fold$Time rather than dcpo_input_fold$T to avoid any risk of confusion with TRUE

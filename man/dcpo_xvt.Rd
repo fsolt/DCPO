@@ -20,7 +20,7 @@ dcpo_xvt(
 
 \item{number_of_folds}{an integer indicating the total number of folds}
 
-\item{fold_seed}{a seed for reproducably randomly assigning observations to folds; when a complete set of k-fold cross-validations is to be performed, the same seed should be used for all}
+\item{fold_seed}{a seed for reproducibly randomly assigning observations to folds; when a complete set of k-fold cross-validations is to be performed, the same seed should be used for all}
 
 \item{chime}{play chime when complete?}
 
@@ -38,7 +38,7 @@ a stanfit object
 a complete k-fold cross-validation, call it repeatedly, changing only the fold_number argument.
 }
 \examples{
-\dontrun{
+\donttest{
 
 demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 

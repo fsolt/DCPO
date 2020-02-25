@@ -18,7 +18,7 @@ a stanfit object
 \code{get_xvt_results} performs a single cross-validation test for dcpo's estimates of cross-national public opinion
 }
 \examples{
-\dontrun{
+\donttest{
 
 demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 

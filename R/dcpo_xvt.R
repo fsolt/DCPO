@@ -42,6 +42,7 @@
 #' @importFrom janitor clean_names
 #' @importFrom tidyr spread
 #' @importFrom beepr beep
+#' @importFrom stats setNames
 #'
 #' @export
 

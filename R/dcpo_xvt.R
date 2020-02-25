@@ -96,7 +96,7 @@ dcpo_xvt <- function(dcpo_input,
   stopifnot(sum(scale_item_matrix) == 1)
 
   dcpo_input_fold <- list( K          = max(as.numeric(dat$kk)),
-                           T          = max(dat$tt),
+                           Time       = max(dat$tt),
                            Q          = max(as.numeric(dat$qq)),
                            R          = max(dat$rr),
                            N          = nrow(dat %>% filter(!test)),
@@ -117,9 +117,11 @@ dcpo_xvt <- function(dcpo_input,
                            data       = dat,
                            data_args  = dcpo_input$data_args)
 
+  dcpo_input_fold_names <- c("K", "T", "Q", "R", "N", "kk", "tt", "qq", "rr", "y_r", "n_r", "N_test", "kk_test", "tt_test", "qq_test", "rr_test", "n_r_test", "fixed_cutp", "use_delta", "data", "data_args")
+
   dcpo_model <- stanmodels$dcpo_kfold
   stan_args <- list(object = dcpo_model,
-                    data = dcpo_input_fold,
+                    data = setNames(dcpo_input_fold, dcpo_input_fold_names),
                     ...)
   if (!length(stan_args$control)) {
     stan_args$control <- list(adapt_delta = 0.99, stepsize = 0.005, max_treedepth = 14)
@@ -138,7 +140,7 @@ dcpo_xvt <- function(dcpo_input,
   }
   dcpo_output_fold <- do.call(rstan::sampling, stan_args)
 
-  out1 <- list(dcpo_input_fold = dcpo_input_fold,
+  out1 <- list(dcpo_input_fold = setNames(dcpo_input_fold, dcpo_input_fold_names),
                dcpo_output_fold = dcpo_output_fold,
                xvt_args = list(fold_number = fold_number, number_of_folds = number_of_folds, fold_seed = fold_seed))
 

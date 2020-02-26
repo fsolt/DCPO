@@ -28,10 +28,9 @@ additional options; \code{stan} defaults reset by \code{dcpo} are \code{seed = 3
 }
 \examples{
 \donttest{
-
 demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
 
-demsup_data <- format_dcpo(demsup %>% with_min_yrs(3),
+demsup_data <- format_dcpo(with_min_yrs(demsup, 3),
                            scale_q = "church_21",
                            scale_cp = 2)
 

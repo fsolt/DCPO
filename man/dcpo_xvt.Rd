@@ -42,7 +42,7 @@ a complete k-fold cross-validation, call it repeatedly, changing only the fold_n
 demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            number_of_folds = 4,
                            iter = 150,
-                           chains = 2)  # 2 chains, 150 iterations for example/testing purposes only; use defaults
+                           chains = 2) # 2 chains/150 iterations for example only; use defaults
 }
 
 }

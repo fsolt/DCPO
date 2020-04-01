@@ -23,7 +23,7 @@ a stanfit object
 demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            number_of_folds = 4,
                            iter = 150,
-                           chains = 2)  # 2 chains, 150 iterations for example/testing purposes only; use defaults
+                           chains = 2) # 2 chains/150 iterations for example only; use defaults
 
 get_xvt_results(dcpo_demsup_xvtest)
 

@@ -8,9 +8,12 @@ There were no ERRORs or WARNINGs.
 
 There were NOTES:
 
-❯ checking for GNU extensions in Makefiles ... NOTE
+* checking for GNU extensions in Makefiles ... NOTE
   GNU make is a SystemRequirements.
 
 * checking data for non-ASCII characters ... NOTE
   Note: found 38 marked UTF-8 strings
   
+## Resubmission
+
+Revised all examples to spawn just two processes.

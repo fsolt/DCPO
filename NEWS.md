@@ -1,2 +1,5 @@
 ## Version 0.5.0
 1. Initial release to CRAN.
+
+## Version 0.5.1
+1. The package now exports `demsup_data` so that the examples do not need to create it (this makes CRAN happy).

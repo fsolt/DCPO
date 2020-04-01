@@ -39,12 +39,6 @@ a complete k-fold cross-validation, call it repeatedly, changing only the fold_n
 }
 \examples{
 \donttest{
-demsup <- read_csv(system.file("extdata", "all_data_demsupport.csv", package = "DCPOtools"))
-
-demsup_data <- format_dcpo(with_min_yrs(demsup, 3),
-                           scale_q = "church_21",
-                           scale_cp = 2)
-
 # Single cross-validation test with 25% test set
 demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            number_of_folds = 4,

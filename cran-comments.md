@@ -15,5 +15,6 @@ There were NOTES:
   Note: found 38 marked UTF-8 strings
   
 ## Resubmission
+This is a resubmission. In this version I have:
 
-Revised all examples to spawn just two processes.
+* Revised all examples to spawn just two processes.

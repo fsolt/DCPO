@@ -28,7 +28,7 @@ additional options; \code{stan} defaults reset by \code{dcpo} are \code{seed = 3
 }
 \examples{
 \donttest{
-out1 <- dcpo(demsup_data)
+out1 <- dcpo(demsup_data, chains = 2) # two chains (and so two cores) for example/testing purposes
 }
 
 }

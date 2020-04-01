@@ -20,17 +20,19 @@ a stanfit object
 \examples{
 \donttest{
 # Single cross-validation test with 25% test set
-dcpo_demsup_xvtest <- dcpo_xvt(demsup_data,
+demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            number_of_folds = 4,
-                           iter = 150)
+                           iter = 150,
+                           chains = 2) # two chains (and so two cores) for example/testing purposes
 
 get_xvt_results(dcpo_demsup_xvtest)
 
 # k-fold cross-validation with 10 folds (dcpo_demsup_kfold will be a list of stanfit objects)
-dcpo_demsup_kfold <- purrr::map(1:10, function(x) {
+demsup_kfold_10 <- purrr::map(1:10, function(x) {
                               dcpo_xvt(demsup_data,
                                          fold_number = x, # number_of_folds = 10 is the default
-                                         iter = 150)
+                                         iter = 150,
+                                         chains = 2) # two chains (and so two cores) for example/testing purposes
                                          })
 
 get_xvt_results(dcpo_demsup_kfold)

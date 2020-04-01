@@ -28,7 +28,7 @@ a tibble
 }
 \examples{
 \dontrun{
-out1 <- dcpo(demsup_data)
+out1 <- dcpo(demsup_data, chains = 2) # two chains (and so two cores) for example/testing purposes
 
 theta_results <- summarize_dcpo_results(dcpo_input = demsup_data,
                                         dcpo_output = out1,

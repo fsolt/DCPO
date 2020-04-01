@@ -14,7 +14,7 @@
 #'
 #'@examples
 #' \donttest{
-#' out1 <- dcpo(demsup_data, chains = 2) # two chains (and so two cores) for example/testing purposes
+#' out1 <- dcpo(demsup_data, chains = 2, iter = 150) # 2 chains, 150 iterations for example/testing purposes only; use defaults
 #' }
 #'
 #' @return a stanfit object

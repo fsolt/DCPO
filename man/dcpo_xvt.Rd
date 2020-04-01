@@ -42,14 +42,7 @@ a complete k-fold cross-validation, call it repeatedly, changing only the fold_n
 demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            number_of_folds = 4,
                            iter = 150,
-                           chains = 2) # two chains (and so two cores) for example/testing purposes
-
-# k-fold cross-validation with 10 folds (demsup_kfold_10 will be a list of stanfit objects)
-demsup_kfold_10 <- purrr::map(1:10, function(x) {
-                              dcpo_xvt(demsup_data,
-                                         fold_number = x, # number_of_folds = 10 is the default
-                                         iter = 150,
-                                         chains = 2) # two chains (and so two cores) for example/testing purposes
-                                         })
+                           chains = 2)  # 2 chains, 150 iterations for example/testing purposes only; use defaults
 }
+
 }

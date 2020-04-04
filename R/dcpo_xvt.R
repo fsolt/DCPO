@@ -24,7 +24,7 @@
 #' @return a stanfit object
 #'
 #' @import rstan
-#' @importFrom dplyr '%>%' group_by mutate ungroup arrange summarize filter mutate_at select mutate_all n_distinct vars matches pull
+#' @importFrom dplyr '%>%' group_by mutate ungroup arrange summarize filter mutate_at select mutate_all n_distinct vars matches pull if_else
 #' @importFrom forcats as_factor
 #' @importFrom janitor clean_names
 #' @importFrom tidyr spread

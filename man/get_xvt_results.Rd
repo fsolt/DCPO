@@ -25,7 +25,7 @@ demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            iter = 150,
                            chains = 2) # 2 chains/150 iterations for example only; use defaults
 
-get_xvt_results(dcpo_demsup_xvtest)
+get_xvt_results(demsup_xvtest_25pct)
 
 }
 }

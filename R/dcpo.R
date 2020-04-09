@@ -15,6 +15,7 @@
 #'@examples
 #' \donttest{
 #' out1 <- dcpo(demsup_data,
+#'              chime = FALSE,
 #'              chains = 2,
 #'              iter = 150) # 2 chains/150 iterations for example purposes only; use defaults
 #' }

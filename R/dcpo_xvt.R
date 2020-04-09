@@ -16,6 +16,7 @@
 #' \donttest{
 #' # Single cross-validation test with 25% test set
 #' demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
+#'                            chime = FALSE,
 #'                            number_of_folds = 4,
 #'                            iter = 150,
 #'                            chains = 2) # 2 chains/150 iterations for example only; use defaults

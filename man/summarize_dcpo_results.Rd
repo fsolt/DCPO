@@ -31,7 +31,7 @@ a tibble
 out1 <- dcpo(demsup_data,
              chime = FALSE,
              chains = 2,
-             iter = 150) # 2 chains/150 iterations for example purposes only; use defaults
+             iter = 250) # 2 chains/250 iterations for example purposes only; use defaults
 
 theta_results <- summarize_dcpo_results(dcpo_input = demsup_data,
                                         dcpo_output = out1,

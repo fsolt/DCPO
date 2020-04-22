@@ -16,7 +16,7 @@
 #' \donttest{
 #' out1 <- dcpo(demsup_data,
 #'              chains = 2,
-#'              iter = 250) # 2 chains/250 iterations for example purposes only; use defaults
+#'              iter = 300) # 2 chains/300 iterations for example purposes only; use defaults
 #' }
 #'
 #' @return a stanfit object

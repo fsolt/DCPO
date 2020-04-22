@@ -17,8 +17,8 @@
 #' # Single cross-validation test with 25% test set
 #' demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
 #'                            number_of_folds = 4,
-#'                            iter = 250,
-#'                            chains = 2) # 2 chains/250 iterations for example only; use defaults
+#'                            iter = 300,
+#'                            chains = 2) # 2 chains/300 iterations for example only; use defaults
 #' }
 #'
 #' @return a stanfit object

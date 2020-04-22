@@ -3,3 +3,6 @@
 
 ## Version 0.5.1
 1. The package now exports `demsup_data` so that the examples do not need to create it (this makes CRAN happy).
+
+## Version 0.5.2
+1. Revise examples to work consistently on CRAN's test suite

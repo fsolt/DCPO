@@ -14,7 +14,4 @@ There were NOTES:
 * checking data for non-ASCII characters ... NOTE
   Note: found 38 marked UTF-8 strings
   
-## Resubmission
-This is a resubmission. In this version I have:
-
-* Revised all examples to spawn just two processes.
+## This submission attempts to address the donttest issue found in 0.5.1 (which unfortunately I can't replicate on any of my test platforms).

@@ -12,13 +12,6 @@
 #' additional options; \code{stan} defaults reset by \code{dcpo} are \code{seed = 324, thin = 2,}
 #' \code{cores = min(stan_args$chains, parallel::detectCores()/2),} and \code{control <- list(adapt_delta = 0.99, stepsize = 0.005, max_treedepth = 14)}
 #'
-#'@examples
-
-#' out1 <- dcpo(demsup_data,
-#'              cores = 2,
-#'              iter = 300) # 2 cores/300 iterations for example purposes only; use defaults
-
-#'
 #' @return a stanfit object
 #'
 #' @import rstan

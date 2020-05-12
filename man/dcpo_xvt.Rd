@@ -36,13 +36,3 @@ a stanfit object
 \code{dcpo_xvt} performs a single cross-validation test of a DCPO estimation.  To perform
 a complete k-fold cross-validation, call it repeatedly, changing only the fold_number argument.
 }
-\examples{
-\donttest{
-# Single cross-validation test with 25% test set
-demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
-                           number_of_folds = 4,
-                           iter = 300,
-                           chains = 2) # 2 chains/300 iterations for example only; use defaults
-}
-
-}

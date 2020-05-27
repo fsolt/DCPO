@@ -17,3 +17,16 @@ a stanfit object
 \description{
 \code{get_xvt_results} performs a single cross-validation test for dcpo's estimates of cross-national public opinion
 }
+\examples{
+\donttest{
+# Single cross-validation test with 25% test set
+demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
+                           chime = FALSE,
+                           number_of_folds = 4,
+                           iter = 300,
+                           chains = 1) # 1 chain/300 iterations for example only; use defaults
+
+get_xvt_results(demsup_xvtest_25pct)
+}
+
+}

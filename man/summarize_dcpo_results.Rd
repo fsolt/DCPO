@@ -26,3 +26,16 @@ a tibble
 \description{
 \code{summarize_dcpo_results} is a convenience function that produces summary statistics of the main parameters of a DCPO stanfit object along with the relevant identifying information (country, year, question, and cutpoint).
 }
+\examples{
+\dontrun{
+out1 <- dcpo(demsup_data,
+             chime = FALSE,
+             chains = 1,
+             iter = 300) # 1 chain/300 iterations for example purposes only; use defaults
+
+theta_results <- summarize_dcpo_results(dcpo_input = demsup_data,
+                                        dcpo_output = out1,
+                                        pars = "theta")
+}
+
+}

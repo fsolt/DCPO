@@ -7,6 +7,18 @@
 #' @param pars a character vector of parameter names to be summarized from the \code{DCPO} model: theta (mean public opinion), sigma (polarization in public opinion), alpha (question dispersion), beta (question-cutpoint difficulty), and/or delta (country-specific question bias)
 #' @param probs a numeric vector of quantiles of interest; the default is c(.1, .9)
 #'
+#' @examples
+#' \dontrun{
+#' out1 <- dcpo(demsup_data,
+#'              chime = FALSE,
+#'              chains = 1,
+#'              iter = 300) # 1 chain/300 iterations for example purposes only; use defaults
+#'
+#' theta_results <- summarize_dcpo_results(dcpo_input = demsup_data,
+#'                                         dcpo_output = out1,
+#'                                         pars = "theta")
+#' }
+#'
 #' @return a tibble
 #'
 #' @importFrom rstan summary

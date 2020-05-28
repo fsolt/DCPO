@@ -8,7 +8,7 @@
 #' @param probs a numeric vector of quantiles of interest; the default is c(.1, .9)
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' out1 <- dcpo(demsup_data,
 #'              chime = FALSE,
 #'              chains = 1,

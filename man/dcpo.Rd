@@ -27,9 +27,10 @@ additional options; \code{stan} defaults reset by \code{dcpo} are \code{seed = 3
 \code{cores = min(stan_args$chains, parallel::detectCores()/2),} and \code{control <- list(adapt_delta = 0.99, stepsize = 0.005, max_treedepth = 14)}
 }
 \examples{
-
+\donttest{
 out1 <- dcpo(demsup_data,
              chains = 1,
              iter = 300) # 1 chain/300 iterations for example purposes only; use defaults
+}
 
 }

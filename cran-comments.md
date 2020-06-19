@@ -1,7 +1,7 @@
 ## Test environments
 * Local OS X install, R 3.6.1
-* Ubuntu 14.04.5 LTS (on travis-ci), R 4.0.0
-* win-builder (R version 4.0.0 alpha (2020-03-26 r78078))
+* Ubuntu 14.04.5 LTS (on travis-ci), R version 4.0.0 (2020-04-24)
+* win-builder (R version 4.0.0 (2020-04-24))
 
 ## R CMD check results
 There were no ERRORs or WARNINGs.

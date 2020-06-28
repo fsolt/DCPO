@@ -62,11 +62,11 @@ dcpo_xvt <- function(dcpo_input,
     group_by(test, qq, kk) %>%
     summarize(years = n_distinct(year)) %>%
     ungroup() %>%
-    filter(!test) %>%
     spread(key = kk, value = years, fill = 0) %>%
     mutate(countries = rowSums(.[, c(-1, -2)] > 1)) %>%
     mutate_at(vars(-test, -qq, -countries),
               ~ if_else(. > 1 & countries > 2 & qq != scale_q, 1, 0)) %>%
+    filter(!test) %>%
     select(-test, -qq, -countries) %>%
     {if (!delta) mutate_all(., ~ 0) else .}
 

@@ -19,7 +19,7 @@ a stanfit object
 }
 \examples{
 \donttest{
-# Single cross-validation test with 25% test set
+# Single cross-validation test with 25\% test set
 demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            chime = FALSE,
                            number_of_folds = 4,

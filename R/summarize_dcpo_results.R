@@ -1,4 +1,4 @@
-#' Extract DCPO Results
+#' Summarize DCPO Results
 #'
 #' \code{summarize_dcpo_results} is a convenience function that produces summary statistics of the main parameters of a DCPO stanfit object along with the relevant identifying information (country, year, question, and cutpoint).
 #'
@@ -51,6 +51,11 @@ summarize_dcpo_results <- function(dcpo_input,
     dplyr::group_by(year) %>%
     dplyr::summarize(tt = first(tt))
 
+  ktcodes <- dat %>%
+    dplyr::group_by(country) %>%
+    dplyr::summarize(first_yr = min(year),
+                     last_yr = max(year))
+
   res <- map_df(pars, function(par) {
     if (par == "theta") {
       rstan::summary(dcpo_output, pars = "theta", probs = probs) %>%
@@ -66,7 +71,13 @@ summarize_dcpo_results <- function(dcpo_input,
                                            parameter))) %>%
         dplyr::left_join(kcodes, by = "kk") %>%
         dplyr::left_join(tcodes, by = "tt") %>%
-        dplyr::arrange(kk, tt)
+        dplyr::mutate(year = if_else(tt == 1,
+                                     as.integer(year),
+                                     as.integer(min(year, na.rm = TRUE) + tt - 1))) %>%
+        dplyr::left_join(ktcodes, by = "country") %>%
+        dplyr::filter(year >= first_yr & year <= last_yr) %>%
+        dplyr::arrange(kk, tt) %>%
+        dplyr::select(-first_yr, -last_yr)
     } else if (par == "sigma") {
       rstan::summary(dcpo_output, pars = "sigma", probs = probs) %>%
         dplyr::first() %>%
@@ -80,8 +91,14 @@ summarize_dcpo_results <- function(dcpo_input,
                                            "\\1",
                                            parameter))) %>%
         dplyr::left_join(kcodes, by = "kk") %>%
-        dplyr::left_join(tcodes, by = "tt") %>%
-        dplyr::arrange(kk, tt)
+        dplyr::left_join(tcodes, by = "tt")%>%
+        dplyr::mutate(year = if_else(tt == 1,
+                                     as.integer(year),
+                                     as.integer(min(year, na.rm = TRUE) + tt - 1))) %>%
+        dplyr::left_join(ktcodes, by = "country") %>%
+        dplyr::filter(year >= first_yr & year <= last_yr) %>%
+        dplyr::arrange(kk, tt) %>%
+        dplyr::select(-first_yr, -last_yr)
     } else if (par == "alpha") {
       rstan::summary(dcpo_output, pars = "alpha", probs = probs) %>%
         dplyr::first() %>%
@@ -102,7 +119,7 @@ summarize_dcpo_results <- function(dcpo_input,
         dplyr::mutate(rr = as.numeric(gsub("beta\\[(\\d+),\\d+\\]",
                                            "\\1",
                                            parameter)),
-                      qq = as.numeric(gsub("beta\\[(\\d+),\\d+\\]",
+                      qq = as.numeric(gsub("beta\\[\\d+,(\\d+)\\]",
                                            "\\1",
                                            parameter)))%>%
         dplyr::left_join(qcodes, by = "qq") %>%
@@ -126,3 +143,7 @@ summarize_dcpo_results <- function(dcpo_input,
   })
   return(res)
 }
+
+#' @export
+#' @rdname summarize_dcpo_results
+summarise_dcpo_results <- summarize_dcpo_results

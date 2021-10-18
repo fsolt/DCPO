@@ -33,5 +33,5 @@ LinkingTo:
 Suggests: knitr
 SystemRequirements: GNU make
 NeedsCompilation: yes
-RoxygenNote: 7.0.0
+RoxygenNote: 7.1.1
 Biarch: true

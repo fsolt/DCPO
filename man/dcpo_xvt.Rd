@@ -38,7 +38,7 @@ a complete k-fold cross-validation, call it repeatedly, changing only the fold_n
 }
 \examples{
 \donttest{
-# Single cross-validation test with 25% test set
+# Single cross-validation test with 25\% test set
 demsup_xvtest_25pct <- dcpo_xvt(demsup_data,
                            number_of_folds = 4,
                            iter = 300,

@@ -3,6 +3,7 @@ data{
   int<lower=1> T;                     // number of years
   int<lower=1> Q;                     // number of questions
   int<lower=1> R;                     // maximum number of response cutpoints
+  int<lower=1, upper=R> RR[Q];        // maximum number of response cutpoints for question q
   int<lower=1> N;                     // number of KTQR observations
   int<lower=1, upper=K> kk[N];        // country k for opinion n
   int<lower=1, upper=T> tt[N];        // year t for opinion n
@@ -16,7 +17,7 @@ data{
 
 parameters{
   vector<lower=0>[Q] alpha;           // question discrimination
-  row_vector<lower=0>[Q] raw_beta[R]; // question-response difficulty component
+  ordered[R] raw_beta[Q];             // question-response difficulty component
   row_vector[Q] beta_init;            // initial question-response difficulty component, for first response
   vector[K] raw_delta_N01[Q];         // question-country difficulty component
   real<lower=0> sd_delta;             // question-country difficulty component variation
@@ -48,16 +49,12 @@ transformed parameters{
 
   // difficulty
   for (q in 1:Q) {
-    // ordered beta from (unordered) beta_raw, with fixed cut point
-    for (r in 1:R) {
+    // ordered beta from beta_raw, with fixed cut point
+    for (r in 1:RR[q]) {
       if (fixed_cutp[q, r] == 1) {
         beta[r, q] = 1;
       } else {
-        if (r == 1) {
-          beta[r, q] = beta_init[q];
-        } else {
-          beta[r, q] = beta[r-1, q] + raw_beta[r, q];
-        }
+        beta[r, q] = raw_beta[q, r];
       }
     }
     // delta, with mean zero for each question
@@ -76,17 +73,17 @@ transformed parameters{
 
   // later year values for raw_theta, theta, raw_sigma, and sigma
   for (t in 2:T) {
-	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
-	  theta[t] = inv_logit(raw_theta[t] - 1); // scale to [0, 1]; raw_theta = 1 -> 50% agreement when beta = 1
-	  raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
-	  sigma[t] = exp(raw_sigma[t]); // implies sigma[t] ~ lognormal(raw_sigma[t-1], sd_sigma_evolve)
+    raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
+    theta[t] = inv_logit(raw_theta[t] - 1); // scale to [0, 1]; raw_theta = 1 -> 50% agreement when beta = 1
+    raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
+    sigma[t] = exp(raw_sigma[t]); // implies sigma[t] ~ lognormal(raw_sigma[t-1], sd_sigma_evolve)
   }
 
   for (n in 1:N) {                            // N-vector expansion
-  	beta_rr_qq[n] = beta[rr[n], qq[n]];
-  	delta_qq_kk[n] = delta[qq[n], kk[n]];
-  	raw_theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
-  	sigma_tt_kk[n] = sigma[tt[n], kk[n]];
+    beta_rr_qq[n] = beta[rr[n], qq[n]];
+    delta_qq_kk[n] = delta[qq[n], kk[n]];
+    raw_theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
+    sigma_tt_kk[n] = sigma[tt[n], kk[n]];
   }
 
   // fitted values model

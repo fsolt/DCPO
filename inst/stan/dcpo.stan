@@ -3,7 +3,6 @@ data{
   int<lower=1> T;                     // number of years
   int<lower=1> Q;                     // number of questions
   int<lower=1> R;                     // maximum number of response cutpoints
-  int<lower=1, upper=R> RR[Q];        // maximum number of response cutpoints for question q
   int<lower=1> N;                     // number of KTQR observations
   int<lower=1, upper=K> kk[N];        // country k for opinion n
   int<lower=1, upper=T> tt[N];        // year t for opinion n
@@ -17,7 +16,8 @@ data{
 
 parameters{
   vector<lower=0>[Q] alpha;           // question discrimination
-  ordered[R] raw_beta[Q];             // question-response difficulty component
+  row_vector<lower=0>[Q] raw_beta[R]; // question-response difficulty component
+  row_vector[Q] beta_init;            // initial question-response difficulty component, for first response
   vector[K] raw_delta_N01[Q];         // question-country difficulty component
   real<lower=0> sd_delta;             // question-country difficulty component variation
   row_vector[K] raw_theta_N01[T];     // public opinion, before transition model, std normal scale
@@ -48,12 +48,16 @@ transformed parameters{
 
   // difficulty
   for (q in 1:Q) {
-    // ordered beta from beta_raw, with fixed cut point
-    for (r in 1:RR[q]) {
+    // ordered beta from (unordered) beta_raw, with fixed cut point
+    for (r in 1:R) {
       if (fixed_cutp[q, r] == 1) {
         beta[r, q] = 1;
       } else {
-        beta[r, q] = raw_beta[q, r];
+        if (r == 1) {
+          beta[r, q] = beta_init[q];
+        } else {
+          beta[r, q] = beta[r-1, q] + raw_beta[r, q];
+        }
       }
     }
     // delta, with mean zero for each question
@@ -96,8 +100,11 @@ model{
   phi ~ gamma(4, 0.1);
 
   alpha ~ std_normal();
+  beta_init ~ std_normal();
+  for (r in 1:R) {
+    raw_beta[r] ~ std_normal();
+  }
   for (q in 1:Q) {
-    raw_beta[q] ~ std_normal();
     raw_delta_N01[q] ~ std_normal();
   }
   sd_delta ~ std_normal();

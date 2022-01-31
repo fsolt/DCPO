@@ -102,7 +102,7 @@ summarize_dcpo_results <- function(dcpo_input,
         dplyr::mutate(rr = as.numeric(gsub("beta\\[(\\d+),\\d+\\]",
                                            "\\1",
                                            parameter)),
-                      qq = as.numeric(gsub("beta\\[(\\d+),\\d+\\]",
+                      qq = as.numeric(gsub("beta\\[\\d+,(\\d+)\\]",
                                            "\\1",
                                            parameter)))%>%
         dplyr::left_join(qcodes, by = "qq") %>%

@@ -2,17 +2,9 @@
 % Please edit documentation in R/summarize_dcpo_results.R
 \name{summarize_dcpo_results}
 \alias{summarize_dcpo_results}
-\alias{summarise_dcpo_results}
-\title{Summarize DCPO Results}
+\title{Extract DCPO Results}
 \usage{
 summarize_dcpo_results(
-  dcpo_input,
-  dcpo_output,
-  pars = c("theta", "sigma", "alpha", "beta", "delta"),
-  probs = c(0.1, 0.9)
-)
-
-summarise_dcpo_results(
   dcpo_input,
   dcpo_output,
   pars = c("theta", "sigma", "alpha", "beta", "delta"),

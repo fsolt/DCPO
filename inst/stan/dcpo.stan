@@ -76,17 +76,17 @@ transformed parameters{
 
   // later year values for raw_theta, theta, raw_sigma, and sigma
   for (t in 2:T) {
-    raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
-    theta[t] = inv_logit(raw_theta[t] - 1); // scale to [0, 1]; raw_theta = 1 -> 50% agreement when beta = 1
-    raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
-    sigma[t] = exp(raw_sigma[t]); // implies sigma[t] ~ lognormal(raw_sigma[t-1], sd_sigma_evolve)
+	  raw_theta[t] = raw_theta[t-1] + sd_theta_evolve * raw_theta_N01[t]; // transition model, implies raw_theta[t] ~ normal(raw_theta[t-1], sd_theta_evolve)
+	  theta[t] = inv_logit(raw_theta[t] - 1); // scale to [0, 1]; raw_theta = 1 -> 50% agreement when beta = 1
+	  raw_sigma[t] = raw_sigma[t-1] + sd_sigma_evolve * raw_sigma_N01[t]; // transition model, implies raw_sigma[t] ~ normal(raw_sigma[t-1], sd_sigma_evolve)
+	  sigma[t] = exp(raw_sigma[t]); // implies sigma[t] ~ lognormal(raw_sigma[t-1], sd_sigma_evolve)
   }
 
   for (n in 1:N) {                            // N-vector expansion
-    beta_rr_qq[n] = beta[rr[n], qq[n]];
-    delta_qq_kk[n] = delta[qq[n], kk[n]];
-    raw_theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
-    sigma_tt_kk[n] = sigma[tt[n], kk[n]];
+  	beta_rr_qq[n] = beta[rr[n], qq[n]];
+  	delta_qq_kk[n] = delta[qq[n], kk[n]];
+  	raw_theta_tt_kk[n] = raw_theta[tt[n], kk[n]];
+  	sigma_tt_kk[n] = sigma[tt[n], kk[n]];
   }
 
   // fitted values model

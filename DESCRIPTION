@@ -15,7 +15,7 @@ Depends:
   Rcpp (>= 0.12.17), 
   methods
 Imports: 
-  rstan (>= 2.19.3), 
+  rstan (>= 2.19.2), 
   rstantools (>= 2.1.0), 
   beepr,
   dplyr,
@@ -26,12 +26,12 @@ Imports:
   tidyr
 LinkingTo: 
   StanHeaders (>= 2.21.0),
-  rstan (>= 2.19.3),
+  rstan (>= 2.19.2),
   BH (>= 1.66.0-1),
   Rcpp (>= 0.12.0),
   RcppEigen (>= 0.3.3.4.0)
 Suggests: knitr
 SystemRequirements: GNU make
 NeedsCompilation: yes
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Biarch: true

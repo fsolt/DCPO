@@ -37,10 +37,15 @@ summarize_dcpo_results <- function(dcpo_input,
 
   dat <- dcpo_input$data
 
+  fit <- dcpo_output
+
   qcodes <- dat %>%
     dplyr::group_by(question) %>%
+    filter(rr == max(rr)) %>%
     dplyr::summarize(qq = first(qq) %>%
-                       as.numeric())
+                       as.numeric(),
+                     n = n(),
+                     rr_max = max(rr))
 
   kcodes <- dat %>%
     dplyr::group_by(country) %>%
@@ -59,17 +64,15 @@ summarize_dcpo_results <- function(dcpo_input,
 
   res <- map_df(pars, function(par) {
     if (par == "theta") {
-      rstan::summary(dcpo_output, pars = "theta", probs = probs) %>%
-        dplyr::first() %>%
-        as.data.frame() %>%
-        tibble::rownames_to_column("parameter") %>%
-        tibble::as_tibble() %>%
+      fit$summary("theta",
+                  ~posterior::quantile2(., probs = probs),
+                  posterior::default_summary_measures()) %>%
         dplyr::mutate(tt = as.numeric(gsub("theta\\[(\\d+),\\d+\\]",
                                            "\\1",
-                                           parameter)),
+                                           variable)),
                       kk = as.numeric(gsub("theta\\[\\d+,(\\d+)\\]",
                                            "\\1",
-                                           parameter))) %>%
+                                           variable))) %>%
         dplyr::left_join(kcodes, by = "kk") %>%
         dplyr::left_join(tcodes, by = "tt") %>%
         dplyr::mutate(year = if_else(tt == 1,
@@ -78,53 +81,48 @@ summarize_dcpo_results <- function(dcpo_input,
         dplyr::left_join(ktcodes, by = "country") %>%
         dplyr::filter(year >= first_yr & year <= last_yr) %>%
         dplyr::arrange(kk, tt) %>%
-        dplyr::select(-first_yr, -last_yr)
+        dplyr::select(country, year, mean, median, sd, mad, q5, q10, q90, q95, variable, kk, tt)
     } else if (par == "sigma") {
-      rstan::summary(dcpo_output, pars = "sigma", probs = probs) %>%
-        dplyr::first() %>%
-        as.data.frame() %>%
-        tibble::rownames_to_column("parameter") %>%
-        tibble::as_tibble() %>%
+      fit$summary("theta",
+                  ~posterior::quantile2(., probs = probs),
+                  posterior::default_summary_measures()) %>%
         dplyr::mutate(tt = as.numeric(gsub("sigma\\[(\\d+),\\d+\\]",
                                            "\\1",
-                                           parameter)),
+                                           variable)),
                       kk = as.numeric(gsub("sigma\\[\\d+,(\\d+)\\]",
                                            "\\1",
-                                           parameter))) %>%
+                                           variable))) %>%
         dplyr::left_join(kcodes, by = "kk") %>%
         dplyr::left_join(tcodes, by = "tt") %>%
-        dplyr::arrange(kk, tt)
+        dplyr::mutate(year = if_else(tt == 1,
+                                     as.integer(year),
+                                     as.integer(min(year, na.rm = TRUE) + tt - 1))) %>%
+        dplyr::left_join(ktcodes, by = "country") %>%
+        dplyr::filter(year >= first_yr & year <= last_yr) %>%
+        dplyr::arrange(kk, tt) %>%
+        dplyr::select(country, year, mean, median, sd, mad, q5, q10, q90, q95, variable, kk, tt)
     } else if (par == "alpha") {
-      rstan::summary(dcpo_output, pars = "alpha", probs = probs) %>%
-        dplyr::first() %>%
-        as.data.frame() %>%
-        tibble::rownames_to_column("parameter") %>%
-        tibble::as_tibble() %>%
+      fit$summary("alpha") %>%
         dplyr::mutate(qq = as.numeric(gsub("alpha\\[(\\d+)]",
                                            "\\1",
-                                           parameter))) %>%
+                                           variable))) %>%
         dplyr::left_join(qcodes, by = "qq") %>%
-        dplyr::arrange(qq)
+        dplyr::arrange(qq) %>%
+        dplyr::select(question, n, everything())
     } else if (par == "beta") {
-      rstan::summary(dcpo_output, pars = "beta", probs = probs) %>%
-        dplyr::first() %>%
-        as.data.frame() %>%
-        tibble::rownames_to_column("parameter") %>%
-        tibble::as_tibble() %>%
+      fit$draws("beta", format = "df") %>%
         dplyr::mutate(rr = as.numeric(gsub("beta\\[(\\d+),\\d+\\]",
                                            "\\1",
-                                           parameter)),
+                                           variable)),
                       qq = as.numeric(gsub("beta\\[\\d+,(\\d+)\\]",
                                            "\\1",
-                                           parameter)))%>%
+                                           variable)))%>%
         dplyr::left_join(qcodes, by = "qq") %>%
-        dplyr::arrange(qq, rr)
+        dplyr::arrange(qq, rr) %>%
+        dplyr::filter(rr <= rr_max) %>%
+        dplyr::select(question, n, everything())
     } else if (par == "delta") {
-      rstan::summary(dcpo_output, pars = "delta", probs = probs) %>%
-        dplyr::first() %>%
-        as.data.frame() %>%
-        tibble::rownames_to_column("parameter") %>%
-        tibble::as_tibble() %>%
+      fit$draws("delta", format = "df") %>%
         dplyr::mutate(qq = as.numeric(gsub("delta\\[(\\d+),\\d+\\]",
                                            "\\1",
                                            parameter)),
@@ -133,7 +131,8 @@ summarize_dcpo_results <- function(dcpo_input,
                                            parameter)))%>%
         dplyr::left_join(qcodes, by = "qq") %>%
         dplyr::left_join(kcodes, by = "kk") %>%
-        dplyr::arrange(qq)
+        dplyr::arrange(qq) %>%
+        dplyr::select(question, n, country, everything())
     }
   })
   return(res)

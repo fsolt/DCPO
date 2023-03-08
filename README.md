@@ -1,4 +1,4 @@
-[![CRAN version](http://www.r-pkg.org/badges/version/DCPO)](https://CRAN.R-project.org/package=DCPO) ![](http://cranlogs.r-pkg.org/badges/grand-total/DCPO) [![Travis-CI Build Status](https://travis-ci.org/fsolt/DCPO.svg?branch=master)](https://travis-ci.org/fsolt/DCPO)
+[![CRAN version](http://www.r-pkg.org/badges/version/DCPO)](https://CRAN.R-project.org/package=DCPO) ![](http://cranlogs.r-pkg.org/badges/grand-total/DCPO) [![Travis-CI Build Status](https://travis-ci.org/fsolt/DCPO.svg?branch=master)](https://travis-ci.org/fsolt/DCPO)  ![](https://img.shields.io/badge/lifecycle-depricated-orange.svg)
 
 ------------------------------------------------------------------------
 DCPO
@@ -26,3 +26,5 @@ See the detailed instruction [here](https://github.com/stan-dev/rstan/wiki/RStan
 Windows users may encounter some issues when installing `DCPO` due to the version or system settings.
 To minimize unnecessary disturbance, we recommand to install the [proper version](https://cran.r-project.org/web/checks/check_results_DCPO.html) of R and `Stanheaders` package first. 
 Also, when installing `DCPO`, users are recommanded to set the argument `dependencies` as "TRUE" in the `install.packages` or `remotes::install_github` functions. 
+
+**Note**: Development of `CmdStan`, available on R via [CmdStanR](https://mc-stan.org/cmdstanr/), has far outstripped that of the `rstan` package on which DCPO is based. DCPO estimates can now be generated much, much faster (wallclock times of < 2%) by passing [the DCPO Stan file](https://github.com/fsolt/DCPO/blob/master/inst/stan/dcpo.stan) to `CmdStanR`. See [here](https://github.com/fsolt/dcpo_trust_bureaucracy/blob/1a8a87c0d1c99c32a94489066ef6c5508c1f7a1f/paper/dcpo_trust_bureaucracy.Rmd#L600) for an example.

@@ -4,43 +4,43 @@ data{
   int<lower=1> Q;                     // number of questions
   int<lower=1> R;                     // maximum number of response cutpoints
   int<lower=1> N;                     // number of KTQR observations
-  int<lower=1, upper=K> kk[N];        // country k for opinion n
-  int<lower=1, upper=T> tt[N];        // year t for opinion n
-  int<lower=1, upper=Q> qq[N];        // question q for opinion n
-  int<lower=1, upper=R> rr[N];        // response cutpoint r for opinion n
-  int<lower=1> y_r[N];                // vector of survey responses, cumulative count
-  int<lower=1> n_r[N];                // vector of sample sizes
-  int fixed_cutp[Q, R];               // indicates single category with difficulty fixed to .5
-  vector<lower=0, upper=1>[K] use_delta[Q]; // indicates multiple years observed of question q in country k
+  array[N] int<lower=1, upper=K> kk;        // country k for opinion n
+  array[N] int<lower=1, upper=T> tt;        // year t for opinion n
+  array[N] int<lower=1, upper=Q> qq;        // question q for opinion n
+  array[N] int<lower=1, upper=R> rr;        // response cutpoint r for opinion n
+  array[N] int<lower=1> y_r;                // vector of survey responses, cumulative count
+  array[N] int<lower=1> n_r;                // vector of sample sizes
+  array[Q, R] int fixed_cutp;               // indicates single category with difficulty fixed to .5
+  array[Q] vector<lower=0, upper=1>[K] use_delta; // indicates multiple years observed of question q in country k
 }
 
 parameters{
   vector<lower=0>[Q] alpha;           // question discrimination
-  row_vector<lower=0>[Q] raw_beta[R]; // question-response difficulty component
+  array[R] row_vector<lower=0>[Q] raw_beta; // question-response difficulty component
   row_vector[Q] beta_init;            // initial question-response difficulty component, for first response
-  vector[K] raw_delta_N01[Q];         // question-country difficulty component
+  array[Q] vector[K] raw_delta_N01;         // question-country difficulty component
   real<lower=0> sd_delta;             // question-country difficulty component variation
-  row_vector[K] raw_theta_N01[T];     // public opinion, before transition model, std normal scale
+  array[T] row_vector[K] raw_theta_N01;     // public opinion, before transition model, std normal scale
   real<lower=0> sd_theta_evolve;      // public opinion evolution
   row_vector[K] theta_init;           // initial public opinion, for first year
-  row_vector[K] raw_sigma_N01[T];     // raw public opinion std deviation, before transition model, std normal scale
+  array[T] row_vector[K] raw_sigma_N01;     // raw public opinion std deviation, before transition model, std normal scale
   real<lower=0> sd_sigma_evolve;      // raw public opinion std deviation evolution
   row_vector[K] raw_sigma_init;       // initial raw public opinion std deviation, for first year
   real<lower=0> phi;                  // response model beta-binomial dispersion parameter
 }
 
 transformed parameters{
-  row_vector[Q] beta[R];              // question-response difficulty component
+  array[R] row_vector[Q] beta;              // question-response difficulty component
   vector[N] beta_rr_qq;               // N-vector for question-response difficulty component
-  vector[K] raw_delta[Q];             // question-country difficulty component, std normal prior
+  array[Q] vector[K] raw_delta;             // question-country difficulty component, std normal prior
   vector[Q] mean_raw_delta;           // mean question-country difficulty component, std normal prior, by question
-  vector[K] delta[Q];                 // question-country difficulty component, mean centered by question
+  array[Q] vector[K] delta;                 // question-country difficulty component, mean centered by question
   vector[N] delta_qq_kk;              // N-vector for question-country difficulty component values
-  row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
-  row_vector[K] theta[T]; 	          // public opinion, after transition model, on [0, 1] scale
+  array[T] row_vector[K] raw_theta; 	      // public opinion, after transition model
+  array[T] row_vector[K] theta; 	          // public opinion, after transition model, on [0, 1] scale
   vector[N] raw_theta_tt_kk;				  // N-vector for raw public opinion values
-  row_vector[K] raw_sigma[T];         // raw public opinion std deviation, after transition model
-  row_vector[K] sigma[T];             // public opinion std deviation, after transition model
+  array[T] row_vector[K] raw_sigma;         // raw public opinion std deviation, after transition model
+  array[T] row_vector[K] sigma;             // public opinion std deviation, after transition model
   vector[N] sigma_tt_kk;				      // N-vector for public opinion std deviation values
   vector<lower=0,upper=1>[N] eta;     // fitted values, on logit scale
   vector<lower=0>[N] a;					      // response model beta-binomial alpha parameter

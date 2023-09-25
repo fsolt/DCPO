@@ -4,52 +4,52 @@ data{
   int<lower=1> Q;                     // number of questions
   int<lower=1> R;                     // maximum number of response cutpoints
   int<lower=1> N;                     // number of KTQR observations, training set
-  int<lower=1, upper=K> kk[N];        // country k for opinion n
-  int<lower=1, upper=T> tt[N];        // year t for opinion n
-  int<lower=1, upper=Q> qq[N];        // question q for opinion n
-  int<lower=1, upper=R> rr[N];        // response cutpoint r for opinion n
-  int<lower=1> y_r[N];                // vector of survey responses, cumulative count
-  int<lower=1> n_r[N];                // vector of sample sizes
+  array[N] int<lower=1, upper=K> kk;        // country k for opinion n
+  array[N] int<lower=1, upper=T> tt;        // year t for opinion n
+  array[N] int<lower=1, upper=Q> qq;        // question q for opinion n
+  array[N] int<lower=1, upper=R> rr;        // response cutpoint r for opinion n
+  array[N] int<lower=1> y_r;                // vector of survey responses, cumulative count
+  array[N] int<lower=1> n_r;                // vector of sample sizes
   int<lower=1> N_test;                // number of KTQR observations, testing set
-  int<lower=1, upper=K> kk_test[N_test]; // country k for opinion n, testing set
-  int<lower=1, upper=T> tt_test[N_test]; // year t for opinion n, testing set
-  int<lower=1, upper=Q> qq_test[N_test]; // question q for opinion n, testing set
-  int<lower=1, upper=R> rr_test[N_test]; // response cutpoint r for opinion n, testing set
-  int<lower=1> n_r_test[N_test];      // vector of sample sizes, testing set
-  int fixed_cutp[Q, R];               // indicates single category with difficulty fixed to .5
-  vector<lower=0, upper=1>[K] use_delta[Q]; // indicates multiple years observed of question q in country k
+  array[N_test] int<lower=1, upper=K> kk_test; // country k for opinion n, testing set
+  array[N_test] int<lower=1, upper=T> tt_test; // year t for opinion n, testing set
+  array[N_test] int<lower=1, upper=Q> qq_test; // question q for opinion n, testing set
+  array[N_test] int<lower=1, upper=R> rr_test; // response cutpoint r for opinion n, testing set
+  array[N_test] int<lower=1> n_r_test;      // vector of sample sizes, testing set
+  array[Q, R] int fixed_cutp;               // indicates single category with difficulty fixed to .5
+  array[Q] vector<lower=0, upper=1>[K] use_delta; // indicates multiple years observed of question q in country k
 }
 
 parameters{
   vector<lower=0>[Q] alpha;           // question discrimination
-  row_vector<lower=0>[Q] raw_beta[R]; // question-response difficulty component
+  array[R] row_vector<lower=0>[Q] raw_beta; // question-response difficulty component
   row_vector[Q] beta_init;            // initial question-response difficulty component, for first response
-  vector[K] raw_delta_N01[Q];         // question-country difficulty component
+  array[Q] vector[K] raw_delta_N01;         // question-country difficulty component
   real<lower=0> sd_delta;             // question-country difficulty component variation
-  row_vector[K] raw_theta_N01[T];     // public opinion, before transition model, std normal scale
+  array[T] row_vector[K] raw_theta_N01;     // public opinion, before transition model, std normal scale
   real<lower=0> sd_theta_evolve;      // public opinion evolution
   row_vector[K] theta_init;           // initial public opinion, for first year
-  row_vector[K] raw_sigma_N01[T];     // opinion variance, before transition model
+  array[T] row_vector[K] raw_sigma_N01;     // opinion variance, before transition model
   real<lower=0> sd_sigma_evolve;      // opinion variance evolution
   row_vector[K] sigma_init;           // initial opinion variance, for first year
   real<lower=0> phi;                  // response model beta-binomial dispersion parameter
 }
 
 transformed parameters{
-  row_vector[Q] beta[R];              // question-response difficulty component
+  array[R] row_vector[Q] beta;              // question-response difficulty component
   vector[N] beta_rr_qq;               // N-vector for question-response difficulty component
   vector[N_test] beta_rr_qq_test;     // N-vector for question-response difficulty component, test set
-  vector[K] raw_delta[Q];             // question-country difficulty component, std normal prior
+  array[Q] vector[K] raw_delta;             // question-country difficulty component, std normal prior
   vector[Q] mean_raw_delta;           // mean question-country difficulty component, std normal prior, by question
-  vector[K] delta[Q];                 // question-country difficulty component, mean centered by question
+  array[Q] vector[K] delta;                 // question-country difficulty component, mean centered by question
   vector[N] delta_qq_kk;              // N-vector for question-country difficulty component values
   vector[N_test] delta_qq_kk_test;    // N-vector for question-country difficulty component values, test set
-  row_vector[K] raw_theta[T]; 	      // public opinion, after transition model
-  row_vector[K] theta[T]; 	          // public opinion, after transition model, on [0, 1] scale
+  array[T] row_vector[K] raw_theta; 	      // public opinion, after transition model
+  array[T] row_vector[K] theta; 	          // public opinion, after transition model, on [0, 1] scale
   vector[N] raw_theta_tt_kk;				  // N-vector for raw public opinion values
   vector[N_test] raw_theta_tt_kk_test;// N-vector for raw public opinion values, test set
-  row_vector[K] raw_sigma[T];         // public opinion variance, after transition model
-  row_vector[K] sigma[T];             // public opinion variance, after transition model, on [0, .25] scale
+  array[T] row_vector[K] raw_sigma;         // public opinion variance, after transition model
+  array[T] row_vector[K] sigma;             // public opinion variance, after transition model, on [0, .25] scale
   vector[N] sigma_tt_kk;				      // N-vector for opinion variance values
   vector[N_test] sigma_tt_kk_test;		// N-vector for opinion variance values, test set
   vector<lower=0,upper=1>[N] eta;     // fitted values, on logit scale
